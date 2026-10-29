@@ -1,9 +1,4 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>فرقة أحمد الفاتح</title>
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>فرقة أحمد الفاتح</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700&display=swap">
 <style>
@@ -470,9 +465,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 @media (max-width: 820px) { .ti { grid-template-columns: 66px 1fr; } .ti-s { grid-column: 1 / -1; grid-template-columns: auto auto 1fr; justify-items: start; align-items: center; } .ti-s .row-act, .ti-s > button { justify-self: end; } }
 @media (prefers-reduced-motion: reduce) { .ti.live::before { animation: none; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
-</style>
-</head>
-<body>
+</style></head><body>
 
 <header class="bar"><div class="wrap">
   <a class="brand" href="#home" id="brand"></a>
@@ -485,6 +478,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 (function () {
   "use strict";
   var TODAY = (function () { var d = new Date(), z = function (n) { return (n < 10 ? "0" : "") + n; }; return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()); })();
+  var CLOUD = "https://scouts-83903-default-rtdb.firebaseio.com"; /* رابط قاعدة البيانات المشتركة (Firebase Realtime Database) — إن تُرك فارغًا تُحفظ البيانات في هذا الجهاز فقط */
   var KEY = "afs-demo-v1";
 
   /* ---------- state ---------- */
@@ -527,7 +521,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return { user: u, pass: pw || ranStr(6) };
   }
   function flashHtml(where) { return ui.flash && ui.flash.where === where ? '<div class="flash' + (ui.flash.err ? " bad" : "") + '" role="status">' + h(ui.flash.text).replace(/ · كلمة المرور/g, "<br>كلمة المرور").replace(/([A-Za-z0-9._-]{3,})/g, '<bdi dir="ltr">$1</bdi>') + "</div>" : ""; }
-  function save() { try { if (S.members) ensureCodes(); localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function save() { try { if (S.members) ensureCodes(); localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} cloudPush(); }
   var PTASKS = ["رفع العلم في الطابور", "استقبال الطلاب صباحاً", "تنظيم الطابور الصباحي", "تنظيم فسحة الابتدائي", "تنظيم فسحة الإعدادي", "تسجيل مخالفات الفسحة", "تنظيم دخول الطلاب إلى الفصول", "تنظيم الانصراف", "المناوبة في المصلى", "حراسة بوابة المدرسة", "تنظيم المقصف", "الإسعافات الأولية", "نظافة الساحة والممرات", "تنظيم الحفلات والفعاليات المدرسية", "استقبال الضيوف والزوار", "المرور على الفصول وتنظيمها"];
   var BCATS = [["hob", "شارات الهوايات والمهارات"], ["srv", "شارات الخدمة العامة والمواطنة"], ["lead", "الشارات القيادية الكشفية والأنشطة"]];
   var BADGES = [
@@ -637,7 +631,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 
   /* ---------- helpers ---------- */
   function h(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
-  function nid() { S.nid += 1; return S.nid; }
+  function nid() { S.nid = Math.max((S.nid || 0) + 1, Date.now()); return S.nid; }
   function fmt(iso, opt) { try { return new Date(iso + "T12:00:00").toLocaleDateString("ar-BH-u-nu-latn", opt); } catch (e) { return iso; } }
   function day(iso) { return fmt(iso, { day: "numeric" }); }
   function mon(iso) { return fmt(iso, { month: "long" }); }
@@ -1585,8 +1579,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       });
     });
   }
-  function dbPut(p) { return dbTx("readwrite", function (st) { return st.put(p); }); }
-  function dbDel(id) { return dbTx("readwrite", function (st) { return st.delete(id); }); }
+  function dbPut(p) { clPhotoPut(p); return dbTx("readwrite", function (st) { return st.put(p); }); }
+  function dbDel(id) { clPhotoDel(id); return dbTx("readwrite", function (st) { return st.delete(id); }); }
   function dbAll() { return dbTx("readonly", function (st) { return st.getAll(); }); }
 
   function rnd(seed) { var x = seed * 9301 + 49297; return function () { x = (x * 9301 + 49297) % 233280; return x / 233280; }; }
@@ -1842,7 +1836,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "bkno") { ui.bkAsk = false; refresh(); }
     else if (a === "bkyes") {
       var raw = (document.getElementById("bk-ta") || {}).value || "";
-      try { var obj = JSON.parse(raw); if (!obj || !obj.members || !obj.staff) throw 0; localStorage.setItem(KEY, JSON.stringify(obj)); location.reload(); }
+      try { var obj = JSON.parse(raw); if (!obj || !obj.members || !obj.staff) throw 0; localStorage.setItem(KEY, JSON.stringify(obj)); cloudRestore(obj); }
       catch (er) { ui.bkAsk = false; ui.bkErr = true; ui.bkMsg = "النص الملصوق ليس نسخة احتياطية صحيحة."; refresh(); }
     }
     else if (a === "navtoggle") { ui.navOpen = !ui.navOpen; refresh(); }
@@ -2179,14 +2173,119 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     if (Math.abs(dx) > 50) lbStep(dx < 0 ? 1 : -1);
   }, { passive: true });
 
+  /* ---------- المزامنة المباشرة (Firebase Realtime Database عبر REST + SSE) ---------- */
+  var cl = { last: {}, remote: {}, timer: null, busy: false, first: true, ph: {}, es: null, st: "off" };
+  function clBase() { return CLOUD.replace(/\/+$/, ""); }
+  function clJ(url, opt) { return fetch(url, opt).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
+  function clStatus(st) {
+    cl.st = st;
+    if (!CLOUD) return;
+    var el = document.getElementById("clpill");
+    if (!el) { el = document.createElement("div"); el.id = "clpill"; el.style.cssText = "position:fixed;bottom:6px;left:8px;z-index:50;font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(0,0,0,.55);color:#fff;pointer-events:none"; document.body.appendChild(el); }
+    el.textContent = st === "on" ? "● مباشر" : st === "sync" ? "◐ مزامنة…" : "○ غير متصل";
+    el.style.background = st === "on" ? "rgba(21,128,61,.85)" : st === "sync" ? "rgba(180,120,0,.85)" : "rgba(185,28,28,.85)";
+  }
+  function cloudPush() {
+    if (!CLOUD || cl.first) return;
+    clearTimeout(cl.timer);
+    cl.timer = setTimeout(function () { cl.timer = null; clFlush(); }, 350);
+  }
+  function clFlush() {
+    if (cl.busy) { cloudPush(); return; }
+    var jobs = [];
+    Object.keys(S).forEach(function (k) {
+      if (k === "meId") return;
+      var v = JSON.stringify(S[k]);
+      if (v !== cl.last[k]) jobs.push(clJ(clBase() + "/afs/" + k + ".json", { method: "PUT", body: JSON.stringify(v) }).then(function () { cl.last[k] = v; }));
+    });
+    if (!jobs.length) return;
+    cl.busy = true; clStatus("sync");
+    Promise.all(jobs).then(function () { clStatus("on"); }).catch(function () { clStatus("off"); setTimeout(cloudPush, 5000); })
+      .then(function () { cl.busy = false; clApply(); });
+  }
+  function clRefresh() {
+    var ae = document.activeElement;
+    if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) { setTimeout(clRefresh, 2500); return; }
+    if (ui.lb || (shown === "admin-photos" && ui.newEv)) return;
+    var y = window.scrollY; refresh(); window.scrollTo(0, y);
+  }
+  function clApply() {
+    if (cl.busy || cl.timer) return;
+    var changed = false;
+    Object.keys(cl.remote).forEach(function (k) {
+      var r = cl.remote[k];
+      if (typeof r !== "string" || k === "meId") return;
+      var loc = JSON.stringify(S[k]);
+      if (r === loc) { cl.last[k] = r; return; }
+      if (!cl.first && loc !== cl.last[k]) return; /* تعديل محلي لم يُرسل بعد */
+      try { S[k] = JSON.parse(r); cl.last[k] = r; changed = true; } catch (e) {}
+    });
+    if (cl.first) { cl.first = false; clFlush(); }
+    if (changed) { clRefresh(); }
+  }
+  function clConnect() {
+    if (!CLOUD || !window.EventSource) return;
+    clStatus("sync");
+    var es = cl.es = new EventSource(clBase() + "/afs.json");
+    es.addEventListener("put", function (e) {
+      var d; try { d = JSON.parse(e.data); } catch (x) { return; }
+      if (d.path === "/") cl.remote = d.data || {};
+      else { var k = d.path.split("/")[1]; if (d.data === null) delete cl.remote[k]; else cl.remote[k] = d.data; }
+      clStatus("on"); clApply();
+    });
+    es.addEventListener("patch", function (e) {
+      var d; try { d = JSON.parse(e.data); } catch (x) { return; }
+      Object.keys(d.data || {}).forEach(function (k) { if (d.data[k] === null) delete cl.remote[k]; else cl.remote[k] = d.data[k]; });
+      clApply();
+    });
+    es.onerror = function () { clStatus("off"); };
+    es.onopen = function () { clStatus("on"); };
+    clPhotoSync(); setInterval(clPhotoSync, 6000);
+  }
+  function cloudRestore(obj) {
+    if (!CLOUD) { location.reload(); return; }
+    Promise.all(Object.keys(obj).map(function (k) { return clJ(clBase() + "/afs/" + k + ".json", { method: "PUT", body: JSON.stringify(JSON.stringify(obj[k])) }); }))
+      .then(function () { location.reload(); }).catch(function () { location.reload(); });
+  }
+  /* الصور: كل صورة عقدة مستقلة في /photos */
+  function clPhotoPut(p) {
+    if (!CLOUD || cl.ph[p.id]) return;
+    cl.ph[p.id] = 1;
+    clJ(clBase() + "/photos/" + p.id + ".json", { method: "PUT", body: JSON.stringify(p) }).catch(function () { delete cl.ph[p.id]; });
+  }
+  function clPhotoDel(id) {
+    if (!CLOUD) return;
+    delete cl.ph[id];
+    fetch(clBase() + "/photos/" + id + ".json", { method: "DELETE" }).catch(function () {});
+  }
+  var phBusy = false;
+  function clPhotoSync() {
+    if (phBusy || !CLOUD || idbOk === null) return;
+    phBusy = true;
+    clJ(clBase() + "/photos.json?shallow=true").then(function (idx) {
+      idx = idx || {};
+      var changed = false, jobs = [];
+      PH = PH.filter(function (p) { if (cl.ph[p.id] && !idx[p.id]) { delete cl.ph[p.id]; dbTx("readwrite", function (st) { return st.delete(p.id); }).catch(function () {}); changed = true; return false; } return true; });
+      PH.forEach(function (p) { if (!idx[p.id] && !cl.ph[p.id]) clPhotoPut(p); else cl.ph[p.id] = 1; });
+      Object.keys(idx).forEach(function (id) {
+        if (PH.some(function (p) { return String(p.id) === id; })) return;
+        jobs.push(clJ(clBase() + "/photos/" + id + ".json").then(function (rec) {
+          if (!rec) return;
+          rec.id = Number(rec.id); cl.ph[rec.id] = 1; PH.push(rec); changed = true;
+          return dbTx("readwrite", function (st) { return st.put(rec); }).catch(function () {});
+        }));
+      });
+      return Promise.all(jobs).then(function () { if (changed && (/^(gallery|album-)/.test(shown) || shown === "admin-photos")) clRefresh(); });
+    }).catch(function () {}).then(function () { phBusy = false; });
+  }
+
   go();
   if (shown === "") render("home");
+  clConnect();
   dbAll().then(function (list) {
     PH = list || []; idbOk = true;
     if (/^(gallery|album-)/.test(shown) || (shown === "admin-photos" && !ui.newEv)) refresh();
   }).catch(function () { idbOk = false; });
 })();
 </script>
-
-</body>
-</html>
+</body></html>
