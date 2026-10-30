@@ -780,7 +780,16 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       '<div class="field full"><label for="j-phone">رقم التواصل</label><input id="j-phone" type="tel" required></div>' +
       '<div class="field full"><label for="j-note">ملاحظات</label><textarea id="j-note"></textarea></div></div>' +
       '<div style="margin-top:16px"><button class="btn" type="submit">إرسال الطلب</button></div></form></section>';
+    var js = joinState();
+    if (!js.open) P.join = '<section class="sec" id="join"><div class="sec-h"><h2>انضم إلى الفرقة</h2></div><div class="card" role="status" style="text-align:center;padding:28px 18px"><h3 style="margin-bottom:8px">' + h(js.title) + '</h3><p class="muted">' + h(js.text) + "</p></div></section>";
     return P;
+  }
+  function joinState() {
+    var c = S.joinCfg || {};
+    if (!c.on) return { open: false, title: "التسجيل مغلق حالياً", text: "سيُعلن عن فتح باب التسجيل في موعده." };
+    if (c.from && TODAY < c.from) return { open: false, title: "التسجيل لم يبدأ بعد", text: "يبدأ التسجيل في " + longDate(c.from) + "." };
+    if (c.to && TODAY > c.to) return { open: false, title: "انتهى التسجيل", text: "أُغلق باب التسجيل ولا تُستقبل طلبات جديدة." };
+    return { open: true };
   }
   function heroImg() { return S.hero === "none" ? "" : (S.hero || DEFHERO); }
   function vHome() {
@@ -1384,7 +1393,9 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var rows = S.requests.map(function (r) {
       return "<tr><td>" + h(r.name) + '</td><td class="num">' + h(r.age) + "</td><td>" + h(r.grade || "—") + "</td><td>" + h(r.guardian) + '</td><td class="num" dir="ltr" style="text-align:end">' + h(r.phone) + "</td><td>" + h(r.note) + '</td><td><span class="row-act"><button class="btn sm" data-act="accept" data-id="' + r.id + '">قبول</button><button class="btn danger sm" data-act="reject" data-id="' + r.id + '">رفض</button></span></td></tr>';
     }).join("") || '<tr><td colspan="7" class="empty">لا توجد طلبات جديدة.</td></tr>';
-    return flashHtml("req") + '<div class="card"><h3>طلبات الانضمام</h3><div class="tbl"><table><thead><tr><th>الاسم</th><th>العمر</th><th>الصف</th><th>ولي الأمر</th><th>التواصل</th><th>ملاحظات</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div></div>";
+    var jc = S.joinCfg || {}, js = joinState();
+    var jcard = '<div class="card"><h3>فتح باب التسجيل</h3><p class="muted" style="margin-bottom:10px">الحالة الآن: <b>' + (js.open ? "مفتوح" : h(js.title)) + '</b>. يظهر نموذج الانضمام في الموقع خلال الفترة المحددة فقط، وبعدها تظهر رسالة انتهاء التسجيل ولا تُستقبل بيانات.</p><form data-form="setJoin"><div class="form-grid"><div class="field"><label for="jc-on">التسجيل</label><select id="jc-on"><option value="1"' + (jc.on ? " selected" : "") + '>مفعّل</option><option value="0"' + (jc.on ? "" : " selected") + '>مغلق</option></select></div><div class="field"><label for="jc-from">يبدأ في</label><input id="jc-from" type="date" value="' + h(jc.from || "") + '"></div><div class="field"><label for="jc-to">ينتهي في</label><input id="jc-to" type="date" value="' + h(jc.to || "") + '"></div></div><div style="margin-top:14px"><button class="btn" type="submit">حفظ</button></div></form></div>';
+    return flashHtml("req") + jcard + '<div class="card"><h3>طلبات الانضمام</h3><div class="tbl"><table><thead><tr><th>الاسم</th><th>العمر</th><th>الصف</th><th>ولي الأمر</th><th>التواصل</th><th>ملاحظات</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div></div>";
   }
 
   function aContent() {
@@ -2078,7 +2089,12 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var acct = (ui.role === "scout" || ui.role === "parent" ? S.members : ui.role === "teacher" ? S.teachers : S.staff).filter(function (x) { return String(x.user).toLowerCase() === u && (ui.role === "parent" ? x.pcode === p : x.pass === p); })[0], ok = !!acct;
       if (!ok) { ui.loginErr = "اسم المستخدم أو كلمة المرور غير صحيحة."; refresh(); return; }
       session = ui.role; uid = acct.id; if (session === "scout") S.meId = acct.id; ui.loginErr = ""; shown = ""; location.hash = session; go();
+    } else if (f === "setJoin") {
+      var jf = v("jc-from"), jt = v("jc-to"); if (jf && jt && jt < jf) { var jx = jf; jf = jt; jt = jx; }
+      S.joinCfg = { on: v("jc-on") === "1", from: jf, to: jt };
+      logEv("ضبط فترة التسجيل"); save(); ui.flash = { where: "req", text: "حُفظت إعدادات التسجيل." }; refresh();
     } else if (f === "join") {
+      if (!joinState().open) { refresh("join"); return; }
       S.requests.push({ id: nid(), name: v("j-name"), age: v("j-age"), grade: v("j-grade"), level: "فتيان", guardian: v("j-guardian"), phone: v("j-phone"), note: v("j-note"), date: TODAY });
       save(); ui.flash = { where: "join", text: "وصل طلبك إلى الإدارة. سنتواصل معك قريباً." }; refresh("join");
     } else if (f === "profile") {
