@@ -640,7 +640,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function longDate(iso) { return fmt(iso, { weekday: "long", day: "numeric", month: "long" }); }
   function me() { return S.members.filter(function (m) { return m.id === S.meId; })[0] || S.members[0]; }
   function sortedActs() { return S.activities.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; }); }
-  function upcomingCount() { return S.activities.filter(function (a) { return (a.end || a.date) >= TODAY; }).length; }
+  function upcomingCount() { return S.activities.filter(function (a) { return actEnd(a) >= TODAY; }).length; }
 
   var ICON = {
     star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
@@ -694,17 +694,19 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       return '<optgroup label="' + g[0] + '">' + o + "</optgroup>";
     }).join("");
   }
+  function actEnd(a) { return a.daily ? (a.end || "9999-12-31") : (a.end || a.date); }
   function actStatus(a) {
-    var s0 = a.date, e0 = a.end && a.end >= a.date ? a.end : a.date;
+    var s0 = a.date, e0 = a.daily ? (a.end && a.end >= a.date ? a.end : "9999-12-31") : (a.end && a.end >= a.date ? a.end : a.date);
     if (TODAY > e0) return { k: "done", t: "انتهت" };
     if (TODAY < s0) {
       var n = Math.round((new Date(s0 + "T00:00:00") - new Date(TODAY + "T00:00:00")) / 864e5);
       return { k: "soon", t: n === 1 ? "غداً" : n === 2 ? "بعد يومين" : n <= 10 ? "بعد " + n + " أيام" : "بعد " + n + " يوماً" };
     }
-    return { k: "live", t: "جارية الآن" };
+    return { k: "live", t: a.daily ? "يومي" : "جارية الآن" };
   }
   function actRange(a) {
     var o = { day: "numeric", month: "long" };
+    if (a.daily) return "يومياً من " + fmt(a.date, o) + (a.end && a.end > a.date ? " إلى " + fmt(a.end, o) : "");
     return a.end && a.end > a.date ? "من " + fmt(a.date, o) + " إلى " + fmt(a.end, o) : longDate(a.date);
   }
   function vActivities() {
@@ -733,7 +735,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       '<div class="field"><label for="aa-date">يبدأ في</label><input id="aa-date" type="date" value="' + TODAY + '" required></div>' +
       '<div class="field"><label for="aa-end">ينتهي في (اختياري للأنشطة متعددة الأيام)</label><input id="aa-end" type="date"></div>' +
       '<div class="field"><label for="aa-place">المكان</label><input id="aa-place" type="text" required></div>' +
-      '<div class="field"><label for="aa-kind">النوع</label><select id="aa-kind"><option>اجتماع</option><option>تدريب</option><option>مخيم</option><option>خدمة مجتمع</option><option>مسابقة</option><option>فعالية وطنية</option></select></div></div>' +
+      '<div class="field"><label for="aa-kind">النوع</label><select id="aa-kind"><option>اجتماع</option><option>تدريب</option><option>مخيم</option><option>خدمة مجتمع</option><option>مسابقة</option><option>فعالية وطنية</option></select></div>' +
+      '<div class="field"><label for="aa-rep">التكرار</label><select id="aa-rep"><option value="">مرة واحدة</option><option value="daily">يومياً</option></select></div></div>' +
       '<div class="row-act" style="margin-top:14px"><button class="btn" type="submit">نشر النشاط</button><button class="btn ghost" type="button" data-act="cancelact">إلغاء</button></div></form>';
     var add = admin && !ui.newAct ? '<button class="btn" type="button" data-act="newact">+ إضافة نشاط</button>' : "";
     return '<section class="sec"><div class="sec-h"><div><h2>الأنشطة والبرامج</h2><p style="margin-top:6px">خطة الفرقة على خط زمني، وتتغير حالة كل نشاط تلقائياً بحسب تاريخ اليوم.</p></div>' + add + "</div>" + fl + form + nextHtml +
@@ -771,7 +774,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
   function homeExtra() {
     var mo = TODAY.slice(0, 7), anns = S.announcements.slice(0, 3).map(function (a) { return '<div class="ann"><h4>' + h(a.title) + "</h4><p>" + h(a.text) + "</p><small>" + longDate(a.date) + "</small></div>"; }).join("");
-    var up = sortedActs().filter(function (a) { return (a.end || a.date) >= TODAY; }).slice(0, 3).map(function (a) { return '<div class="act"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3 style="font-size:1.1rem">' + h(a.title) + '</h3><div class="meta">' + h(a.place) + '</div></div><span class="kind">' + h(a.kind) + "</span></div>"; }).join("");
+    var up = sortedActs().filter(function (a) { return actEnd(a) >= TODAY; }).slice(0, 3).map(function (a) { return '<div class="act"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3 style="font-size:1.1rem">' + h(a.title) + '</h3><div class="meta">' + h(a.place) + '</div></div><span class="kind">' + h(a.kind) + "</span></div>"; }).join("");
     return '<section class="hsec" aria-label="إنجازات الفرقة"><div class="hstats"><div><b>' + arNum(S.members.length) + "</b><span>كشاف</span></div><div><b>" + arNum(S.patrols.length) + "</b><span>طليعة</span></div><div><b>" + arNum(S.activities.length) + "</b><span>نشاط وفعالية</span></div><div><b>" + arNum(S.awards.length) + "</b><span>شارة ممنوحة</span></div></div>" +
       (S.patrols.length ? '<div class="card"><h3>لوحة شرف الطلائع هذا الشهر</h3>' + patrolBoard(mo) + "</div>" : "") +
       (up ? '<div class="card"><h3>الأنشطة القادمة</h3><div class="acts" style="border-top:0">' + up + "</div></div>" : "") + (anns ? '<div class="card"><h3>آخر الأخبار</h3>' + anns + "</div>" : "") + "</section>";
@@ -824,7 +827,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var late = !t.done && t.due && t.due < TODAY;
       return '<li><label class="' + (t.done ? "done" : "") + '"><input type="checkbox" data-task="' + t.id + '"' + (t.done ? " checked" : "") + "><span>" + h(t.text) + (t.due ? ' <small class="muted">· حتى ' + fullDate(t.due) + (late ? " (متأخرة)" : "") + "</small>" : "") + "</span></label></li>";
     }).join("");
-    var acts = sortedActs().filter(function (a) { return (a.end || a.date) >= TODAY; }).map(function (a) {
+    var acts = sortedActs().filter(function (a) { return actEnd(a) >= TODAY; }).map(function (a) {
       return '<div class="act"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3 style="font-size:1.1rem">' + h(a.title) + '</h3><div class="meta">' + h(a.place) + '</div></div><span class="kind">' + h(a.kind) + "</span></div>";
     }).join("") || '<p class="empty">لا توجد أنشطة قادمة.</p>';
     var anns = S.announcements.map(function (a) { return '<div class="ann"><h4>' + h(a.title) + "</h4><p>" + h(a.text) + "</p><small>" + longDate(a.date) + "</small></div>"; }).join("") || '<p class="empty">لا توجد إعلانات.</p>';
@@ -1187,7 +1190,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     },
     acts: function (d) {
       d.title("الأنشطة والفعاليات", "العدد: " + S.activities.length);
-      d.table(["النشاط", "النوع", "المكان", "التاريخ", "الحالة"], sortedActs().map(function (a) { return [a.title, a.kind, a.place, fullDate(a.date) + (a.end && a.end > a.date ? " إلى " + fullDate(a.end) : ""), actStatus(a).t]; }), [.27, .13, .2, .25, .15]);
+      d.table(["النشاط", "النوع", "المكان", "التاريخ", "الحالة"], sortedActs().map(function (a) { return [a.title, a.kind, a.place, (a.daily ? "يومياً من " : "") + fullDate(a.date) + (a.end && a.end > a.date ? " إلى " + fullDate(a.end) : ""), actStatus(a).t]; }), [.27, .13, .2, .25, .15]);
     }
   };
   var PDFNAME = { stats: "إحصاءات الفرقة", members: "قائمة الكشافة", teachers: "المعلمون", scards: "بطاقات الكشافة", tcards: "بطاقات المعلمين", patrols: "قوائم الطلائع", duty: "جدول المناوبات", tasks: "مهام الكشافة", awards: "الشارات الممنوحة", att: "كشف الحضور", report: "التقرير الشهري", log: "سجل العمليات", records: "سجل السلوك", requests: "طلبات الانضمام", acts: "الأنشطة" };
@@ -1376,7 +1379,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var anns = S.announcements.map(function (a) { return "<tr><td>" + h(a.title) + '</td><td class="num">' + longDate(a.date) + '</td><td></td><td><button class="btn danger sm" data-act="delann" data-id="' + a.id + '">حذف</button></td></tr>'; }).join("");
     return f + '<div class="card"><h3>صورة الواجهة الرئيسية</h3>' + (heroImg() ? '<img src="' + heroImg() + '" alt="" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:10px">' : '<p class="muted">لا توجد صورة حالياً.</p>') + '<div class="row-act" style="flex-wrap:wrap"><label class="btn sm" for="hero-in">' + (heroImg() ? "تغيير الصورة" : "اختيار صورة") + '</label><input id="hero-in" class="evin" type="file" accept="image/*">' + (heroImg() ? '<button class="btn danger sm" data-act="herodel">إزالة</button>' : "") + (S.hero ? '<button class="btn ghost sm" data-act="herodef">الصورة الأصلية</button>' : "") + '</div></div>' +
       '<div class="card"><h3>إضافة نشاط</h3><form data-form="addAct"><div class="form-grid"><div class="field"><label for="a-title">اسم النشاط</label><input id="a-title" type="text" required></div><div class="field"><label for="a-date">يبدأ في</label><input id="a-date" type="date" value="' + TODAY + '" required></div><div class="field"><label for="a-end">ينتهي في (اختياري)</label><input id="a-end" type="date"></div>' +
-      '<div class="field"><label for="a-place">المكان</label><input id="a-place" type="text" required></div><div class="field"><label for="a-kind">النوع</label><select id="a-kind"><option>اجتماع</option><option>تدريب</option><option>مخيم</option><option>خدمة مجتمع</option><option>مسابقة</option><option>فعالية وطنية</option></select></div></div><div style="margin-top:14px"><button class="btn" type="submit">نشر النشاط</button></div></form></div>' +
+      '<div class="field"><label for="a-place">المكان</label><input id="a-place" type="text" required></div><div class="field"><label for="a-kind">النوع</label><select id="a-kind"><option>اجتماع</option><option>تدريب</option><option>مخيم</option><option>خدمة مجتمع</option><option>مسابقة</option><option>فعالية وطنية</option></select></div><div class="field"><label for="a-rep">التكرار</label><select id="a-rep"><option value="">مرة واحدة</option><option value="daily">يومياً</option></select></div></div><div style="margin-top:14px"><button class="btn" type="submit">نشر النشاط</button></div></form></div>' +
       '<div class="card"><h3>إضافة إعلان</h3><form data-form="addAnn" class="stack"><div class="field"><label for="n-title">العنوان</label><input id="n-title" type="text" required></div><div class="field"><label for="n-text">النص</label><textarea id="n-text" required></textarea></div><div><button class="btn" type="submit">نشر الإعلان</button></div></form></div>' +
       '<div class="card"><h3>المنشور حالياً</h3><div class="tbl"><table><tbody>' + acts + anns + "</tbody></table></div></div>";
   }
@@ -2100,7 +2103,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       S.members.push({ id: nid(), name: v("m-name"), grade: v("m-grade"), patrol: "", level: "فتيان", att: 0, photo: "", user: c1.user, pass: c1.pass });
       logEv("إضافة الكشاف " + v("m-name")); save(); ui.flash = { where: "member", text: "تمت إضافة " + v("m-name") + ". اسم المستخدم: " + c1.user + " · كلمة المرور: " + c1.pass }; refresh();
     } else if (f === "addAct") {
-      S.activities.push({ id: nid(), title: v("a-title"), date: v("a-date"), place: v("a-place"), kind: v("a-kind"), end: v("a-end") });
+      S.activities.push({ id: nid(), title: v("a-title"), date: v("a-date"), place: v("a-place"), kind: v("a-kind"), end: v("a-end"), daily: v("a-rep") === "daily" });
       save(); ui.flash = { where: "content", text: "نُشر النشاط في الموقع وفي صفحة الكشاف." }; refresh();
     } else if (f === "addAnn") {
       S.announcements.unshift({ id: nid(), title: v("n-title"), text: v("n-text"), date: TODAY });
@@ -2130,7 +2133,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     } else if (f === "addActivity") {
       var sd = v("aa-date") || TODAY, ed2 = v("aa-end");
       if (ed2 && ed2 < sd) { var sw = sd; sd = ed2; ed2 = sw; }
-      S.activities.push({ id: nid(), title: v("aa-title"), date: sd, end: ed2 && ed2 !== sd ? ed2 : "", place: v("aa-place"), kind: v("aa-kind") });
+      S.activities.push({ id: nid(), title: v("aa-title"), date: sd, end: ed2 && ed2 !== sd ? ed2 : "", place: v("aa-place"), kind: v("aa-kind"), daily: v("aa-rep") === "daily" });
       ui.newAct = false; save(); ui.flash = { where: "act", text: "نُشر النشاط على الخط الزمني." }; refresh();
     } else if (f === "addEvent") {
       var en = v("ev-name"), ed = v("ev-date") || TODAY, edesc = v("ev-desc");
