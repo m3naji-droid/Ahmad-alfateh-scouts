@@ -793,7 +793,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
   function heroImg() { return S.hero === "none" ? "" : (S.hero || DEFHERO); }
   function vHome() {
-    return '<section class="hero"' + (heroImg() ? ' style="--hb:url(' + heroImg() + ')"' : "") + '><div class="hero-in"><div>' + emblem("emb", "#24552f", "#eef3e0", "#f0c050") + '<div class="motto">كن مستعداً</div><h1>فرقة أحمد الفاتح الكشفية</h1><p class="lead">نصنع من الأولاد رجالاً يعتمدون على أنفسهم، يخدمون مجتمعهم، ويعرفون الطبيعة.</p></div>' + loginForm() + '</div></section>' + homeExtra();
+    return '<section class="hero"' + (heroImg() ? ' style="--hb:url(' + heroImg() + ')"' : "") + '><div class="hero-in"><div>' + emblem("emb", "#24552f", "#eef3e0", "#f0c050") + '<div class="motto">كن مستعداً</div><h1>فرقة أحمد الفاتح الكشفية</h1><p class="lead">نصنع من الاولاد رجالاً يعتمدون على أنفسهم، ويقومون بواجبهم تجاه الله وتجاه وطنهم ومجتمعهم.</p></div>' + loginForm() + '</div></section>' + homeExtra();
   }
   function homeExtra() {
     var mo = TODAY.slice(0, 7), anns = S.announcements.slice(0, 3).map(function (a) { return '<div class="ann"><h4>' + h(a.title) + "</h4><p>" + h(a.text) + "</p><small>" + longDate(a.date) + "</small></div>"; }).join("");
