@@ -548,7 +548,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function lvf(l) { return l === 8 ? "#3a2f00" : "#fff"; }
   var SUGB = { discipline: ["الالتزام"], active: ["المشاركة الفاعلة في الحصة", "التعاون مع الفريق"], order: ["الاحترام", "النظافة والترتيب"], community: ["المبادرة في الخدمة", "مساعدة الزملاء"] };
   function logEv(text) {
-    var who = session === "admin" ? (byId(S.staff, uid) || {}).name : session === "teacher" ? (byId(S.teachers, uid) || {}).name : session === "scout" ? (me() || {}).name : session === "parent" ? "ولي أمر" : "";
+    var who = session === "admin" ? (byId(S.staff, uid) || {}).name : session === "teacher" ? (byId(S.teachers, uid) || {}).name : session === "scout" ? (me() || {}).name : "";
     S.log.unshift({ id: nid(), ts: Date.now(), who: who || "—", text: text });
     if (S.log.length > 300) S.log.length = 300;
   }
@@ -805,9 +805,9 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 
   function loginForm() {
     var sc = ui.role === "scout";
-    return '<form class="login" data-form="login"><h1>دخول الأعضاء</h1><div class="seg" role="group" aria-label="نوع الحساب"><button type="button" data-act="role" data-v="scout" class="' + (ui.role === "scout" ? "on" : "") + '">كشاف</button><button type="button" data-act="role" data-v="teacher" class="' + (ui.role === "teacher" ? "on" : "") + '">معلم</button><button type="button" data-act="role" data-v="parent" class="' + (ui.role === "parent" ? "on" : "") + '">ولي أمر</button><button type="button" data-act="role" data-v="admin" class="' + (ui.role === "admin" ? "on" : "") + '">الإدارة</button></div>' +
-      '<div class="field"><label for="l-user">' + (ui.role === "parent" ? "اسم مستخدم الكشاف" : "اسم المستخدم") + '</label><input id="l-user" type="text" autocomplete="off" required></div>' +
-      '<div class="field"><label for="l-pass">' + (ui.role === "parent" ? "رمز ولي الأمر" : "كلمة المرور") + '</label><input id="l-pass" type="password" autocomplete="off" required></div>' +
+    return '<form class="login" data-form="login"><h1>دخول الأعضاء</h1><div class="seg" role="group" aria-label="نوع الحساب"><button type="button" data-act="role" data-v="scout" class="' + (ui.role === "scout" ? "on" : "") + '">كشاف</button><button type="button" data-act="role" data-v="teacher" class="' + (ui.role === "teacher" ? "on" : "") + '">معلم</button><button type="button" data-act="role" data-v="admin" class="' + (ui.role === "admin" ? "on" : "") + '">الإدارة</button></div>' +
+      '<div class="field"><label for="l-user">' + "اسم المستخدم" + '</label><input id="l-user" type="text" autocomplete="off" required></div>' +
+      '<div class="field"><label for="l-pass">' + "كلمة المرور" + '</label><input id="l-pass" type="password" autocomplete="off" required></div>' +
       '<div class="err" role="alert">' + h(ui.loginErr) + '</div><button class="btn" type="submit">دخول</button>' +
       '</form>';
   }
@@ -829,18 +829,6 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return '<div class="card"><h3>مهام طليعتي</h3>' + (rows ? '<p class="muted" style="margin-bottom:6px">طليعة ' + h(m.patrol) + "</p>" + rows : '<p class="empty">' + (m.patrol ? "لم تُحدد مهام لطليعتك بعد." : "لم تُضف إلى طليعة بعد.") + "</p>") + "</div>";
   }
 
-  function vParent() {
-    var m = byId(S.members, uid);
-    if (!m) return '<p class="empty">تعذر العثور على الحساب.</p>';
-    var pts = totalOf(m.id), lv = levelOf(pts), wk = weekOf(m.id, 0), sp = suspOf(m.id), mt = S.tasks.filter(function (t) { return t.scoutId === m.id; });
-    var recs = recsOf(m.id).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 8).map(function (r) { return '<div class="rec ' + (r.points > 0 ? "good" : "bad") + '"><span class="pt">' + sgn(r.points) + "</span><div><b>" + h(r.beh) + '</b><div class="muted" style="font-size:.85rem">' + fullDate(r.date) + "</div></div></div>"; }).join("") || '<p class="empty">لا توجد سلوكيات مسجلة بعد.</p>';
-    var tasks = mt.map(function (t) { return '<div class="prow"><span>' + h(t.text) + (t.due ? ' <small class="muted">حتى ' + fullDate(t.due) + "</small>" : "") + '</span><span class="st">' + (t.done ? "منجزة" : "قيد التنفيذ") + "</span></div>"; }).join("") || '<p class="empty">لا توجد مهام.</p>';
-    var pt = m.patrol ? ptList(m.patrol).map(function (t) { return '<div class="prow"><span>' + h(t.text) + ' <small class="muted">' + daysTxt(t.days) + "</small></span></div>"; }).join("") : "";
-    return '<div class="dash-h"><div><span class="chip">صفحة ولي الأمر</span><h1>متابعة ' + h(m.name) + '</h1></div></div><div class="tbody"><div class="pdfbar"><button type="button" class="btn ghost sm" data-act="myreport" data-id="' + m.id + '">تحميل تقرير الكشاف PDF</button></div>' +
-      (sp ? '<div class="susp">' + (sp.out ? "فُصل الكشاف من الفرقة بقرار الإدارة." : "الكشاف موقوف حتى " + fullDate(sp.until) + ".") + "</div>" : "") +
-      '<div class="card"><h3>بيانات الكشاف</h3><p>' + h(m.grade) + " · " + (m.patrol ? "طليعة " + h(m.patrol) : "بلا طليعة") + " · الحضور " + attTxt(m) + '</p></div><div class="card score"><div class="top"><div><span class="muted">مجموع النقاط</span><b class="big' + (pts < 0 ? " neg" : "") + '">' + pts + '</b></div><div class="side2"><span class="lvl">' + lv.name + '</span><span class="muted">هذا الأسبوع: ' + sgn(wk) + "</span></div></div></div>" +
-      '<div class="card"><h3>آخر السلوكيات</h3>' + recs + "</div>" + badgesPage(m).replace('data-act="cert"', 'data-act="cert"') + '<div class="card"><h3>مهام الكشاف</h3>' + tasks + "</div>" + (pt ? '<div class="card"><h3>مهام الطليعة</h3>' + pt + "</div>" : "") + "</div>";
-  }
 
   function vScout() {
     var m = me();
@@ -1145,7 +1133,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
   function pdfCredCards(kind) {
     var teach = kind === "t", list = credList(teach ? "t" : "m");
-    return list.map(function (a) { return teach ? { name: a.name, sub: a.title, color: "#e0a526", fg: "#2a1d00", fields: [["اسم المستخدم", a.user], ["كلمة المرور", a.pass]] } : { name: a.name, sub: a.grade + (a.patrol ? " · " + a.patrol : ""), fields: [["اسم المستخدم", a.user], ["كلمة المرور", a.pass], ["رمز ولي الأمر", a.pcode]] }; });
+    return list.map(function (a) { return teach ? { name: a.name, sub: a.title, color: "#e0a526", fg: "#2a1d00", fields: [["اسم المستخدم", a.user], ["كلمة المرور", a.pass]] } : { name: a.name, sub: a.grade + (a.patrol ? " · " + a.patrol : ""), fields: [["اسم المستخدم", a.user], ["كلمة المرور", a.pass]] }; });
   }
   var PDFB = {
     stats: function (d) {
@@ -1367,7 +1355,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   /* credential cards */
   function credList(kind) { return kind === "t" ? S.teachers : S.members.filter(function (m) { return !ui.cardPatrol || m.patrol === ui.cardPatrol; }); }
   function credTsv(kind, list) {
-    var rows = kind === "t" ? [["الاسم", "المسمى", "اسم المستخدم", "كلمة المرور"]].concat(list.map(function (a) { return [a.name, a.title, a.user, a.pass]; })) : [["الاسم", "الصف", "الطليعة", "اسم المستخدم", "كلمة المرور", "رمز ولي الأمر"]].concat(list.map(function (a) { return [a.name, a.grade, a.patrol, a.user, a.pass, a.pcode]; }));
+    var rows = kind === "t" ? [["الاسم", "المسمى", "اسم المستخدم", "كلمة المرور"]].concat(list.map(function (a) { return [a.name, a.title, a.user, a.pass]; })) : [["الاسم", "الصف", "الطليعة", "اسم المستخدم", "كلمة المرور"]].concat(list.map(function (a) { return [a.name, a.grade, a.patrol, a.user, a.pass]; }));
     return rows.map(function (r) { return r.join("\t"); }).join("\n");
   }
   function copyText(txt) {
@@ -1382,7 +1370,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var cards = list.map(function (a) {
       var em = teach ? emblem("", "#fff8e1", "#2a1d00", "#2a1d00") : emblem("", "#24552f", "#eef3e0", "#f0c050");
       return '<article class="idc ' + (teach ? "t" : "s") + '"><header>' + em + "<div><b>فرقة أحمد الفاتح الكشفية</b><span>" + (teach ? "بطاقة دخول · معلم أو مشرف" : "بطاقة دخول · كشاف") + '</span></div></header><div class="idb"><div class="idn">' + h(a.name) + '</div><div class="idm">' + (teach ? h(a.title) : h(a.grade) + (a.patrol ? " · " + h(a.patrol) : "")) +
-        '</div><dl><div><dt>اسم المستخدم</dt><dd><code>' + h(a.user) + '</code></dd></div><div><dt>كلمة المرور</dt><dd><code>' + h(a.pass) + '</code></dd></div>' + (teach ? "" : '<div><dt>رمز ولي الأمر (للدخول من خانة «ولي أمر»)</dt><dd><code>' + h(a.pcode) + "</code></dd></div>") + '</dl></div><footer><span>كن مستعداً</span><button class="btn ghost sm" type="button" data-act="copyone" data-kind="' + kind + '" data-id="' + a.id + '">نسخ</button></footer></article>';
+        '</div><dl><div><dt>اسم المستخدم</dt><dd><code>' + h(a.user) + '</code></dd></div><div><dt>كلمة المرور</dt><dd><code>' + h(a.pass) + '</code></dd></div>' + "" + '</dl></div><footer><span>كن مستعداً</span><button class="btn ghost sm" type="button" data-act="copyone" data-kind="' + kind + '" data-id="' + a.id + '">نسخ</button></footer></article>';
     }).join("") || '<p class="empty">لا توجد حسابات لعرضها.</p>';
     return '<a class="back" href="' + back + '">→ ' + (teach ? "المعلمون والمشرفون" : "الكشافة") + '</a><div class="cc-head"><div><h2 style="font-size:1.8rem">بطاقات الدخول</h2><p class="muted">' + (teach ? "المعلمون والمشرفون" : "الكشافة") + " · " + list.length + ' حساب</p></div><div class="row-act" style="flex-wrap:wrap;align-items:end">' + filter + '<button class="btn" type="button" data-act="copycreds" data-kind="' + kind + '">نسخ الجدول كاملاً لإكسل</button></div></div>' +
       '<div class="muted" id="cc-msg" role="status" style="min-height:1.6em"></div><textarea id="cc-ta" hidden readonly style="margin-bottom:14px" aria-label="النص للنسخ"></textarea>' +
@@ -1771,7 +1759,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     document.getElementById("brand").innerHTML = emblem("", "#24552f", "#f1f5e4", "#f0c050") + "<span>فرقة أحمد الفاتح</span>";
     var n;
     if (session) {
-      n = '<span class="chip" style="align-self:center">' + (session === "admin" ? "الإدارة" : session === "teacher" ? "معلم" : session === "parent" ? "ولي أمر" : "كشاف") + '</span><a href="#' + session + '">لوحتي</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#about">من نحن</a><button data-act="logout">خروج</button>';
+      n = '<span class="chip" style="align-self:center">' + (session === "admin" ? "الإدارة" : session === "teacher" ? "معلم" : "كشاف") + '</span><a href="#' + session + '">لوحتي</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#about">من نحن</a><button data-act="logout">خروج</button>';
     } else {
       n = '<a href="#home">الرئيسية</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#about">من نحن</a><a class="go" href="#join">انضم إلينا</a>';
     }
@@ -1780,7 +1768,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function render(k) {
     shown = k;
     var view = /^album-/.test(k) ? "album" : /^admin/.test(k) ? "admin" : k;
-    var out = view === "parent" ? vParent() : view === "scout" ? vScout() : view === "admin" ? vAdmin(k) : view === "teacher" ? vTeacher() : view === "home" ? vHome() : view === "gallery" ? vGallery() : view === "activities" ? vActivities() : view === "album" ? vAlbum(k) : vParts()[view];
+    var out = view === "scout" ? vScout() : view === "admin" ? vAdmin(k) : view === "teacher" ? vTeacher() : view === "home" ? vHome() : view === "gallery" ? vGallery() : view === "activities" ? vActivities() : view === "album" ? vAlbum(k) : vParts()[view];
     ui.flash = null;
     document.getElementById("app").innerHTML = out +
       '<footer class="ft"><div><b style="font-family:var(--font-display);font-size:1.2rem;color:var(--fg)">فرقة أحمد الفاتح الكشفية</b><br>كن مستعداً</div><div>جميع الحقوق محفوظة © فرقة أحمد الفاتح الكشفية</div></footer>';
@@ -1794,8 +1782,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function go() {
     if (ui.lb) lbClose();
     var n = location.hash.slice(1) || "home", view;
-    if (PAGES[n] || n === "scout" || n === "teacher" || n === "parent") view = n; else if (/^admin(-[a-z]+)?$/.test(n)) view = "admin"; else if (/^album-\d+$/.test(n)) view = "album"; else view = "home";
-    if ((view === "scout" && session !== "scout") || (view === "teacher" && session !== "teacher") || (view === "parent" && session !== "parent") || (view === "admin" && session !== "admin")) { location.hash = "home"; return; }
+    if (PAGES[n] || n === "scout" || n === "teacher") view = n; else if (/^admin(-[a-z]+)?$/.test(n)) view = "admin"; else if (/^album-\d+$/.test(n)) view = "album"; else view = "home";
+    if ((view === "scout" && session !== "scout") || (view === "teacher" && session !== "teacher") || (view === "admin" && session !== "admin")) { location.hash = "home"; return; }
     if (view === "home" && session) { location.hash = session; return; }
     var key = view === "album" || view === "admin" ? n : view;
     if (key !== shown) render(key);
@@ -2086,7 +2074,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     e.preventDefault();
     if (f === "login") {
       var u = v("l-user").toLowerCase(), p = v("l-pass");
-      var acct = (ui.role === "scout" || ui.role === "parent" ? S.members : ui.role === "teacher" ? S.teachers : S.staff).filter(function (x) { return String(x.user).toLowerCase() === u && (ui.role === "parent" ? x.pcode === p : x.pass === p); })[0], ok = !!acct;
+      var acct = (ui.role === "scout" ? S.members : ui.role === "teacher" ? S.teachers : S.staff).filter(function (x) { return String(x.user).toLowerCase() === u && x.pass === p; })[0], ok = !!acct;
       if (!ok) { ui.loginErr = "اسم المستخدم أو كلمة المرور غير صحيحة."; refresh(); return; }
       session = ui.role; uid = acct.id; if (session === "scout") S.meId = acct.id; ui.loginErr = ""; shown = ""; location.hash = session; go();
     } else if (f === "setJoin") {
