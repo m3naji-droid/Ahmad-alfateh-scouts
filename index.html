@@ -1786,6 +1786,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function drItem(it) { return '<div class="dr" data-k="' + it.key + '"><img src="' + it.thumb + '" alt=""><button type="button" data-act="drdel" data-k="' + it.key + '" aria-label="إزالة الصورة">×</button></div>'; }
 
   /* ---------- تقرير الفعالية (PDF) ---------- */
+  var EV_SIGS = [["قائد الفرقة", "أ. باسل حسين", "أ. محمد عبدالله"], ["المدير المساعد", "أ. خالد نواف بني حمد"], ["مدير المدرسة", "أ. محمد مصباح يوسف"]];
   var EV_GOALS = ["تعزيز محبة الله ورسوله ﷺ والاقتداء به", "ترسيخ قيم الانتماء والولاء للوطن وقيادته", "غرس قيمة الصدق والأمانة لدى الكشافة", "تنمية روح التعاون والعمل بروح الفريق الواحد", "تعزيز الاعتماد على النفس وتحمّل المسؤولية", "تنمية مهارات القيادة لدى الكشافة", "إكساب الكشافة مهارات الإسعافات الأولية", "تدريب الكشافة على العقد والتربيطات", "تنمية مهارات التخييم والحياة في الطبيعة", "تعريف الكشافة بقراءة الخرائط واستخدام البوصلة", "تعزيز الانضباط والالتزام بالنظام", "غرس حب الخدمة العامة والعمل التطوعي", "تنمية الوعي بأهمية المحافظة على البيئة", "ترسيخ مبدأ احترام الآخرين وحسن الخلق", "تنمية مهارات التواصل والتعبير لدى الكشافة", "استثمار أوقات الفراغ فيما ينفع", "تنمية اللياقة البدنية والصحة العامة", "تعزيز الثقة بالنفس والجرأة الأدبية", "تدريب الكشافة على تنظيم الطابور والمراسم", "إعداد الكشافة للمشاركة في المناسبات الوطنية", "ترسيخ القيم الإسلامية والآداب العامة", "تنمية مهارات التفكير والإبداع وحل المشكلات", "تنمية مهارات القراءة والفهم لدى الطلاب", "تعزيز روح المنافسة الشريفة بين الطلائع", "تعريف الكشافة بتاريخ مملكة البحرين وتراثها", "تدريب الكشافة على السلامة والأمان", "تنمية الحس الاجتماعي والتكافل بين الزملاء", "تشجيع الكشافة على الحصول على الشارات والمهارات", "تعزيز الوعي بالمحافظة على المرافق المدرسية", "غرس قيمة المحافظة على الوقت والالتزام بالمواعيد", "تدريب الكشافة على الطبخ في الخلاء", "تنمية الذوق الفني والمهارات اليدوية", "تعزيز الانتماء للفرقة الكشفية والمدرسة", "إتاحة الفرصة لاكتشاف مواهب الكشافة وتنميتها", "تنمية مهارات الإلقاء والحوار", "ترسيخ مفهوم المواطنة الصالحة"];
   function pdfRR(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
   function loadImg(src) { return new Promise(function (res) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
@@ -1859,17 +1860,18 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       }
       if (noteH) { c.fillStyle = "#fbe9ec"; pdfRR(c, X0, sigY - noteH - 22, W, noteH, 18); c.fill(); c.fillStyle = INK; c.font = d.f(24, false); var nl = d.lines(rp.note, 24, false, W - 40); c.fillText(nl[0], cx, sigY - noteH - 22 + 14); }
       /* التواقيع */
-      var sg = (rp.sigs && rp.sigs.length ? rp.sigs : [["", ""], ["", ""], ["", ""]]), sgW = Math.floor((W - 2 * 24) / 3);
+      var sg = EV_SIGS, sgW = Math.floor((W - 2 * 24) / 3);
       sg.slice(0, 3).forEach(function (sx, k) {
         var x = PGW - X0 - (k + 1) * sgW - k * 24;
         c.fillStyle = "#fff"; pdfRR(c, x, sigY, sgW, 112, 22); c.fill(); c.strokeStyle = k % 2 ? RED : BLUE; c.lineWidth = 3; c.stroke();
-        c.fillStyle = INK; c.font = d.f(28, true); c.fillText(sx[0] || "", x + sgW / 2, sigY + 16); c.font = d.f(26, false); c.fillText(sx[1] || "", x + sgW / 2, sigY + 62);
+        c.fillStyle = INK; c.font = d.f(28, true); c.fillText(sx[0], x + sgW / 2, sigY + 14); c.font = d.f(sx.length > 2 ? 24 : 26, false);
+        if (sx.length > 2) { c.fillText(sx[1], x + sgW / 2, sigY + 54); c.fillText(sx[2], x + sgW / 2, sigY + 82); } else c.fillText(sx[1], x + sgW / 2, sigY + 62);
       });
       c.textAlign = "right";
     });
   }
   function evRepForm(a) {
-    var r = a.rep || {}, sel = r.goals || [], sg = r.sigs && r.sigs.length ? r.sigs : [["قائد الفرقة", ""], ["مشرف الفرقة", ""], ["مدير المدرسة", ""]], custom = sel.filter(function (g) { return EV_GOALS.indexOf(g) < 0; }).join("\n");
+    var r = a.rep || {}, sel = r.goals || [], custom = sel.filter(function (g) { return EV_GOALS.indexOf(g) < 0; }).join("\n");
     var gl = EV_GOALS.map(function (g, i) { return '<label class="gchk"><input type="checkbox" name="goal" value="' + i + '"' + (sel.indexOf(g) > -1 ? " checked" : "") + "><span>" + h(g) + "</span></label>"; }).join("");
     return '<form data-form="repAlb" class="repf" style="margin:14px 0"><h4 style="margin-bottom:10px">بيانات تقرير الفعالية</h4><div class="form-grid">' +
       '<div class="field full"><label for="rp-title">عنوان التقرير</label><input id="rp-title" type="text" value="' + h(r.title || a.title) + '" required></div>' +
@@ -1880,7 +1882,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       '<div class="field" style="margin-top:12px"><label>الأهداف (اختر ما يناسب الفعالية)</label><div class="gbox">' + gl + '</div></div>' +
       '<div class="field"><label for="rp-custom">أهداف أخرى (هدف في كل سطر)</label><textarea id="rp-custom" style="min-height:64px">' + h(custom) + '</textarea></div>' +
       '<div class="field"><label for="rp-note">ملاحظة أسفل الصور (اختياري)</label><input id="rp-note" type="text" value="' + h(r.note || "") + '"></div>' +
-      '<div class="form-grid" style="margin-top:6px">' + sg.map(function (x, i) { return '<div class="field"><label for="rp-sr' + i + '">المسمى ' + (i + 1) + '</label><input id="rp-sr' + i + '" type="text" value="' + h(x[0]) + '"><label for="rp-sn' + i + '">الاسم</label><input id="rp-sn' + i + '" type="text" value="' + h(x[1]) + '"></div>'; }).join("") + "</div>" +
+      '<small class="muted" style="display:block;margin-top:8px">التواقيع ثابتة في التقرير: قائد الفرقة (أ. باسل حسين وأ. محمد عبدالله)، المدير المساعد (أ. خالد نواف بني حمد)، مدير المدرسة (أ. محمد مصباح يوسف).</small>' +
       '<small class="muted">تُضاف إلى التقرير أول ٦ صور من الفعالية.</small>' +
       '<div class="row-act" style="margin-top:12px"><button class="btn sm" type="submit">تنزيل التقرير PDF</button><button class="btn ghost sm" type="button" data-act="repcancel">إلغاء</button></div></form>';
   }
@@ -2394,8 +2396,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       if (ra) {
         var gs = Array.prototype.map.call(document.querySelectorAll('input[name="goal"]:checked'), function (x) { return EV_GOALS[Number(x.value)]; });
         v("rp-custom").split("\n").forEach(function (l) { l = l.trim(); if (l) gs.push(l); });
-        var sgs = [0, 1, 2].map(function (i) { return [v("rp-sr" + i), v("rp-sn" + i)]; });
-        ra.rep = { title: v("rp-title"), place: v("rp-place"), doers: v("rp-doers"), target: v("rp-target"), count: v("rp-count"), goals: gs, note: v("rp-note"), sigs: sgs };
+        ra.rep = { title: v("rp-title"), place: v("rp-place"), doers: v("rp-doers"), target: v("rp-target"), count: v("rp-count"), goals: gs, note: v("rp-note") };
         save(); exportPdf("evrep", [ra.id]);
       }
     } else if (f === "editAlb") {
