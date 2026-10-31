@@ -9,11 +9,11 @@
   --fg: #2b1a14;
   --muted: #6f5d4a;
   --line: #d6c9aa;
-  --primary: #c42f40;
+  --primary: #1f4a7a;
   --primary-fg: #fdf6e6;
-  --panel: #c8384a;
+  --panel: #234a78;
   --panel-fg: #fbf3e1;
-  --panel-muted: #f7e0d4;
+  --panel-muted: #d3e0ef;
   --accent: #b8924a;
   --gold: #e8d3a2;
   --danger: #8f1d12;
@@ -22,15 +22,15 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #1d1311; --surface: #281a17; --fg: #f3e7d3; --muted: #c6b198; --line: #4b362e;
-    --primary: #e8505c; --primary-fg: #1d1311; --panel: #5e0f1b; --panel-fg: #fbf3e1; --panel-muted: #e6c5b6;
+    --bg: #0f1823; --surface: #172433; --fg: #e8eef6; --muted: #a3b5ca; --line: #2d4259;
+    --primary: #7fb0e6; --primary-fg: #0f1823; --panel: #17365a; --panel-fg: #f3f7fb; --panel-muted: #c3d3e6;
     --accent: #d9b872; --gold: #e8d3a2; --danger: #ef7d6f;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #1d1311; --surface: #281a17; --fg: #f3e7d3; --muted: #c6b198; --line: #4b362e;
-  --primary: #e8505c; --primary-fg: #1d1311; --panel: #5e0f1b; --panel-fg: #fbf3e1; --panel-muted: #e6c5b6;
+  --bg: #0f1823; --surface: #172433; --fg: #e8eef6; --muted: #a3b5ca; --line: #2d4259;
+  --primary: #7fb0e6; --primary-fg: #0f1823; --panel: #17365a; --panel-fg: #f3f7fb; --panel-muted: #c3d3e6;
   --accent: #d9b872; --gold: #e8d3a2; --danger: #ef7d6f;
   color-scheme: dark;
 }
@@ -297,7 +297,7 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .cert-bg { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.6); display: grid; place-items: center; padding: 16px; overflow: auto; }
 .cert { background: #fffdf5; color: #2a2412; max-width: 560px; width: 100%; border: 3px double #8d7752; outline: 6px solid #fffdf5; outline-offset: -12px; padding: 30px 24px; text-align: center; border-radius: 6px; display: grid; gap: 8px; justify-items: center; }
 .cert > img { width: 96px; height: 96px; display: block; margin: 0 auto 6px; }
-.cert h2 { font-family: var(--font-display); font-size: 2rem; margin: 0; color: #c8384a; }
+.cert h2 { font-family: var(--font-display); font-size: 2rem; margin: 0; color: #234a78; }
 .cert .nm { font-family: var(--font-display); font-size: 1.9rem; border-bottom: 2px solid #8d7752; padding: 0 20px 4px; }
 .cert .bdg { color: #2a2412; }
 .cert .bdg .bi { width: 90px; height: 90px; }
@@ -594,7 +594,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function certHtml(sid, bid) {
     var m = byId(S.members, sid), b = bdef(bid), a = m && b ? awardOf(sid, bid) : null;
     if (!a) return "";
-    return '<div class="cert-bg" data-act="certx"><div class="cert-wrap" role="dialog" aria-label="شهادة تقدير"><div class="cert">' + emblem("", "#c8384a", "#fbf3e1", "#e8d3a2").replace("<svg", '<svg style="width:70px;height:70px"') + "<h2>شهادة تقدير</h2><div>تمنح فرقة أحمد الفاتح الكشفية الكشاف</div><div class=\"nm\">" + h(m.name) + "</div><div>" + h(m.grade) + "</div><div>" + bdgHtml(b, a.level) + "</div><div>تقديراً لجهوده وتميّزه، وقد حصل على المستوى " + arNum(a.level) + " من هذه الشارة</div>" +
+    return '<div class="cert-bg" data-act="certx"><div class="cert-wrap" role="dialog" aria-label="شهادة تقدير"><div class="cert">' + emblem("", "#234a78", "#fbf3e1", "#e8d3a2").replace("<svg", '<svg style="width:70px;height:70px"') + "<h2>شهادة تقدير</h2><div>تمنح فرقة أحمد الفاتح الكشفية الكشاف</div><div class=\"nm\">" + h(m.name) + "</div><div>" + h(m.grade) + "</div><div>" + bdgHtml(b, a.level) + "</div><div>تقديراً لجهوده وتميّزه، وقد حصل على المستوى " + arNum(a.level) + " من هذه الشارة</div>" +
       '<div class="sig"><span>قائد الفرقة</span><span>' + fullDate(a.date) + '</span></div></div><div class="cert-act"><button class="btn" data-act="certcopy" data-id="' + sid + '" data-v="' + bid + '">نسخ نص الشهادة</button><button class="btn" data-act="certpdf" data-id="' + sid + '" data-v="' + bid + '">تحميل PDF</button><button class="btn ghost" data-act="certx">إغلاق</button></div><div class="muted" id="cert-msg" role="status" style="text-align:center;color:#fff"></div><textarea id="cert-ta" hidden readonly aria-label="النص للنسخ"></textarea></div></div>';
   }
   function bdef(id) { return BADGES.filter(function (b) { return b[0] === id; })[0]; }
@@ -892,7 +892,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
   function heroImg() { return S.hero === "none" ? "" : (S.hero || DEFHERO); }
   function vHome() {
-    return '<section class="hero"' + (heroImg() ? ' style="--hb:url(' + heroImg() + ')"' : "") + '><div class="hero-in"><div>' + emblem("emb", "#c8384a", "#fbf3e1", "#e8d3a2") + '<div class="motto">كن مستعداً</div><h1>فرقة أحمد الفاتح الكشفية</h1><p class="lead">نصنع من الاولاد رجالاً يعتمدون على أنفسهم، ويقومون بواجبهم تجاه الله وتجاه وطنهم ومجتمعهم.</p></div>' + loginForm() + '</div></section>' + homeExtra();
+    return '<section class="hero"' + (heroImg() ? ' style="--hb:url(' + heroImg() + ')"' : "") + '><div class="hero-in"><div>' + emblem("emb", "#234a78", "#fbf3e1", "#e8d3a2") + '<div class="motto">كن مستعداً</div><h1>فرقة أحمد الفاتح الكشفية</h1><p class="lead">نصنع من الاولاد رجالاً يعتمدون على أنفسهم، ويقومون بواجبهم تجاه الله وتجاه وطنهم ومجتمعهم.</p></div>' + loginForm() + '</div></section>' + homeExtra();
   }
   function homeExtra() {
     var mo = TODAY.slice(0, 7), anns = S.announcements.slice(0, 3).map(function (a) { return '<div class="ann"><h4>' + h(a.title) + "</h4><p>" + h(a.text) + "</p><small>" + longDate(a.date) + "</small></div>"; }).join("");
@@ -1135,7 +1135,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
 
   /* ---------- PDF export (no external libraries) ---------- */
-  var PGW = 1240, PGH = 1754, PMG = 80, PGREEN = "#c8384a", PGOLD = "#8d7752";
+  var PGW = 1240, PGH = 1754, PMG = 80, PGREEN = "#234a78", PGOLD = "#8d7752";
   function toast(t, ms) {
     var el = document.getElementById("toast");
     if (!el) { el = document.createElement("div"); el.id = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
@@ -1480,7 +1480,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var teach = kind === "t", list = credList(kind), back = teach ? "#admin-teachers" : "#admin-members";
     var filter = teach ? "" : '<div class="field" style="min-width:200px"><label for="cf-patrol">الطليعة</label><select id="cf-patrol"><option value="">كل الطلائع</option>' + S.patrols.map(function (pt) { return "<option" + (ui.cardPatrol === pt ? " selected" : "") + ">" + h(pt) + "</option>"; }).join("") + "</select></div>";
     var cards = list.map(function (a) {
-      var em = teach ? emblem("", "#fff8e1", "#2a1d00", "#2a1d00") : emblem("", "#c8384a", "#fbf3e1", "#e8d3a2");
+      var em = teach ? emblem("", "#fff8e1", "#2a1d00", "#2a1d00") : emblem("", "#234a78", "#fbf3e1", "#e8d3a2");
       return '<article class="idc ' + (teach ? "t" : "s") + '"><header>' + em + "<div><b>فرقة أحمد الفاتح الكشفية</b><span>" + (teach ? "بطاقة دخول · معلم أو مشرف" : "بطاقة دخول · كشاف") + '</span></div></header><div class="idb"><div class="idn">' + h(a.name) + '</div><div class="idm">' + (teach ? h(a.title) : h(a.grade) + (a.patrol ? " · " + h(a.patrol) : "")) +
         '</div><dl><div><dt>اسم المستخدم</dt><dd><code>' + h(a.user) + '</code></dd></div><div><dt>كلمة المرور</dt><dd><code>' + h(a.pass) + '</code></dd></div>' + "" + '</dl><div class="idq">' + qrSvg(SITE_URL, 84) + '<div><b>امسح الرمز لفتح الموقع</b><small dir="ltr">' + SITE_SHOW[0] + SITE_SHOW[1] + '</small></div></div></div><footer><span>كن مستعداً</span><button class="btn ghost sm" type="button" data-act="copyone" data-kind="' + kind + '" data-id="' + a.id + '">نسخ</button></footer></article>';
     }).join("") || '<p class="empty">لا توجد حسابات لعرضها.</p>';
@@ -1735,11 +1735,11 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var fl = 560 - v * 90;
       o = '<rect width="800" height="560" fill="#a6dcef"/><rect y="290" width="800" height="150" fill="#1f7fa8"/>';
       for (i = 0; i < 5; i++) o += '<path d="M0 ' + (320 + i * 24) + 'Q100 ' + (306 + i * 24) + ' 200 ' + (320 + i * 24) + 'T400 ' + (320 + i * 24) + 'T600 ' + (320 + i * 24) + 'T800 ' + (320 + i * 24) + '" fill="none" stroke="#fff" stroke-width="3" opacity=".45"/>';
-      o += '<path d="M0 430Q240 400 480 430T800 420V560H0Z" fill="#e8cf9a"/><line x1="' + fl + '" y1="300" x2="' + fl + '" y2="470" stroke="#5a3e22" stroke-width="6"/><path d="M' + fl + ' 306h70l-14 22 14 22h-70z" fill="#c8384a"/>' +
-        '<ellipse cx="' + (120 + v * 70) + '" cy="500" rx="46" ry="30" fill="#2f6f3c"/><ellipse cx="' + (200 + v * 70) + '" cy="520" rx="38" ry="24" fill="#c8384a"/>';
+      o += '<path d="M0 430Q240 400 480 430T800 420V560H0Z" fill="#e8cf9a"/><line x1="' + fl + '" y1="300" x2="' + fl + '" y2="470" stroke="#5a3e22" stroke-width="6"/><path d="M' + fl + ' 306h70l-14 22 14 22h-70z" fill="#234a78"/>' +
+        '<ellipse cx="' + (120 + v * 70) + '" cy="500" rx="46" ry="30" fill="#2f6f3c"/><ellipse cx="' + (200 + v * 70) + '" cy="520" rx="38" ry="24" fill="#234a78"/>';
     } else {
       var rot = v * 14 - 10;
-      o = '<rect width="800" height="560" fill="#dfe9d3"/><circle cx="400" cy="280" r="190" fill="#c8384a"/><g transform="rotate(' + rot + ' 400 280)"><path d="M360 160h80v80h80v80h-80v80h-80v-80h-80v-80h80z" fill="#fdf6e6"/></g>' +
+      o = '<rect width="800" height="560" fill="#dfe9d3"/><circle cx="400" cy="280" r="190" fill="#234a78"/><g transform="rotate(' + rot + ' 400 280)"><path d="M360 160h80v80h80v80h-80v80h-80v-80h-80v-80h80z" fill="#fdf6e6"/></g>' +
         '<path d="M80 470Q220 380 360 470T640 470T800 450" fill="none" stroke="#a8823f" stroke-width="12" stroke-linecap="round"/><circle cx="120" cy="120" r="46" fill="none" stroke="#a8823f" stroke-width="10"/><circle cx="160" cy="120" r="46" fill="none" stroke="#a8823f" stroke-width="10"/>';
     }
     return o;
@@ -1971,7 +1971,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 
   /* ---------- render ---------- */
   function renderBar() {
-    document.getElementById("brand").innerHTML = emblem("", "#c8384a", "#fdf6e6", "#e8d3a2") + "<span>فرقة أحمد الفاتح</span>";
+    document.getElementById("brand").innerHTML = emblem("", "#234a78", "#fdf6e6", "#e8d3a2") + "<span>فرقة أحمد الفاتح</span>";
     var n;
     if (session) {
       n = '<span class="chip" style="align-self:center">' + (session === "admin" ? "الإدارة" : session === "teacher" ? "معلم" : "كشاف") + '</span><a href="#' + session + '">لوحتي</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#about">من نحن</a><button data-act="logout">خروج</button>';
