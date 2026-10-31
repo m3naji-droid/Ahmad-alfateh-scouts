@@ -434,6 +434,9 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
   .ttabs button { flex: 1 1 auto; padding: 9px 12px; }
 }
 .side::-webkit-scrollbar, .ttabs::-webkit-scrollbar { display: none; }
+.subnav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.subnav a { padding: 8px 16px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); text-decoration: none; font-size: .95rem; font-weight: 600; }
+.subnav a.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .side a { display: block; flex: none; white-space: nowrap; padding: 6px 11px; font-size: .88rem; border-radius: 7px; text-decoration: none; color: var(--muted); font-weight: 500; }
 .side a:hover { color: var(--fg); }
 .side a.on { background: var(--primary); color: var(--primary-fg); font-weight: 700; }
@@ -971,10 +974,15 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var sub = k && k.indexOf("admin-") === 0 ? k.slice(6) : "stats";
     var rq = S.requests.length;
     var items = [["stats", "الإحصاءات"], ["members", "الكشافة"], ["patrols", "الطلائع"], ["tasks", "مهام الكشافة"], ["badges", "الشارات"], ["attendance", "الحضور"], ["reports", "التقارير والسجل"], ["behavior", "السلوك والنقاط" + (S.cases.filter(function (c) { return c.status === "pending"; }).length ? " (" + S.cases.filter(function (c) { return c.status === "pending"; }).length + ")" : "")], ["teachers", "المعلمون والمشرفون"], ["staff", "الإدارة"], ["requests", "طلبات الانضمام" + (rq ? " (" + rq + ")" : "")], ["content", "الأنشطة والإعلانات"], ["photos", "الصور"]];
-    var nav = items.map(function (i) { return '<a href="#' + (i[0] === "stats" ? "admin" : "admin-" + i[0]) + '" class="' + ((sub === "scoutcards" ? "members" : sub === "teachercards" ? "teachers" : sub) === i[0] ? "on" : "") + '">' + i[1] + "</a>"; }).join("");
-    var curIt = items.filter(function (i) { return i[0] === (sub === "scoutcards" ? "members" : sub === "teachercards" ? "teachers" : sub); })[0] || items[0];
-    var curLbl = h(curIt[1]);
-    var body = pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
+    var ck = sub === "scoutcards" ? "members" : sub === "teachercards" ? "teachers" : sub;
+    var pend = S.cases.filter(function (c) { return c.status === "pending"; }).length;
+    var GR = [["stats", "الإحصاءات", ["stats"], 0], ["scouts", "الكشافة", ["members", "patrols", "tasks", "badges", "attendance"], 0], ["conduct", "السلوك والتقارير", ["behavior", "reports"], pend], ["accounts", "الحسابات", ["teachers", "staff"], 0], ["site", "الموقع", ["requests", "content", "photos"], rq]];
+    var cg = GR.filter(function (g) { return g[2].indexOf(ck) > -1; })[0] || GR[0];
+    var lnk = function (k) { return "#" + (k === "stats" ? "admin" : "admin-" + k); };
+    var nav = GR.map(function (g) { return '<a href="' + lnk(g[2][0]) + '" class="' + (g === cg ? "on" : "") + '">' + g[1] + (g[3] ? " (" + g[3] + ")" : "") + "</a>"; }).join("");
+    var curLbl = h(cg[1]);
+    var subNav = cg[2].length > 1 ? '<nav class="subnav" aria-label="أقسام ' + h(cg[1]) + '">' + cg[2].map(function (k) { var it = items.filter(function (x) { return x[0] === k; })[0]; return '<a href="' + lnk(k) + '" class="' + (ck === k ? "on" : "") + '">' + (it ? it[1] : k) + "</a>"; }).join("") + "</nav>" : "";
+    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
     return '<div class="dash-h"><div><span class="chip">صفحة الإدارة</span><h1>لوحة قيادة الفرقة</h1></div></div><div class="adm"><div class="admnav' + (ui.navOpen ? " open" : "") + '"><button type="button" class="navtoggle" data-act="navtoggle" aria-expanded="' + (!!ui.navOpen) + '"><div><span>القسم الحالي</span><br>' + curLbl + '</div><b aria-hidden="true">' + (ui.navOpen ? "▲" : "▼") + '</b></button><nav class="side" aria-label="أقسام الإدارة">' + nav + '</nav></div><div class="main">' + body + "</div></div>";
   }
 
