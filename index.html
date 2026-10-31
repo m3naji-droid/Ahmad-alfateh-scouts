@@ -1423,6 +1423,22 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         var als = arg.map(albumById).filter(Boolean); if (!als.length) { toast("لا توجد فعاليات."); return; }
         name = als.length === 1 ? "تقرير فعالية - " + als[0].title : "تقارير الفعاليات " + TODAY;
         job = als.reduce(function (pr, al) { return pr.then(function () { return pdfEvDraw(d, al); }); }, Promise.resolve());
+      } else if (kind === "top") {
+        var tN = S.topN || 10, tOff = ui.lbWeek || 0, tRows = rankList(tOff).slice(0, tN), tWs = addDays(weekStart(TODAY), -7 * tOff);
+        if (!tRows.length) { toast("لا توجد نقاط مسجلة في هذا الأسبوع."); return; }
+        var tWk = (tOff === 0 ? "هذا الأسبوع" : "الأسبوع الماضي") + " (" + fullDate(tWs) + " إلى " + fullDate(addDays(tWs, 6)) + ")";
+        tRows.forEach(function (r, i) { r.pos = i + 1; });
+        if (arg === "grade") {
+          name = "أفضل " + tN + " كشافين حسب الصفوف " + TODAY;
+          d.title("أفضل " + tN + " كشافين · حسب الصفوف", tWk + " · الترتيب بين قوسين هو الترتيب العام");
+          var gk = function (g) { var ix = 0; GRADES.forEach(function (x, i) { if (normGrade(g) === g && g.indexOf(x[2]) === 0) ix = i; }); var n = parseInt((g.match(/\d+$/) || [0])[0], 10) || 0; return ix * 100 + n; };
+          var gs = []; tRows.forEach(function (r) { if (gs.indexOf(r.m.grade) < 0) gs.push(r.m.grade); }); gs.sort(function (a, b) { return gk(a) - gk(b); });
+          gs.forEach(function (g) { d.h2("الصف " + g); d.table(["الترتيب العام", "الكشاف", "الطليعة", "نقاط الأسبوع", "المجموع"], tRows.filter(function (r) { return r.m.grade === g; }).map(function (r) { return [String(r.pos), r.m.name, r.m.patrol || "—", String(r.w), String(r.t)]; }), [.14, .34, .2, .16, .16]); });
+        } else {
+          name = "أفضل " + tN + " كشافين " + TODAY;
+          d.title("أفضل " + tN + " كشافين", tWk);
+          d.table(["#", "الكشاف", "الصف", "الطليعة", "نقاط الأسبوع", "المجموع"], tRows.map(function (r) { return [String(r.pos), r.m.name, r.m.grade, r.m.patrol || "—", String(r.w), String(r.t)]; }), [.08, .28, .14, .2, .15, .15]);
+        }
       } else if (PDFB[kind]) { name = PDFNAME[kind] + " " + TODAY; PDFB[kind](d); }
       else return;
       return Promise.resolve(job).then(function () { return d.finish(); }).then(function (blob) { return dl.save({ filename: name + ".pdf", data: blob }); }).then(function () { toast("تم تجهيز ملف PDF."); }, function (er) { toast(er && er.code === "declined" ? "أُلغي التحميل." : "تعذر إنشاء الملف."); });
@@ -1613,7 +1629,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function leaderHtml(meId) {
     var isAdm = session === "admin", N = isAdm ? (S.topN || 10) : 10, off = ui.lbWeek || 0, rows = rankList(off).slice(0, N);
     var ttl = "أفضل " + (N === 10 ? "١٠" : N) + " كشافين";
-    var sel = isAdm ? '<div class="field" style="max-width:220px;margin:10px 0"><label for="topn">عدد الكشافين الظاهرين</label><select id="topn" data-act="topn">' + [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(function (n) { return "<option" + (n === N ? " selected" : "") + ">" + n + "</option>"; }).join("") + "</select></div>" : "";
+    var sel = isAdm ? '<div class="field" style="max-width:220px;margin:10px 0"><label for="topn">عدد الكشافين الظاهرين</label><select id="topn" data-act="topn">' + [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(function (n) { return "<option" + (n === N ? " selected" : "") + ">" + n + "</option>"; }).join("") + '</select></div><div class="pdfbar"><span class="muted">تحميل PDF:</span><button type="button" class="btn ghost sm" data-act="toppdf" data-v="rank">مرتبة بالأفضلية</button><button type="button" class="btn ghost sm" data-act="toppdf" data-v="grade">مرتبة بالصفوف</button></div>' : "";
     var tabs = '<div class="fcs"><button type="button" class="fc' + (off === 0 ? " on" : "") + '" data-act="lbweek" data-v="0">هذا الأسبوع</button><button type="button" class="fc' + (off === 1 ? " on" : "") + '" data-act="lbweek" data-v="1">الأسبوع الماضي</button></div>';
     if (!rows.length) return '<div class="card"><h3>' + ttl + "</h3>" + tabs + sel + '<p class="empty">لا توجد نقاط مسجلة في هذا الأسبوع بعد. كن أول من يصل إلى القمة.</p></div>';
     var pod = rows.slice(0, 3).map(function (r, i) {
@@ -2152,6 +2168,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "tkdel") { S.tasks = drop(S.tasks, id); save(); ui.flash = { where: "tasks", text: "حُذفت المهمة." }; refresh(); }
     else if (a === "awdel") { var awx = byId(S.awards, id); if (awx) logEv("سحب شارة من " + ((byId(S.members, awx.scoutId) || {}).name || "كشاف")); S.awards = drop(S.awards, id); save(); ui.flash = { where: "badges", text: "سُحبت الشارة." }; refresh(); }
     else if (a === "pdf") { exportPdf(val); }
+    else if (a === "toppdf") { exportPdf("top", val); }
     else if (a === "certpdf") { exportPdf("cert", [id, val]); }
     else if (a === "myreport") { exportPdf("myreport", id); }
     else if (a === "cert") { ui.cert = [id, val]; refresh(); }
