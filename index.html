@@ -337,6 +337,11 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .idc .idb { padding: 16px; display: grid; gap: 4px; align-content: start; }
 .idc .idn { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.3; overflow-wrap: anywhere; }
 .idc .idm { color: var(--muted); font-size: .9rem; margin-bottom: 8px; }
+.msg h4 { margin: 6px 0 4px; }
+.msg .mh { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.msg.unread { border-inline-start: 5px solid var(--primary); }
+.msg .mrep { margin-top: 10px; padding: 10px 14px; background: var(--bg); border-radius: 8px; border: 1px solid var(--line); }
+.chip.new { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
 .gbox { max-height: 220px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 8px; display: grid; gap: 4px; background: var(--surface); }
 .gchk { display: flex; gap: 8px; align-items: flex-start; font-size: .92rem; cursor: pointer; }
 .gchk input { margin-top: 4px; flex: none; }
@@ -635,6 +640,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function daysTxt(d) { return d && d.length && d.length < 5 ? d.map(function (i) { return WDAYS[i]; }).join("، ") : "كل أيام الدراسة"; }
   function ptList(x) { return S.ptasks.filter(function (t) { return t.patrol === x; }); }
   if (!S.cases) S.cases = [];
+  if (!S.msgs) S.msgs = [];
   if (!S.holidays) S.holidays = [
     { id: 9001, name: "رأس السنة الميلادية", from: "01-01", to: "01-01", yearly: true },
     { id: 9002, name: "عيد العمال", from: "05-01", to: "05-01", yearly: true },
@@ -954,26 +960,26 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var tasksC = '<div class="card"><h3>مهامي</h3><div class="prog" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pct + '%"></i></div><p class="muted" style="margin-bottom:8px">أنجزت ' + done + " من " + mt.length + '</p><ul class="tasks">' + tasks + "</ul></div>";
     var actsC = '<div class="card"><h3>الأنشطة القادمة</h3><div class="acts" style="border-top:0">' + acts + "</div></div>";
     var annsC = '<div class="card"><h3>إعلانات الفرقة</h3>' + anns + "</div></div>";
-    var stabs = [["profile", "بياناتي"], ["points", "نقاطي"], ["badges", "الشارات"], ["acts", "الأنشطة والإعلانات"], ["cred", "بيانات الدخول"]];
+    var stabs = [["profile", "بياناتي"], ["points", "نقاطي"], ["badges", "الشارات"], ["acts", "الأنشطة والإعلانات"], ["msg", "مراسلة الإدارة"], ["cred", "بيانات الدخول"]];
     var sb = ui.stab || "profile";
     var fixed = ptaskHtml(m) + (mt.length ? tasksC : "");
-    var sbody = sb === "points" ? '<div class="pdfbar"><button type="button" class="btn ghost sm" data-act="myreport" data-id="' + m.id + '">تحميل تقريري PDF</button></div>' + pointsHtml(m) + '<div class="card"><h3>تحدي الطلائع هذا الشهر</h3>' + patrolBoard(TODAY.slice(0, 7)) + "</div>" : sb === "badges" ? badgesC : sb === "acts" ? actsC + annsC : sb === "cred" ? credCard(m) : profileC;
+    var sbody = sb === "points" ? '<div class="pdfbar"><button type="button" class="btn ghost sm" data-act="myreport" data-id="' + m.id + '">تحميل تقريري PDF</button></div>' + pointsHtml(m) + '<div class="card"><h3>تحدي الطلائع هذا الشهر</h3>' + patrolBoard(TODAY.slice(0, 7)) + "</div>" : sb === "badges" ? badgesC : sb === "acts" ? actsC + annsC : sb === "cred" ? credCard(m) : sb === "msg" ? msgPage() : profileC;
     return pre + '<div class="dash-h"><div><span class="chip">صفحة الكشاف</span><h1>أهلاً، ' + h(m.name) + '</h1></div></div><div class="tbody" style="margin-bottom:20px">' + fixed + '</div><nav class="ttabs" aria-label="أقسام صفحة الكشاف">' + stabs.map(function (x) { return '<button type="button" data-act="stab" data-v="' + x[0] + '" class="' + (sb === x[0] ? "on" : "") + '" aria-pressed="' + (sb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + sbody + "</div>";
   }
 
   function vAdmin(k) {
     var sub = k && k.indexOf("admin-") === 0 ? k.slice(6) : "stats";
     var rq = S.requests.length;
-    var items = [["stats", "الإحصاءات"], ["members", "الكشافة"], ["patrols", "الطلائع"], ["tasks", "مهام الكشافة"], ["badges", "الشارات"], ["attendance", "الحضور"], ["reports", "التقارير والسجل"], ["behavior", "السلوك والنقاط" + (S.cases.filter(function (c) { return c.status === "pending"; }).length ? " (" + S.cases.filter(function (c) { return c.status === "pending"; }).length + ")" : "")], ["teachers", "المعلمون والمشرفون"], ["staff", "الإدارة"], ["requests", "طلبات الانضمام" + (rq ? " (" + rq + ")" : "")], ["content", "الأنشطة والإعلانات"], ["photos", "الصور"]];
+    var items = [["stats", "الإحصاءات"], ["members", "الكشافة"], ["patrols", "الطلائع"], ["tasks", "مهام الكشافة"], ["badges", "الشارات"], ["attendance", "الحضور"], ["reports", "التقارير والسجل"], ["behavior", "السلوك والنقاط" + (S.cases.filter(function (c) { return c.status === "pending"; }).length ? " (" + S.cases.filter(function (c) { return c.status === "pending"; }).length + ")" : "")], ["teachers", "المعلمون والمشرفون"], ["staff", "الإدارة"], ["requests", "طلبات الانضمام" + (rq ? " (" + rq + ")" : "")], ["messages", "الرسائل والاقتراحات" + (unreadMsgs() ? " (" + unreadMsgs() + ")" : "")], ["content", "الأنشطة والإعلانات"], ["photos", "الصور"]];
     var ck = sub === "scoutcards" ? "members" : sub === "teachercards" ? "teachers" : sub;
     var pend = S.cases.filter(function (c) { return c.status === "pending"; }).length;
-    var GR = [["stats", "الإحصاءات", ["stats"], 0], ["scouts", "الكشافة", ["members", "patrols", "tasks", "badges", "attendance"], 0], ["conduct", "السلوك والتقارير", ["behavior", "reports"], pend], ["accounts", "الحسابات", ["teachers", "staff"], 0], ["site", "الموقع", ["requests", "content", "photos"], rq]];
+    var GR = [["stats", "الإحصاءات", ["stats"], 0], ["scouts", "الكشافة", ["members", "patrols", "tasks", "badges", "attendance"], 0], ["conduct", "السلوك والتقارير", ["behavior", "reports"], pend], ["accounts", "الحسابات", ["teachers", "staff"], 0], ["site", "الموقع", ["requests", "messages", "content", "photos"], rq + unreadMsgs()]];
     var cg = GR.filter(function (g) { return g[2].indexOf(ck) > -1; })[0] || GR[0];
     var lnk = function (k) { return "#" + (k === "stats" ? "admin" : "admin-" + k); };
     var nav = GR.map(function (g) { return '<a href="' + lnk(g[2][0]) + '" class="' + (g === cg ? "on" : "") + '">' + g[1] + (g[3] ? " (" + g[3] + ")" : "") + "</a>"; }).join("");
     var curLbl = h(cg[1]);
     var subNav = cg[2].length > 1 ? '<nav class="subnav" aria-label="أقسام ' + h(cg[1]) + '">' + cg[2].map(function (k) { var it = items.filter(function (x) { return x[0] === k; })[0]; return '<a href="' + lnk(k) + '" class="' + (ck === k ? "on" : "") + '">' + (it ? it[1] : k) + "</a>"; }).join("") + "</nav>" : "";
-    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
+    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
     return '<div class="dash-h"><div><span class="chip">صفحة الإدارة</span><h1>لوحة قيادة الفرقة</h1></div></div><div class="adm"><div class="admnav' + (ui.navOpen ? " open" : "") + '"><button type="button" class="navtoggle" data-act="navtoggle" aria-expanded="' + (!!ui.navOpen) + '"><div><span>القسم الحالي</span><br>' + curLbl + '</div><b aria-hidden="true">' + (ui.navOpen ? "▲" : "▼") + '</b></button><nav class="side" aria-label="أقسام الإدارة">' + nav + '</nav></div><div class="main">' + body + "</div></div>";
   }
 
@@ -1643,9 +1649,9 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var undo = cs && cs.status === "approved" ? '<span class="muted">معتمد</span>' : ui.confirmRec === r.id ? '<span class="row-act"><button class="btn danger sm" data-act="recdelyes" data-id="' + r.id + '">تراجع</button><button class="btn ghost sm" data-act="recno">إلغاء</button></span>' : '<button class="btn ghost sm" data-act="recdel" data-id="' + r.id + '">تراجع</button>';
       return '<div class="rec ' + (r.points > 0 ? "good" : "bad") + '"><span class="pt">' + sgn(r.points) + "</span><div><b>" + h(sc ? sc.name : "—") + "</b> · " + h(r.beh) + '<div class="muted" style="font-size:.85rem">' + fullDate(r.date) + (cs ? " · إجراء: " + h(cs.action) + " (" + caseLabel(cs.status) + ")" : "") + '</div><div style="margin-top:4px">' + undo + "</div></div></div>";
     }).join("") || '<p class="empty">لم تسجّل شيئاً بعد.</p>';
-    var tabs = [["record", "تسجيل سلوك"], ["review", "مراجعات الإدارة" + (nRev ? " (" + nRev + ")" : "")], ["log", "آخر ما سجّلته"], ["cred", "بيانات الدخول"]];
+    var tabs = [["record", "تسجيل سلوك"], ["review", "مراجعات الإدارة" + (nRev ? " (" + nRev + ")" : "")], ["log", "آخر ما سجّلته"], ["msg", "مراسلة الإدارة"], ["cred", "بيانات الدخول"]];
     var tb = ui.ttab || "record";
-    var body = tb === "review" ? (mine || '<div class="card"><p class="empty">لا توجد مراجعات مطلوبة من الإدارة.</p></div>') : tb === "log" ? '<div class="card"><h3>آخر ما سجّلته</h3>' + log + "</div>" : tb === "cred" ? credCard(t) : form;
+    var body = tb === "review" ? (mine || '<div class="card"><p class="empty">لا توجد مراجعات مطلوبة من الإدارة.</p></div>') : tb === "log" ? '<div class="card"><h3>آخر ما سجّلته</h3>' + log + "</div>" : tb === "cred" ? credCard(t) : tb === "msg" ? msgPage() : form;
     return '<div class="dash-h"><div><span class="chip">صفحة المعلم</span><h1>أهلاً، ' + h(t.name) + '</h1></div></div><nav class="ttabs" aria-label="أقسام صفحة المعلم">' + tabs.map(function (x) { return '<button type="button" data-act="ttab" data-v="' + x[0] + '" class="' + (tb === x[0] ? "on" : "") + '" aria-pressed="' + (tb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + body + "</div>";
   }
   function caseLabel(st) { return st === "pending" ? "بانتظار الاعتماد" : st === "approved" ? "معتمد" : st === "returned" ? "أُعيد للمراجعة" : "مسحوب"; }
@@ -1882,6 +1888,36 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       '<small class="muted" style="display:block;margin-top:8px">التواقيع ثابتة في التقرير: قائد الفرقة (أ. باسل حسين وأ. محمد عبدالله)، المدير المساعد (أ. خالد نواف بني حمد)، مدير المدرسة (أ. محمد مصباح يوسف).</small>' +
       '<small class="muted">تُضاف إلى التقرير أول ٦ صور من الفعالية.</small>' +
       '<div class="row-act" style="margin-top:12px"><button class="btn sm" type="submit">تنزيل التقرير PDF</button><button class="btn ghost sm" type="button" data-act="repcancel">إلغاء</button></div></form>';
+  }
+
+
+  /* ---------- مراسلة الإدارة ---------- */
+  var MSG_KINDS = ["اقتراح", "ملاحظة", "شكوى", "استفسار", "أخرى"];
+  function unreadMsgs() { return (S.msgs || []).filter(function (m) { return !m.read; }).length; }
+  function msgPage() {
+    var mine = (S.msgs || []).filter(function (m) { return m.role === session && m.uid === uid; }).sort(function (a, b) { return b.ts - a.ts; });
+    var list = mine.map(function (m) {
+      return '<div class="msg"><div class="mh"><span class="chip">' + h(m.kind) + "</span><small class=\"muted\">" + longDate(m.date) + '</small></div><h4>' + h(m.subject) + "</h4><p>" + h(m.text).replace(/\n/g, "<br>") + "</p>" +
+        (m.reply ? '<div class="mrep"><b>رد الإدارة</b><p>' + h(m.reply).replace(/\n/g, "<br>") + "</p></div>" : '<small class="muted">بانتظار رد الإدارة</small>') + "</div>";
+    }).join("") || '<p class="empty">لم ترسل أي رسالة بعد.</p>';
+    return flashHtml("msg") + '<div class="card"><h3>مراسلة الإدارة</h3><p class="muted" style="margin-bottom:10px">أرسل اقتراحاً أو ملاحظة أو شكوى أو استفساراً، وستصل إلى الإدارة مباشرة.</p><form data-form="sendMsg"><div class="form-grid"><div class="field"><label for="ms-kind">نوع الرسالة</label><select id="ms-kind">' +
+      MSG_KINDS.map(function (k) { return "<option>" + k + "</option>"; }).join("") + '</select></div><div class="field"><label for="ms-subj">العنوان</label><input id="ms-subj" type="text" maxlength="80" required></div><div class="field full"><label for="ms-text">الرسالة</label><textarea id="ms-text" required maxlength="1500"></textarea></div></div><div style="margin-top:14px"><button class="btn" type="submit">إرسال</button></div></form></div>' +
+      '<div class="card"><h3>رسائلي (' + mine.length + ")</h3>" + list + "</div>";
+  }
+  function aMessages() {
+    var f = ui.msgKind || "", all = (S.msgs || []).slice().sort(function (a, b) { return b.ts - a.ts; });
+    var shown = all.filter(function (m) { return !f || m.kind === f; });
+    var chips = '<div class="fcs" role="group" aria-label="تصفية الرسائل"><button type="button" class="' + (!f ? "on" : "") + '" data-act="mkind" data-v="">الكل (' + all.length + ")</button>" +
+      MSG_KINDS.map(function (k) { var n = all.filter(function (m) { return m.kind === k; }).length; return '<button type="button" class="' + (f === k ? "on" : "") + '" data-act="mkind" data-v="' + k + '">' + k + " (" + n + ")</button>"; }).join("") + "</div>";
+    var cards = shown.map(function (m) {
+      var who = (m.role === "teacher" ? "معلم" : "كشاف") + " · " + m.name + (m.grade ? " · " + m.grade : "");
+      var rf = ui.replyOpen === m.id ? '<form data-form="replyMsg" style="margin-top:10px"><div class="field"><label for="rm-text">الرد</label><textarea id="rm-text" required>' + h(m.reply || "") + '</textarea></div><div class="row-act" style="margin-top:8px"><button class="btn sm" type="submit">إرسال الرد</button><button class="btn ghost sm" type="button" data-act="mreplyx">إلغاء</button></div></form>' : "";
+      var del = ui.confirmMsg === m.id ? '<span class="muted">حذف الرسالة؟</span><button class="btn danger sm" data-act="mdelyes" data-id="' + m.id + '">نعم</button><button class="btn ghost sm" data-act="mdelno">إلغاء</button>' : '<button class="btn danger sm" data-act="mdel" data-id="' + m.id + '">حذف</button>';
+      return '<div class="card msg' + (m.read ? "" : " unread") + '"><div class="mh"><span class="chip">' + h(m.kind) + "</span>" + (m.read ? "" : '<span class="chip new">جديدة</span>') + '<small class="muted">' + h(who) + " · " + longDate(m.date) + "</small></div><h4>" + h(m.subject) + "</h4><p>" + h(m.text).replace(/\n/g, "<br>") + "</p>" +
+        (m.reply ? '<div class="mrep"><b>ردّك</b><p>' + h(m.reply).replace(/\n/g, "<br>") + "</p></div>" : "") + rf +
+        '<div class="row-act" style="margin-top:10px;flex-wrap:wrap"><button class="btn sm" data-act="mreply" data-id="' + m.id + '">' + (m.reply ? "تعديل الرد" : "رد") + '</button><button class="btn ghost sm" data-act="mread" data-id="' + m.id + '">' + (m.read ? "تحديد كغير مقروءة" : "تحديد كمقروءة") + "</button>" + del + "</div></div>";
+    }).join("") || '<div class="card"><p class="empty">لا توجد رسائل.</p></div>';
+    return '<div class="row-act" style="margin-bottom:12px;flex-wrap:wrap">' + (unreadMsgs() ? '<button class="btn ghost sm" data-act="mreadall">تحديد الكل كمقروء</button>' : "") + "</div>" + chips + cards;
   }
 
   function aAlbumRow(a) {
@@ -2191,6 +2227,14 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       ui.confirmAlb = null; save(); ui.flash = { where: "photos", text: "تم حذف الفعالية وصورها." }; refresh();
     }
     else if (a === "editalb") { ui.editAlb = id; refresh(); }
+    else if (a === "mkind") { ui.msgKind = val; refresh(); }
+    else if (a === "mreply") { ui.replyOpen = id; refresh(); }
+    else if (a === "mreplyx") { ui.replyOpen = null; refresh(); }
+    else if (a === "mread") { var mm = byId(S.msgs, id); if (mm) { mm.read = !mm.read; save(); refresh(); } }
+    else if (a === "mreadall") { S.msgs.forEach(function (x) { x.read = true; }); save(); refresh(); }
+    else if (a === "mdel") { ui.confirmMsg = id; refresh(); }
+    else if (a === "mdelno") { ui.confirmMsg = null; refresh(); }
+    else if (a === "mdelyes") { S.msgs = drop(S.msgs, id); ui.confirmMsg = null; logEv("حذف رسالة"); save(); refresh(); }
     else if (a === "repopen") { ui.repAlb = id; refresh(); }
     else if (a === "repcancel") { ui.repAlb = null; refresh(); }
     else if (a === "repall") { exportPdf("evrep", albumsSorted().map(function (x) { return x.id; })); }
@@ -2388,6 +2432,15 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         ui.flash = { where: "photos", text: (ex ? "أضيفت " + items.length + " صورة إلى «" + al2.title + "»." : "نُشرت فعالية «" + al2.title + "» مع " + items.length + " صورة.") + (fails ? " تعذر حفظ بعضها بشكل دائم." : "") };
         refresh();
       });
+    } else if (f === "sendMsg") {
+      var who = session === "teacher" ? byId(S.teachers, uid) : byId(S.members, uid);
+      if (!who || !v("ms-subj") || !v("ms-text")) return;
+      S.msgs.push({ id: nid(), role: session, uid: uid, name: who.name, grade: session === "scout" ? who.grade : "", kind: v("ms-kind"), subject: v("ms-subj"), text: v("ms-text"), date: TODAY, ts: Date.now(), read: false, reply: "", rdate: "" });
+      save(); ui.flash = { where: "msg", text: "وصلت رسالتك إلى الإدارة. شكراً لك." }; refresh();
+    } else if (f === "replyMsg") {
+      var rm = byId(S.msgs, ui.replyOpen);
+      if (rm && v("rm-text")) { rm.reply = v("rm-text"); rm.rdate = TODAY; rm.read = true; logEv("الرد على رسالة من " + rm.name); save(); }
+      ui.replyOpen = null; refresh();
     } else if (f === "repAlb") {
       var ra = albumById(ui.repAlb);
       if (ra) {
