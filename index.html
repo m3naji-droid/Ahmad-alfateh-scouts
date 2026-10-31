@@ -1194,19 +1194,24 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       d.y += 20;
     };
     d.cards = function (items) {
-      var gap = 30, cwd = Math.floor((PGW - 2 * PMG - gap) / 2), chh = 440;
-      for (var i = 0; i < items.length; i += 2) {
-        d.ensure(chh + gap);
-        [items[i], items[i + 1]].forEach(function (it, k) {
-          if (!it) return; var c = d.c, x0 = PGW - PMG - k * (cwd + gap) - cwd, y0 = d.y;
-          c.fillStyle = "#fff"; c.fillRect(x0, y0, cwd, chh); c.setLineDash([10, 8]); c.strokeStyle = "#9aa68a"; c.lineWidth = 2; c.strokeRect(x0, y0, cwd, chh); c.setLineDash([]);
-          c.fillStyle = it.color || PGREEN; c.fillRect(x0, y0, cwd, 58); c.fillStyle = it.fg || "#fff"; c.font = d.f(24, true); c.textAlign = "right"; c.fillText("فرقة أحمد الفاتح الكشفية", x0 + cwd - 18, y0 + 14);
-          c.fillStyle = "#111"; c.font = d.f(32, true); c.fillText(it.name, x0 + cwd - 18, y0 + 74); c.fillStyle = "#555"; c.font = d.f(22, false); c.fillText(it.sub || "", x0 + cwd - 18, y0 + 118);
-          it.fields.forEach(function (fd, j) { var fy = y0 + 156 + j * 56; c.strokeStyle = "#cdd5bd"; c.lineWidth = 1.5; c.strokeRect(x0 + 18, fy, cwd - 36, 48); c.fillStyle = "#777"; c.font = d.f(18, false); c.textAlign = "right"; c.fillText(fd[0], x0 + cwd - 28, fy + 12); c.fillStyle = "#111"; c.font = "700 24px ui-monospace, Menlo, Consolas, monospace"; c.textAlign = "left"; c.direction = "ltr"; c.fillText(fd[1], x0 + 28, fy + 10); c.direction = "rtl"; c.textAlign = "right"; });
-          var qy = y0 + 156 + it.fields.length * 56 + 14; qrDraw(c, SITE_URL, x0 + 18, qy, 150); c.textAlign = "right"; c.fillStyle = "#111"; c.font = d.f(22, true); c.fillText("امسح الرمز لفتح الموقع", x0 + cwd - 28, qy + 30); c.fillStyle = "#555"; c.font = "600 19px ui-monospace, Menlo, Consolas, monospace"; c.direction = "ltr"; c.textAlign = "right"; c.fillText(SITE_SHOW[0], x0 + cwd - 28, qy + 72); c.fillText(SITE_SHOW[1], x0 + cwd - 28, qy + 100); c.direction = "rtl";
+      var mx = 40, gx = 20, gy = 16, cwd = Math.floor((PGW - 2 * mx - gx) / 2), chh = 385, per = 8, top = 50;
+      items.forEach(function (it, idx) {
+        if (idx % per === 0) { d.page(); d.y = top; }
+        var pos = idx % per, col = pos % 2, row = Math.floor(pos / 2), c = d.c, x0 = PGW - mx - col * (cwd + gx) - cwd, y0 = top + row * (chh + gy);
+        c.fillStyle = "#fff"; c.fillRect(x0, y0, cwd, chh); c.setLineDash([10, 8]); c.strokeStyle = "#8d9a7c"; c.lineWidth = 2; c.strokeRect(x0, y0, cwd, chh); c.setLineDash([]);
+        c.fillStyle = it.color || PGREEN; c.fillRect(x0, y0, cwd, 58); c.fillStyle = it.fg || "#fff"; c.font = d.f(24, true); c.textAlign = "right"; c.fillText("فرقة أحمد الفاتح الكشفية", x0 + cwd - 18, y0 + 14);
+        c.fillStyle = "#111"; c.font = d.f(32, true); c.fillText(it.name, x0 + cwd - 18, y0 + 70); c.fillStyle = "#555"; c.font = d.f(22, false); c.fillText(it.sub || "", x0 + cwd - 18, y0 + 112);
+        it.fields.forEach(function (fd, j) {
+          var fy = y0 + 150 + j * 52; c.strokeStyle = "#cdd5bd"; c.lineWidth = 1.5; c.strokeRect(x0 + 18, fy, cwd - 36, 44);
+          c.fillStyle = "#777"; c.font = d.f(18, false); c.textAlign = "right"; c.fillText(fd[0], x0 + cwd - 28, fy + 11);
+          c.fillStyle = "#111"; c.font = "700 24px ui-monospace, Menlo, Consolas, monospace"; c.textAlign = "left"; c.direction = "ltr"; c.fillText(fd[1], x0 + 28, fy + 8); c.direction = "rtl"; c.textAlign = "right";
         });
-        d.y += chh + gap;
-      }
+        var qy = y0 + 150 + it.fields.length * 52 + 8, qs = chh - (qy - y0) - 12;
+        qrDraw(c, SITE_URL, x0 + 18, qy, qs);
+        c.textAlign = "right"; c.fillStyle = "#111"; c.font = d.f(22, true); c.fillText("امسح الرمز لفتح الموقع", x0 + cwd - 28, qy + 14);
+        c.fillStyle = "#555"; c.font = "600 19px ui-monospace, Menlo, Consolas, monospace"; c.direction = "ltr"; c.textAlign = "right";
+        c.fillText(SITE_SHOW[0], x0 + cwd - 28, qy + 54); c.fillText(SITE_SHOW[1], x0 + cwd - 28, qy + 80); c.direction = "rtl";
+      });
     };
     d.finish = function () {
       var n = d.pages.length;
@@ -1253,8 +1258,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       d.title("المعلمون والمشرفون", "العدد: " + S.teachers.length);
       d.table(["الاسم", "المسمى", "اسم المستخدم"], S.teachers.map(function (t) { return [t.name, t.title, t.user]; }), [.4, .3, .3]);
     },
-    scards: function (d) { d.title("بطاقات دخول الكشافة", "سلّم كل بطاقة لصاحبها فقط"); d.cards(pdfCredCards("m")); },
-    tcards: function (d) { d.title("بطاقات دخول المعلمين والمشرفين", "سلّم كل بطاقة لصاحبها فقط"); d.cards(pdfCredCards("t")); },
+    scards: function (d) { d.cards(pdfCredCards("m")); },
+    tcards: function (d) { d.cards(pdfCredCards("t")); },
     patrols: function (d) {
       d.title("قوائم الطلائع", "عدد الطلائع: " + S.patrols.length);
       S.patrols.forEach(function (x) {
