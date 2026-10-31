@@ -1045,7 +1045,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var del = ui.confirmDel === m.id
         ? '<span class="row-act"><span class="muted">حذف ' + h(m.name) + '؟</span><button class="btn danger sm" data-act="delyes" data-id="' + m.id + '">نعم، احذف</button><button class="btn ghost sm" data-act="delno">إلغاء</button></span>'
         : '<button class="btn danger sm" data-act="delask" data-id="' + m.id + '">حذف</button>';
-      return "<tr><td>" + h(m.name) + "</td><td>" + h(m.grade) + "</td><td>" + h(m.patrol || "—") + '</td><td><select class="rk-sel" data-rank="' + m.id + '" aria-label="لقب ' + h(m.name) + '">' + ["", "عريف", "عريف أول"].map(function (r) { return '<option value="' + r + '"' + ((m.rank || "") === r ? " selected" : "") + ">" + (r || "بدون لقب") + "</option>"; }).join("") + '</select></td><td class="num">' + attTxt(m) + '</td><td><code class="pw">' + h(m.user) + "</code>" + (m.credEdit ? ' <small class="muted">(عدّله صاحبه ' + fullDate(m.credEdit) + ")</small>" : "") + "</td><td>" + pwCell("m", m) + "</td><td>" + del + "</td></tr>";
+      return "<tr><td>" + h(m.name) + "</td><td>" + h(m.grade) + "</td><td>" + h(m.patrol || "—") + '</td><td><select class="rk-sel" data-rank="' + m.id + '" aria-label="لقب ' + h(m.name) + '">' + ["", "عريف", "نائب عريف", "عريف أول"].map(function (r) { return '<option value="' + r + '"' + ((m.rank || "") === r ? " selected" : "") + ">" + (r || "بدون لقب") + "</option>"; }).join("") + '</select></td><td class="num">' + attTxt(m) + '</td><td><code class="pw">' + h(m.user) + "</code>" + (m.credEdit ? ' <small class="muted">(عدّله صاحبه ' + fullDate(m.credEdit) + ")</small>" : "") + "</td><td>" + pwCell("m", m) + "</td><td>" + del + "</td></tr>";
     }).join("") || '<tr><td colspan="8" class="empty">لا يوجد أعضاء.</td></tr>';
     return flashHtml("member") + bulkBar("members") + '<div class="card"><h3>إضافة كشاف</h3><form data-form="addMember"><div class="form-grid"><div class="field"><label for="m-name">الاسم</label><input id="m-name" type="text" required></div><div class="field"><label for="m-grade">الصف</label><select id="m-grade" required><option value="">اختر الصف</option>' + gradeOpts() + "</select></div>" +
       '<div class="field"><label for="m-user">اسم المستخدم (اختياري)</label><input id="m-user" type="text" dir="ltr" autocomplete="off" placeholder="يُنشأ تلقائياً"></div>' +
@@ -1063,15 +1063,15 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var list = pp.grade ? S.members.filter(function (m) { return m.grade === pp.grade; }) : [];
     var nSel = 0;
     var chk = list.map(function (m) {
-      var inP = pp.patrol && m.patrol === pp.patrol, on = !!pp.sel[m.id] && !inP; if (on) nSel++;
-      var tag = inP ? '<span class="st">ضمن هذه الطليعة</span>' : m.patrol ? '<span class="muted">حالياً: ' + h(m.patrol) + "</span>" : '<span class="muted">بدون طليعة</span>';
-      return '<label class="pick' + (inP ? " dis" : "") + '"><input type="checkbox" data-pp="' + m.id + '"' + (on ? " checked" : "") + (inP ? " disabled" : "") + "><span>" + h(m.name) + "</span>" + tag + "</label>";
+      var inP = pp.patrol && m.patrol === pp.patrol, taken = !!m.patrol && m.patrol !== pp.patrol, on = !!pp.sel[m.id] && !inP && !taken; if (on) nSel++;
+      var tag = inP ? '<span class="st">ضمن هذه الطليعة</span>' : m.patrol ? '<span class="muted">في طليعة ' + h(m.patrol) + " · أخرجه منها أولاً</span>" : '<span class="muted">بدون طليعة</span>';
+      return '<label class="pick' + (inP || taken ? " dis" : "") + '"><input type="checkbox" data-pp="' + m.id + '"' + (on ? " checked" : "") + (inP || taken ? " disabled" : "") + "><span>" + h(m.name) + "</span>" + tag + "</label>";
     }).join("") || '<p class="empty">' + (pp.grade ? "لا يوجد كشافة في هذا الصف." : "اختر الصف لتظهر أسماء الكشافة.") + "</p>";
     var cards = S.patrols.map(function (x) {
       var ms = S.members.filter(function (m) { return m.patrol === x; });
       var del = ui.confirmPat === x ? '<span class="row-act"><span class="muted">حذف الطليعة؟</span><button class="btn danger sm" data-act="ppdelyes" data-v="' + h(x) + '">نعم</button><button class="btn ghost sm" data-act="ppdelno">إلغاء</button></span>' : '<button class="btn danger sm" data-act="ppdelask" data-v="' + h(x) + '">حذف الطليعة</button>';
       return '<div class="card"><div class="cc-head" style="margin-bottom:10px"><h3 style="margin:0">' + h(x) + ' <small class="muted">(' + ms.length + ")</small></h3>" + del + "</div>" + (ptList(x).length ? '<p class="note" style="margin:0 0 10px">المهام: ' + ptList(x).map(function (t) { return h(t.text); }).join(" · ") + "</p>" : "") +
-        (ms.map(function (m) { return '<div class="prow"><span>' + h(m.name) + ' <small class="muted">' + h(m.grade) + '</small></span><button class="btn ghost sm" data-act="pprm" data-id="' + m.id + '" aria-label="إخراج ' + h(m.name) + ' من الطليعة">إخراج</button></div>'; }).join("") || '<p class="empty">لا يوجد أعضاء في هذه الطليعة.</p>') + "</div>";
+        (ms.map(function (m) { var rs = m.rank === "عريف أول" ? '<span class="st">عريف أول</span>' : '<select class="rk-sel" data-rank="' + m.id + '" aria-label="لقب ' + h(m.name) + '">' + ["", "عريف", "نائب عريف"].map(function (r) { return '<option value="' + r + '"' + ((m.rank || "") === r ? " selected" : "") + ">" + (r || "بدون لقب") + "</option>"; }).join("") + "</select>"; return '<div class="prow"><span>' + h(m.name) + ' <small class="muted">' + h(m.grade) + '</small></span><span class="row-act">' + rs + '<button class="btn ghost sm" data-act="pprm" data-id="' + m.id + '" aria-label="إخراج ' + h(m.name) + ' من الطليعة">إخراج</button></span></div>'; }).join("") || '<p class="empty">لا يوجد أعضاء في هذه الطليعة.</p>') + "</div>";
     }).join("");
     var canAdd = pp.patrol && nSel;
     var taskCard = lead ? "" : ptaskCard();
@@ -1099,7 +1099,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var first = m.rank === "عريف أول", lt = ui.ltab || (first ? "patrols" : "tasks");
     if (!first) lt = "tasks";
     var tabs = first ? '<nav class="subnav" aria-label="أقسام القيادة">' + [["patrols", "الطلائع"], ["att", "الحضور والغياب"], ["tasks", "المهام"]].map(function (x) { return '<button type="button" data-act="ltab" data-v="' + x[0] + '" class="' + (lt === x[0] ? "on" : "") + '" aria-pressed="' + (lt === x[0]) + '">' + x[1] + "</button>"; }).join("") + "</nav>" : "";
-    var note = '<p class="note" style="margin-bottom:14px">لقبك: <b>' + h(m.rank) + "</b> · " + (first ? "تستطيع إدارة الطلائع وتسجيل الحضور وتكليف الطلائع والكشافة بالمهام." : "تستطيع تكليف طليعتك أو أحد أعضائها بمهمة.") + "</p>";
+    var note = '<p class="note" style="margin-bottom:14px">لقبك: <b>' + h(m.rank) + "</b> · " + (first ? "تستطيع إدارة الطلائع وتوزيع الكشافة وتعيين عريف ونائب عريف لكل طليعة، وتسجيل الحضور، وتكليف الطلائع والكشافة بالمهام." : "تستطيع تكليف طليعتك أو أحد أعضائها بمهمة.") + "</p>";
     var body = first ? (lt === "patrols" ? flashHtml("patrols") + aPatrolsBody() : lt === "att" ? aAttendance() : flashHtml("lead") + ptaskCard() + aTasksBody()) : ldrBasic(m);
     return note + tabs + body;
   }
@@ -2183,12 +2183,12 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "ptday") { var dd = ui.pt.days, di = Number(val), px = dd.indexOf(di); if (px > -1) dd.splice(px, 1); else dd.push(di); dd.sort(); refresh(); }
     else if (a === "ppdelask") { ui.confirmPat = val; refresh(); }
     else if (a === "ppdelno") { ui.confirmPat = null; refresh(); }
-    else if (a === "ppdelyes") { S.patrols = S.patrols.filter(function (x) { return x !== val; }); S.ptasks = S.ptasks.filter(function (t) { return t.patrol !== val; }); S.members.forEach(function (m) { if (m.patrol === val) m.patrol = ""; }); ui.confirmPat = null; save(); ui.flash = { where: "patrols", text: "تم حذف الطليعة." }; refresh(); }
-    else if (a === "pprm") { var mm = byId(S.members, id); if (mm) mm.patrol = ""; save(); refresh(); }
-    else if (a === "ppall") { var q1 = ui.pp; S.members.forEach(function (m) { if (m.grade === q1.grade && m.patrol !== q1.patrol) q1.sel[m.id] = true; }); refresh(); }
+    else if (a === "ppdelyes") { S.patrols = S.patrols.filter(function (x) { return x !== val; }); S.ptasks = S.ptasks.filter(function (t) { return t.patrol !== val; }); S.members.forEach(function (m) { if (m.patrol === val) { m.patrol = ""; if (m.rank === "عريف" || m.rank === "نائب عريف") m.rank = ""; } }); ui.confirmPat = null; save(); ui.flash = { where: "patrols", text: "تم حذف الطليعة." }; refresh(); }
+    else if (a === "pprm") { var mm = byId(S.members, id); if (mm) { mm.patrol = ""; if (mm.rank === "عريف" || mm.rank === "نائب عريف") mm.rank = ""; } save(); refresh(); }
+    else if (a === "ppall") { var q1 = ui.pp; S.members.forEach(function (m) { if (m.grade === q1.grade && !m.patrol) q1.sel[m.id] = true; }); refresh(); }
     else if (a === "ppnone") { ui.pp.sel = {}; refresh(); }
     else if (a === "ppadd") {
-      var q2 = ui.pp, c2 = 0; S.members.forEach(function (m) { if (q2.sel[m.id] && m.grade === q2.grade && m.patrol !== q2.patrol) { m.patrol = q2.patrol; c2++; } });
+      var q2 = ui.pp, c2 = 0; S.members.forEach(function (m) { if (q2.sel[m.id] && m.grade === q2.grade && !m.patrol) { m.patrol = q2.patrol; c2++; } });
       q2.sel = {}; logEv("إضافة " + c2 + " كشاف إلى طليعة " + q2.patrol); save(); ui.flash = { where: "patrols", text: "أُضيف " + c2 + " من الكشافة إلى طليعة " + q2.patrol + "." }; refresh();
     }
     else if (a === "bulktoggle") { ui.bulkOpen = ui.bulkOpen || {}; ui.bulkOpen[val] = !bulkOpen(val); if (!ui.bulkOpen[val] && ui.imp && ui.imp.kind === val) ui.imp = null; refresh(); }
@@ -2340,7 +2340,14 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       ui.bg.level = Number(t.value); refresh();
     } else if (t.matches && t.matches("[data-rank]")) {
       var rm = byId(S.members, Number(t.getAttribute("data-rank")));
-      if (rm) { rm.rank = t.value; logEv && logEv("تغيير لقب " + rm.name + " إلى " + (t.value || "بدون لقب")); save(); ui.flash = { where: "member", text: t.value ? "منح " + rm.name + " لقب " + t.value + "." : "أُزيل لقب " + rm.name + "." }; refresh(); }
+      if (rm) {
+        var nv = t.value, wh = session === "admin" ? "member" : "patrols", me0 = session === "scout" ? me() : null, err = "";
+        if (session === "scout" && (!me0 || me0.rank !== "عريف أول" || nv === "عريف أول" || rm.rank === "عريف أول")) err = "لا تملك صلاحية تغيير هذا اللقب.";
+        else if ((nv === "عريف" || nv === "نائب عريف") && !rm.patrol) err = "أضف الكشاف إلى طليعة أولاً.";
+        else if (nv === "عريف" || nv === "نائب عريف") { var ex = S.members.filter(function (x) { return x.id !== rm.id && x.patrol === rm.patrol && x.rank === nv; })[0]; if (ex) err = "في طليعة " + rm.patrol + " " + nv + " بالفعل (" + ex.name + ")، أزل لقبه أولاً."; }
+        if (err) { ui.flash = { where: wh, text: err, err: true }; refresh(); }
+        else { rm.rank = nv; logEv && logEv("تغيير لقب " + rm.name + " إلى " + (nv || "بدون لقب")); save(); ui.flash = { where: wh, text: nv ? "منح " + rm.name + " لقب " + nv + "." : "أُزيل لقب " + rm.name + "." }; refresh(); }
+      }
     } else if (t.id === "ld-task") {
       ui.ld = ui.ld || {}; ui.ld.task = t.value; refresh();
     } else if (t.id === "tk-grade") {
