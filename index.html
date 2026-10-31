@@ -679,25 +679,32 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
 
   /* ---------- views ---------- */
-  var GRADES = [["السادس الابتدائي", 8], ["الأول الإعدادي", 9], ["الثاني الإعدادي", 6], ["الثالث الإعدادي", 6]];
+  var GRADES = [["السادس الابتدائي", 8, "6 ب"], ["الأول الإعدادي", 9, "1 ع"], ["الثاني الإعدادي", 6, "2 ع"], ["الثالث الإعدادي", 6, "3 ع"]];
   function arNum(n) { return String(n).replace(/\d/g, function (d) { return "٠١٢٣٤٥٦٧٨٩"[d]; }); }
   function toWest(x) { return String(x).replace(/[٠-٩]/g, function (d) { return "٠١٢٣٤٥٦٧٨٩".indexOf(d); }); }
   function normGrade(x) {
-    var t = toWest(String(x == null ? "" : x).replace(/[–—ـ]/g, "-").replace(/\s+/g, " ").trim());
-    var m = t.match(/^(.+?)\s*-?\s*فرقة\s*(\d+)$/);
+    var t = toWest(String(x == null ? "" : x).replace(/[–—ـ]/g, "-").replace(/\s+/g, " ").trim()), m, hit = "";
+    m = t.match(/^(\d)\s*([بع])\s*-?\s*(\d+)$/);
+    if (m) {
+      GRADES.forEach(function (g) { var n = parseInt(m[3], 10); if (!hit && g[2] === m[1] + " " + m[2] && n >= 1 && n <= g[1]) hit = g[2] + " " + n; });
+      return hit;
+    }
+    m = t.match(/^(.+?)\s*-?\s*فرقة\s*(\d+)$/);
     if (!m) return "";
-    var base = m[1].trim(), n = parseInt(m[2], 10), hit = "";
-    GRADES.forEach(function (g) { if (!hit && g[0].indexOf(base) === 0 && n >= 1 && n <= g[1]) hit = g[0] + " - فرقة " + arNum(n); });
+    var base = m[1].trim(), n2 = parseInt(m[2], 10);
+    GRADES.forEach(function (g) { if (!hit && g[0].indexOf(base) === 0 && n2 >= 1 && n2 <= g[1]) hit = g[2] + " " + n2; });
     return hit;
   }
   function gradeOpts(sel) {
     var extra = sel && !normGrade(sel) ? '<option value="' + h(sel) + '" selected>' + h(sel) + "</option>" : "";
     return extra + GRADES.map(function (g) {
       var o = "";
-      for (var i = 1; i <= g[1]; i++) { var t = g[0] + " - فرقة " + arNum(i); o += '<option value="' + t + '"' + (t === sel ? " selected" : "") + ">" + t + "</option>"; }
+      for (var i = 1; i <= g[1]; i++) { var t = g[2] + " " + i; o += '<option value="' + t + '"' + (t === sel ? " selected" : "") + ">" + t + "</option>"; }
       return '<optgroup label="' + g[0] + '">' + o + "</optgroup>";
     }).join("");
   }
+  S.members.forEach(function (m) { var g = normGrade(m.grade); if (g) m.grade = g; });
+  S.requests.forEach(function (r) { var g = normGrade(r.grade); if (g) r.grade = g; });
   function holidayOn(d) {
     var md = d.slice(5), r = null;
     (S.holidays || []).forEach(function (x) { if (x.yearly ? (md >= x.from && md <= x.to) : (d >= x.from && d <= x.to)) r = x; });
@@ -883,7 +890,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var pc = ms.map(attPct).filter(function (x) { return x !== null; }), a = pc.length ? Math.round(pc.reduce(function (x, y) { return x + y; }, 0) / pc.length) : 0;
       return '<div class="b"><span>' + h(pt) + '</span><div class="t"><i style="width:' + a + '%"></i></div><span class="v">' + a + "%</span></div>";
     }).join("");
-    var gd = GRADES.map(function (g) { return [g[0], S.members.filter(function (m) { return String(m.grade).indexOf(g[0]) === 0; }).length]; });
+    var gd = GRADES.map(function (g) { return [g[0], S.members.filter(function (m) { return String(m.grade).indexOf(g[2] + " ") === 0; }).length]; });
     var mx = Math.max.apply(null, gd.map(function (x) { return x[1]; }).concat([1]));
     var gbars = gd.map(function (x) { return '<div class="b"><span>' + h(x[0]) + '</span><div class="t"><i style="width:' + Math.round(x[1] / mx * 100) + '%"></i></div><span class="v">' + x[1] + "</span></div>"; }).join("");
     return '<div class="stats">' + tile(S.members.length, "كشاف") + tile(S.staff.length, "عضو إدارة") + tile(S.requests.length, "طلب انضمام") + tile(avg + "%", "متوسط الحضور") +
@@ -1278,9 +1285,9 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   var SAMPLES = {
     members: [
       ["الاسم", "الصف"],
-      ["أحمد سالم", "السادس الابتدائي - فرقة ٣"],
-      ["خالد يوسف", "الأول الإعدادي - فرقة ٥"],
-      ["فهد عادل", "الثاني الإعدادي - فرقة ٢"]
+      ["أحمد سالم", "6 ب 3"],
+      ["خالد يوسف", "1 ع 5"],
+      ["فهد عادل", "2 ع 2"]
     ],
     teachers: [
       ["الاسم", "المسمى", "اسم المستخدم", "كلمة المرور"],
@@ -1343,7 +1350,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         (imp.rows.length ? '<div class="tbl"><table><thead><tr>' + head + "</tr></thead><tbody>" + rowsH + "</tbody></table></div>" : "") +
         '<div class="row-act" style="margin-top:14px"><button class="btn" data-act="doimport"' + (ok ? "" : " disabled") + ">استيراد " + ok + (tch ? " معلم" : " كشاف") + '</button><button class="btn ghost" data-act="cancelimport">إلغاء</button></div></div>';
     }
-    var cols = tch ? "أربعة أعمدة بهذا الترتيب، والصف الأول للعناوين: الاسم، المسمى، اسم المستخدم، كلمة المرور. العمودان الأخيران اختياريان، وإذا تُركا فارغين تُنشأ الحسابات تلقائياً." : "عمودان بهذا الترتيب، والصف الأول للعناوين: الاسم، الصف. اكتب الصف بصيغة «السادس الابتدائي - فرقة ٣». يمكنك إضافة عمودين اختياريين بعنواني «اسم المستخدم» و«كلمة المرور» بعد الصف، وإلا تُنشأ الحسابات تلقائياً.";
+    var cols = tch ? "أربعة أعمدة بهذا الترتيب، والصف الأول للعناوين: الاسم، المسمى، اسم المستخدم، كلمة المرور. العمودان الأخيران اختياريان، وإذا تُركا فارغين تُنشأ الحسابات تلقائياً." : "عمودان بهذا الترتيب، والصف الأول للعناوين: الاسم، الصف. اكتب الصف بصيغة «6 ب 3» أو «1 ع 2» (الرقم ثم ب للابتدائي أو ع للإعدادي ثم رقم الفرقة). يمكنك إضافة عمودين اختياريين بعنواني «اسم المستخدم» و«كلمة المرور» بعد الصف، وإلا تُنشأ الحسابات تلقائياً.";
     return '<div class="card"><h3>' + (tch ? "إضافة جماعية للمعلمين من إكسل" : "إضافة جماعية للكشافة من إكسل") + "</h3>" + flash +
       '<p class="muted" style="margin-bottom:12px">جهّز ملف إكسل بـ' + cols + "</p>" + sample +
       '<div class="row-act" style="margin:12px 0 18px"><button class="btn ghost sm" data-act="copysample" data-kind="' + kind + '" type="button">نسخ المثال لإكسل</button><span class="muted" id="xl-msg" role="status" style="font-size:.85rem"></span></div>' +
