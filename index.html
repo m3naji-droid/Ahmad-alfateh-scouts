@@ -482,7 +482,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 @media (max-width: 820px) { .ti { grid-template-columns: 66px 1fr; } .ti-s { grid-column: 1 / -1; grid-template-columns: auto auto 1fr; justify-items: start; align-items: center; } .ti-s .row-act, .ti-s > button { justify-self: end; } }
 @media (prefers-reduced-motion: reduce) { .ti.live::before { animation: none; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
-</style></head><body>
+</style>
 
 <header class="bar"><div class="wrap">
   <a class="brand" href="#home" id="brand"></a>
@@ -660,6 +660,21 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function mon(iso) { return fmt(iso, { month: "long" }); }
   function longDate(iso) { return fmt(iso, { weekday: "long", day: "numeric", month: "long" }); }
   function me() { return S.members.filter(function (m) { return m.id === S.meId; })[0] || S.members[0]; }
+  function actsView() {
+    var out = [];
+    S.activities.forEach(function (a) {
+      if (!a.daily) { out.push(a); return; }
+      var from = a.date > addDays(TODAY, -7) ? a.date : addDays(TODAY, -7);
+      var lim = addDays(TODAY, 14), to = a.end && a.end >= a.date && a.end < lim ? a.end : lim, first = true;
+      for (var d = from; d <= to; d = addDays(d, 1)) {
+        if (offReason(d)) continue;
+        var o = {}; for (var k in a) o[k] = a[k];
+        o.date = d; o.end = ""; o.daily = false; o.occ = true; o.first = first; o.kind = (a.kind ? a.kind + " · " : "") + "يومي";
+        out.push(o); first = false;
+      }
+    });
+    return out.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  }
   function sortedActs() { return S.activities.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; }); }
   function upcomingCount() { return S.activities.filter(function (a) { return actEnd(a) >= TODAY; }).length; }
 
@@ -829,7 +844,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return a.end && a.end > a.date ? "من " + fmt(a.date, o) + " إلى " + fmt(a.end, o) : longDate(a.date);
   }
   function vActivities() {
-    var admin = session === "admin", all = sortedActs(), cnt = { all: all.length, soon: 0, live: 0, done: 0 }, f = ui.actFilter || "all";
+    var admin = session === "admin", all = actsView(), cnt = { all: all.length, soon: 0, live: 0, done: 0 }, f = ui.actFilter || "all";
     all.forEach(function (a) { cnt[actStatus(a).k]++; });
     var list = all.filter(function (a) { return f === "all" || actStatus(a).k === f; });
     var nx = all.filter(function (a) { return actStatus(a).k === "live"; })[0] || all.filter(function (a) { return actStatus(a).k === "soon"; })[0];
@@ -841,7 +856,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     list.forEach(function (a) {
       if (f === "all" && !marked && a.date > TODAY) { items += '<li class="now">اليوم · ' + longDate(TODAY) + "</li>"; marked = true; }
       var st = actStatus(a), del = "";
-      if (admin) del = ui.confirmAct === a.id
+      if (admin && (!a.occ || a.first)) del = ui.confirmAct === a.id
         ? '<span class="row-act"><button class="btn danger sm" data-act="actdelyes" data-id="' + a.id + '">حذف نهائي</button><button class="btn ghost sm" data-act="actno">إلغاء</button></span>'
         : '<button class="btn danger sm" data-act="actdel" data-id="' + a.id + '">حذف</button>';
       items += '<li class="ti ' + st.k + '"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3>' + h(a.title) + '</h3><div class="meta">' + actRange(a) + " · " + h(a.place) + albumLink(a) + '</div></div><div class="ti-s"><span class="stt ' + st.k + '">' + st.t + '</span><span class="kind' + (a.kind === "فعالية وطنية" ? " nat" : "") + '">' + h(a.kind) + "</span>" + del + "</div></li>";
@@ -862,7 +877,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       '<div class="fcs" role="group" aria-label="تصفية الأنشطة">' + chips + "</div>" + (items ? '<ol class="tline">' + items + "</ol>" : '<p class="empty">لا توجد أنشطة في هذا التصنيف.</p>') + "</section>";
   }
   function vParts() {
-    var acts = sortedActs().map(function (a) {
+    var acts = actsView().map(function (a) {
       return '<div class="act' + (a.date < TODAY ? " past" : "") + '"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3>' + h(a.title) + '</h3><div class="meta">' + longDate(a.date) + " · " + h(a.place) + albumLink(a) + '</div></div><span class="kind">' + h(a.kind) + "</span></div>";
     }).join("") || '<p class="empty">لا توجد أنشطة حالياً.</p>';
     var gal = ["مخيم الصحراء", "تدريب الإسعافات", "حملة الشاطئ", "عقد وحبال", "ليلة السمر", "حفل التكريم"].map(function (c) {
@@ -902,7 +917,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
   function homeExtra() {
     var mo = TODAY.slice(0, 7), anns = S.announcements.slice(0, 3).map(function (a) { return '<div class="ann"><h4>' + h(a.title) + "</h4><p>" + h(a.text) + "</p><small>" + longDate(a.date) + "</small></div>"; }).join("");
-    var up = sortedActs().filter(function (a) { return actEnd(a) >= TODAY; }).slice(0, 3).map(function (a) { return '<div class="act"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3 style="font-size:1.1rem">' + h(a.title) + '</h3><div class="meta">' + h(a.place) + '</div></div><span class="kind">' + h(a.kind) + "</span></div>"; }).join("");
+    var up = actsView().filter(function (a) { return actEnd(a) >= TODAY; }).slice(0, 3).map(function (a) { return '<div class="act"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3 style="font-size:1.1rem">' + h(a.title) + '</h3><div class="meta">' + h(a.place) + '</div></div><span class="kind">' + h(a.kind) + "</span></div>"; }).join("");
     return '<section class="hsec" aria-label="إنجازات الفرقة"><div class="hstats"><div><b>' + arNum(S.members.length) + "</b><span>كشاف</span></div><div><b>" + arNum(S.patrols.length) + "</b><span>طليعة</span></div><div><b>" + arNum(S.activities.length) + "</b><span>نشاط وفعالية</span></div><div><b>" + arNum(S.awards.length) + "</b><span>شارة ممنوحة</span></div></div>" +
       (S.patrols.length ? '<div class="card"><h3>لوحة شرف الطلائع هذا الشهر</h3>' + patrolBoard(mo) + "</div>" : "") +
       (up ? '<div class="card"><h3>الأنشطة القادمة</h3><div class="acts" style="border-top:0">' + up + "</div></div>" : "") + (anns ? '<div class="card"><h3>آخر الأخبار</h3>' + anns + "</div>" : "") + "</section>";
@@ -943,7 +958,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var late = !t.done && t.due && t.due < TODAY;
       return '<li><label class="' + (t.done ? "done" : "") + '"><input type="checkbox" data-task="' + t.id + '"' + (t.done ? " checked" : "") + "><span>" + h(t.text) + (t.due ? ' <small class="muted">· حتى ' + fullDate(t.due) + (late ? " (متأخرة)" : "") + "</small>" : "") + "</span></label></li>";
     }).join("");
-    var acts = sortedActs().filter(function (a) { return actEnd(a) >= TODAY; }).map(function (a) {
+    var acts = actsView().filter(function (a) { return actEnd(a) >= TODAY; }).map(function (a) {
       return '<div class="act"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3 style="font-size:1.1rem">' + h(a.title) + '</h3><div class="meta">' + h(a.place) + '</div></div><span class="kind">' + h(a.kind) + "</span></div>";
     }).join("") || '<p class="empty">لا توجد أنشطة قادمة.</p>';
     var anns = S.announcements.map(function (a) { return '<div class="ann"><h4>' + h(a.title) + "</h4><p>" + h(a.text) + "</p><small>" + longDate(a.date) + "</small></div>"; }).join("") || '<p class="empty">لا توجد إعلانات.</p>';
