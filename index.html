@@ -1582,16 +1582,18 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function sgn(n) { return "\u200e" + (n > 0 ? "+" : n < 0 ? "−" : "") + Math.abs(n); }
 
   function leaderHtml(meId) {
-    var off = ui.lbWeek || 0, rows = rankList(off).slice(0, 10);
+    var isAdm = session === "admin", N = isAdm ? (S.topN || 10) : 10, off = ui.lbWeek || 0, rows = rankList(off).slice(0, N);
+    var ttl = "أفضل " + (N === 10 ? "١٠" : N) + " كشافين";
+    var sel = isAdm ? '<div class="field" style="max-width:220px;margin:10px 0"><label for="topn">عدد الكشافين الظاهرين</label><select id="topn" data-act="topn">' + [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(function (n) { return "<option" + (n === N ? " selected" : "") + ">" + n + "</option>"; }).join("") + "</select></div>" : "";
     var tabs = '<div class="fcs"><button type="button" class="fc' + (off === 0 ? " on" : "") + '" data-act="lbweek" data-v="0">هذا الأسبوع</button><button type="button" class="fc' + (off === 1 ? " on" : "") + '" data-act="lbweek" data-v="1">الأسبوع الماضي</button></div>';
-    if (!rows.length) return '<div class="card"><h3>أفضل ١٠ كشافين</h3>' + tabs + '<p class="empty">لا توجد نقاط مسجلة في هذا الأسبوع بعد. كن أول من يصل إلى القمة.</p></div>';
+    if (!rows.length) return '<div class="card"><h3>' + ttl + "</h3>" + tabs + sel + '<p class="empty">لا توجد نقاط مسجلة في هذا الأسبوع بعد. كن أول من يصل إلى القمة.</p></div>';
     var pod = rows.slice(0, 3).map(function (r, i) {
       return '<div class="p r' + (i + 1) + (r.m.id === meId ? " me" : "") + '"><div class="medal">' + (i + 1) + "</div><b>" + h(r.m.name) + "</b><span>" + r.w + " نقطة</span></div>";
     }).join("");
     var rest = rows.slice(3).map(function (r, i) {
       return '<div class="rk' + (r.m.id === meId ? " me" : "") + '"><span class="n">' + (i + 4) + "</span><span>" + h(r.m.name) + ' <small class="muted">' + h(r.m.patrol || "") + '</small></span><span class="v">' + r.w + "</span></div>";
     }).join("");
-    return '<div class="card"><h3>أفضل ١٠ كشافين</h3>' + tabs + '<div class="pod">' + pod + "</div>" + rest + "</div>";
+    return '<div class="card"><h3>' + ttl + "</h3>" + tabs + sel + '<div class="pod">' + pod + "</div>" + rest + "</div>";
   }
 
   function scoutPre(m) {
@@ -2286,6 +2288,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     } else if (t.matches && t.matches("[data-task]")) {
       var k = byId(S.tasks, Number(t.getAttribute("data-task")));
       if (k) { k.done = t.checked; save(); refresh(); }
+    } else if (t.id === "topn") {
+      S.topN = Number(t.value) || 10; save(); refresh();
     } else if (t.id === "cf-patrol") {
       ui.cardPatrol = t.value; refresh();
     } else if (t.id === "at-date") {
