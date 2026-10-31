@@ -444,6 +444,9 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .subnav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .subnav a { padding: 8px 16px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); text-decoration: none; font-size: .95rem; font-weight: 600; }
 .subnav a.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.subnav button { font-family: inherit; font-size: .95rem; padding: 8px 16px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; font-weight: 700; }
+.subnav button.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.rk-sel { font-family: inherit; padding: 4px 6px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); }
 .side a { display: block; flex: none; white-space: nowrap; padding: 6px 11px; font-size: .88rem; border-radius: 7px; text-decoration: none; color: var(--muted); font-weight: 500; }
 .side a:hover { color: var(--fg); }
 .side a.on { background: var(--primary); color: var(--primary-fg); font-weight: 700; }
@@ -991,11 +994,11 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var tasksC = '<div class="card"><h3>مهامي</h3><div class="prog" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pct + '%"></i></div><p class="muted" style="margin-bottom:8px">أنجزت ' + done + " من " + mt.length + '</p><ul class="tasks">' + tasks + "</ul></div>";
     var actsC = '<div class="card"><h3>الأنشطة القادمة</h3><div class="acts" style="border-top:0">' + acts + "</div></div>";
     var annsC = '<div class="card"><h3>إعلانات الفرقة</h3>' + anns + "</div></div>";
-    var stabs = [["profile", "بياناتي"], ["points", "نقاطي"], ["badges", "الشارات"], ["acts", "الأنشطة والإعلانات"], ["msg", "مراسلة الإدارة"], ["cred", "بيانات الدخول"]];
+    var stabs = [["profile", "بياناتي"], ["points", "نقاطي"], ["badges", "الشارات"], ["acts", "الأنشطة والإعلانات"]].concat(m.rank ? [["lead", "القيادة"]] : []).concat([["msg", "مراسلة الإدارة"], ["cred", "بيانات الدخول"]]);
     var sb = ui.stab || "profile";
     var fixed = ptaskHtml(m) + (mt.length ? tasksC : "");
-    var sbody = sb === "points" ? '<div class="pdfbar"><button type="button" class="btn ghost sm" data-act="myreport" data-id="' + m.id + '">تحميل تقريري PDF</button></div>' + pointsHtml(m) + '<div class="card"><h3>تحدي الطلائع هذا الشهر</h3>' + patrolBoard(TODAY.slice(0, 7)) + "</div>" : sb === "badges" ? badgesC : sb === "acts" ? actsC + annsC : sb === "cred" ? credCard(m) : sb === "msg" ? msgPage() : profileC;
-    return pre + '<div class="dash-h"><div><span class="chip">صفحة الكشاف</span><h1>أهلاً، ' + h(m.name) + '</h1></div></div><div class="tbody" style="margin-bottom:20px">' + fixed + '</div><nav class="ttabs" aria-label="أقسام صفحة الكشاف">' + stabs.map(function (x) { return '<button type="button" data-act="stab" data-v="' + x[0] + '" class="' + (sb === x[0] ? "on" : "") + '" aria-pressed="' + (sb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + sbody + "</div>";
+    var sbody = sb === "points" ? '<div class="pdfbar"><button type="button" class="btn ghost sm" data-act="myreport" data-id="' + m.id + '">تحميل تقريري PDF</button></div>' + pointsHtml(m) + '<div class="card"><h3>تحدي الطلائع هذا الشهر</h3>' + patrolBoard(TODAY.slice(0, 7)) + "</div>" : sb === "badges" ? badgesC : sb === "acts" ? actsC + annsC : sb === "cred" ? credCard(m) : sb === "msg" ? msgPage() : sb === "lead" && m.rank ? leadPage(m) : profileC;
+    return pre + '<div class="dash-h"><div><span class="chip">صفحة الكشاف' + (m.rank ? " · " + h(m.rank) : "") + '</span><h1>أهلاً، ' + h(m.name) + '</h1></div></div><div class="tbody" style="margin-bottom:20px">' + fixed + '</div><nav class="ttabs" aria-label="أقسام صفحة الكشاف">' + stabs.map(function (x) { return '<button type="button" data-act="stab" data-v="' + x[0] + '" class="' + (sb === x[0] ? "on" : "") + '" aria-pressed="' + (sb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + sbody + "</div>";
   }
 
   function vAdmin(k) {
@@ -1042,16 +1045,18 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var del = ui.confirmDel === m.id
         ? '<span class="row-act"><span class="muted">حذف ' + h(m.name) + '؟</span><button class="btn danger sm" data-act="delyes" data-id="' + m.id + '">نعم، احذف</button><button class="btn ghost sm" data-act="delno">إلغاء</button></span>'
         : '<button class="btn danger sm" data-act="delask" data-id="' + m.id + '">حذف</button>';
-      return "<tr><td>" + h(m.name) + "</td><td>" + h(m.grade) + "</td><td>" + h(m.patrol || "—") + '</td><td class="num">' + attTxt(m) + '</td><td><code class="pw">' + h(m.user) + "</code>" + (m.credEdit ? ' <small class="muted">(عدّله صاحبه ' + fullDate(m.credEdit) + ")</small>" : "") + "</td><td>" + pwCell("m", m) + "</td><td>" + del + "</td></tr>";
-    }).join("") || '<tr><td colspan="7" class="empty">لا يوجد أعضاء.</td></tr>';
+      return "<tr><td>" + h(m.name) + "</td><td>" + h(m.grade) + "</td><td>" + h(m.patrol || "—") + '</td><td><select class="rk-sel" data-rank="' + m.id + '" aria-label="لقب ' + h(m.name) + '">' + ["", "عريف", "عريف أول"].map(function (r) { return '<option value="' + r + '"' + ((m.rank || "") === r ? " selected" : "") + ">" + (r || "بدون لقب") + "</option>"; }).join("") + '</select></td><td class="num">' + attTxt(m) + '</td><td><code class="pw">' + h(m.user) + "</code>" + (m.credEdit ? ' <small class="muted">(عدّله صاحبه ' + fullDate(m.credEdit) + ")</small>" : "") + "</td><td>" + pwCell("m", m) + "</td><td>" + del + "</td></tr>";
+    }).join("") || '<tr><td colspan="8" class="empty">لا يوجد أعضاء.</td></tr>';
     return flashHtml("member") + bulkBar("members") + '<div class="card"><h3>إضافة كشاف</h3><form data-form="addMember"><div class="form-grid"><div class="field"><label for="m-name">الاسم</label><input id="m-name" type="text" required></div><div class="field"><label for="m-grade">الصف</label><select id="m-grade" required><option value="">اختر الصف</option>' + gradeOpts() + "</select></div>" +
       '<div class="field"><label for="m-user">اسم المستخدم (اختياري)</label><input id="m-user" type="text" dir="ltr" autocomplete="off" placeholder="يُنشأ تلقائياً"></div>' +
       '<div class="field"><label for="m-pass">كلمة المرور (اختياري)</label><input id="m-pass" type="text" dir="ltr" autocomplete="off" placeholder="تُنشأ تلقائياً"></div></div><div style="margin-top:14px"><button class="btn" type="submit">إضافة</button></div></form></div>' +
       bulkCard("members") +
-      '<div class="card"><h3>قائمة الكشافة (' + S.members.length + ')</h3><div class="tbl"><table><thead><tr><th>الاسم</th><th>الصف</th><th>الطليعة</th><th>الحضور</th><th>اسم المستخدم</th><th>كلمة المرور</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div></div>";
+      '<div class="card"><h3>قائمة الكشافة (' + S.members.length + ')</h3><div class="tbl"><table><thead><tr><th>الاسم</th><th>الصف</th><th>الطليعة</th><th>اللقب</th><th>الحضور</th><th>اسم المستخدم</th><th>كلمة المرور</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div></div>";
   }
 
-  function aPatrols() {
+  function aPatrolsBody() { return aPatrols(true); }
+  function aTasksBody() { return aTasks(true); }
+  function aPatrols(lead) {
     var pp = ui.pp || (ui.pp = { patrol: "", grade: "", sel: {} });
     if (pp.patrol && S.patrols.indexOf(pp.patrol) < 0) pp.patrol = "";
     var popt = '<option value="">اختر الطليعة</option>' + S.patrols.map(function (x) { return "<option" + (x === pp.patrol ? " selected" : "") + ">" + h(x) + "</option>"; }).join("");
@@ -1069,11 +1074,18 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         (ms.map(function (m) { return '<div class="prow"><span>' + h(m.name) + ' <small class="muted">' + h(m.grade) + '</small></span><button class="btn ghost sm" data-act="pprm" data-id="' + m.id + '" aria-label="إخراج ' + h(m.name) + ' من الطليعة">إخراج</button></div>'; }).join("") || '<p class="empty">لا يوجد أعضاء في هذه الطليعة.</p>') + "</div>";
     }).join("");
     var canAdd = pp.patrol && nSel;
+    var taskCard = lead ? "" : ptaskCard();
+    return (lead ? "" : flashHtml("patrols")) + '<div class="card"><h3>إضافة طليعة</h3><form data-form="addPatrol"><div class="form-grid"><div class="field"><label for="pt-name">اسم الطليعة</label><input id="pt-name" type="text" required></div></div><div style="margin-top:14px"><button class="btn" type="submit">إضافة طليعة</button></div></form></div>' +
+      taskCard + '<div class="card"><h3>إضافة كشافة إلى طليعة</h3>' + (S.patrols.length ? '<div class="form-grid"><div class="field"><label for="pp-patrol">الطليعة</label><select id="pp-patrol">' + popt + '</select></div><div class="field"><label for="pp-grade">الصف</label><select id="pp-grade"><option value="">اختر الصف</option>' + gradeOpts(pp.grade) + '</select></div></div>' +
+        '<div class="picks" style="margin-top:14px">' + chk + '</div><div class="row-act" style="margin-top:14px;flex-wrap:wrap"><button class="btn" type="button" data-act="ppadd"' + (canAdd ? "" : " disabled") + ' id="pp-add">إضافة المحددين (' + nSel + ')</button>' + (list.length ? '<button class="btn ghost" type="button" data-act="ppall">تحديد الكل</button><button class="btn ghost" type="button" data-act="ppnone">إلغاء التحديد</button>' : "") + "</div>" : '<p class="empty">أضف طليعة أولاً.</p>') + "</div>" +
+      dutyCard() + (cards || "");
+  }
+  function ptaskCard() {
     var pt = ui.pt || (ui.pt = { patrol: "", task: "", other: "", days: [] });
     pt.days = pt.days || [];
-    if (pt.patrol && S.patrols.indexOf(pt.patrol) < 0) pt.patrol = "";
+    if (pt.patrol && pt.patrol !== "*" && S.patrols.indexOf(pt.patrol) < 0) pt.patrol = "";
     var tsel = '<option value="">اختر المهمة</option>' + PTASKS.concat(["أخرى"]).map(function (x) { return "<option" + (x === pt.task ? " selected" : "") + ">" + h(x) + "</option>"; }).join("");
-    var tp = '<option value="">اختر الطليعة</option>' + S.patrols.map(function (x) { return "<option" + (x === pt.patrol ? " selected" : "") + ">" + h(x) + "</option>"; }).join("");
+    var tp = '<option value="">اختر الطليعة</option>' + (S.patrols.length > 1 ? '<option value="*"' + (pt.patrol === "*" ? " selected" : "") + ">كل الطلائع</option>" : "") + S.patrols.map(function (x) { return "<option" + (x === pt.patrol ? " selected" : "") + ">" + h(x) + "</option>"; }).join("");
     var trows = S.ptasks.filter(function (t) { return S.patrols.indexOf(t.patrol) > -1; }).map(function (t) {
       return "<tr><td>" + h(t.patrol) + "</td><td>" + h(t.text) + "</td><td>" + daysTxt(t.days) + '</td><td><button class="btn ghost sm" data-act="ptdel" data-id="' + t.id + '">حذف</button></td></tr>';
     }).join("") || '<tr><td colspan="4" class="empty">لم تُعيَّن مهام بعد.</td></tr>';
@@ -1081,10 +1093,26 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var taskCard = S.patrols.length ? '<div class="card"><h3>مهام الطلائع</h3><form data-form="setPtask"><div class="form-grid"><div class="field"><label for="pt-patrol">الطليعة</label><select id="pt-patrol" required>' + tp + '</select></div><div class="field"><label for="pt-task">المهمة</label><select id="pt-task" required>' + tsel + "</select></div>" +
       (pt.task === "أخرى" ? '<div class="field"><label for="pt-other">اكتب المهمة</label><input id="pt-other" type="text" required value="' + h(pt.other) + '"></div>' : "") + "</div>" + dchips + '<div style="margin-top:14px"><button class="btn" type="submit">إضافة المهمة</button></div></form>' +
       '<div class="tbl" style="margin-top:18px"><table><thead><tr><th>الطليعة</th><th>المهمة</th><th>الأيام</th><th></th></tr></thead><tbody>' + trows + "</tbody></table></div></div>" : "";
-    return flashHtml("patrols") + '<div class="card"><h3>إضافة طليعة</h3><form data-form="addPatrol"><div class="form-grid"><div class="field"><label for="pt-name">اسم الطليعة</label><input id="pt-name" type="text" required></div></div><div style="margin-top:14px"><button class="btn" type="submit">إضافة طليعة</button></div></form></div>' +
-      taskCard + '<div class="card"><h3>إضافة كشافة إلى طليعة</h3>' + (S.patrols.length ? '<div class="form-grid"><div class="field"><label for="pp-patrol">الطليعة</label><select id="pp-patrol">' + popt + '</select></div><div class="field"><label for="pp-grade">الصف</label><select id="pp-grade"><option value="">اختر الصف</option>' + gradeOpts(pp.grade) + '</select></div></div>' +
-        '<div class="picks" style="margin-top:14px">' + chk + '</div><div class="row-act" style="margin-top:14px;flex-wrap:wrap"><button class="btn" type="button" data-act="ppadd"' + (canAdd ? "" : " disabled") + ' id="pp-add">إضافة المحددين (' + nSel + ')</button>' + (list.length ? '<button class="btn ghost" type="button" data-act="ppall">تحديد الكل</button><button class="btn ghost" type="button" data-act="ppnone">إلغاء التحديد</button>' : "") + "</div>" : '<p class="empty">أضف طليعة أولاً.</p>') + "</div>" +
-      dutyCard() + (cards || "");
+    return taskCard;
+  }
+  function leadPage(m) {
+    var first = m.rank === "عريف أول", lt = ui.ltab || (first ? "patrols" : "tasks");
+    if (!first) lt = "tasks";
+    var tabs = first ? '<nav class="subnav" aria-label="أقسام القيادة">' + [["patrols", "الطلائع"], ["att", "الحضور والغياب"], ["tasks", "المهام"]].map(function (x) { return '<button type="button" data-act="ltab" data-v="' + x[0] + '" class="' + (lt === x[0] ? "on" : "") + '" aria-pressed="' + (lt === x[0]) + '">' + x[1] + "</button>"; }).join("") + "</nav>" : "";
+    var note = '<p class="note" style="margin-bottom:14px">لقبك: <b>' + h(m.rank) + "</b> · " + (first ? "تستطيع إدارة الطلائع وتسجيل الحضور وتكليف الطلائع والكشافة بالمهام." : "تستطيع تكليف طليعتك أو أحد أعضائها بمهمة.") + "</p>";
+    var body = first ? (lt === "patrols" ? flashHtml("patrols") + aPatrolsBody() : lt === "att" ? aAttendance() : flashHtml("lead") + ptaskCard() + aTasksBody()) : ldrBasic(m);
+    return note + tabs + body;
+  }
+  function ldrBasic(m) {
+    if (!m.patrol) return '<div class="card"><p class="empty">لم تُضف إلى طليعة بعد، تواصل مع الإدارة.</p></div>';
+    var ld = ui.ld || (ui.ld = { task: "" }), mem = S.members.filter(function (x) { return x.patrol === m.patrol; });
+    var tsel = '<option value="">اختر المهمة</option>' + PTASKS.concat(["أخرى"]).map(function (x) { return "<option" + (x === ld.task ? " selected" : "") + ">" + h(x) + "</option>"; }).join("");
+    var f1 = '<div class="card"><h3>مهمة لطليعتي (' + h(m.patrol) + ')</h3><form data-form="ldrPtask"><div class="form-grid"><div class="field"><label for="ld-task">المهمة</label><select id="ld-task" required>' + tsel + "</select></div>" +
+      (ld.task === "أخرى" ? '<div class="field"><label for="ld-other">اكتب المهمة</label><input id="ld-other" type="text" required></div>' : "") + '</div><div style="margin-top:14px"><button class="btn" type="submit">إضافة المهمة للطليعة</button></div></form></div>';
+    var f2 = '<div class="card"><h3>مهمة لأحد أعضاء طليعتي</h3><form data-form="ldrTask"><div class="form-grid"><div class="field"><label for="ld-scout">العضو</label><select id="ld-scout" required><option value="">اختر العضو</option>' + mem.map(function (x) { return '<option value="' + x.id + '">' + h(x.name) + "</option>"; }).join("") + '</select></div><div class="field"><label for="ld-text">المهمة</label><input id="ld-text" type="text" required></div><div class="field"><label for="ld-due">الموعد (اختياري)</label><input id="ld-due" type="date"></div></div><div style="margin-top:14px"><button class="btn" type="submit">إضافة المهمة</button></div></form></div>';
+    var pr = S.ptasks.filter(function (t) { return t.patrol === m.patrol; }).map(function (t) { return '<div class="prow"><span>' + h(t.text) + '</span>' + (t.by === m.id ? '<button class="btn ghost sm" data-act="ptdel" data-id="' + t.id + '">حذف</button>' : "") + "</div>"; }).join("");
+    var tr = S.tasks.filter(function (t) { return t.by === m.id; }).map(function (t) { var sc = byId(S.members, t.scoutId); return '<div class="prow"><span>' + h(sc ? sc.name : "—") + " · " + h(t.text) + ' <small class="muted">' + (t.done ? "منجزة" : "قيد التنفيذ") + '</small></span><button class="btn ghost sm" data-act="tkdel" data-id="' + t.id + '">حذف</button></div>'; }).join("");
+    return flashHtml("lead") + f1 + f2 + '<div class="card"><h3>مهام طليعتي الحالية</h3>' + (pr || '<p class="empty">لا توجد مهام.</p>') + '</div><div class="card"><h3>المهام التي كلّفت بها</h3>' + (tr || '<p class="empty">لم تكلّف أحداً بعد.</p>') + "</div>";
   }
   function dutyCard() {
     if (!S.patrols.length || !S.ptasks.length) return "";
@@ -1095,7 +1123,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return '<div class="card"><h3>جدول المناوبات الأسبوعي</h3><div class="tbl"><table class="duty"><thead><tr>' + head + "</tr></thead><tbody>" + rows + "</tbody></table></div></div>";
   }
 
-  function aTasks() {
+  function aTasks(lead) {
     var tk = ui.tk || (ui.tk = { grade: "", scout: "" });
     var ms = tk.grade ? S.members.filter(function (m) { return m.grade === tk.grade; }) : [];
     var sopt = '<option value="">' + (tk.grade ? (ms.length ? "اختر الكشاف" : "لا يوجد كشافة في هذا الصف") : "اختر الصف أولاً") + "</option>" + (ms.length ? '<option value="all"' + (tk.scout === "all" ? " selected" : "") + ">كل كشافة الصف (" + ms.length + ")</option>" : "") + ms.map(function (m) { return '<option value="' + m.id + '"' + (String(m.id) === String(tk.scout) ? " selected" : "") + ">" + h(m.name) + "</option>"; }).join("");
@@ -1103,7 +1131,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var sc = byId(S.members, t.scoutId), late = !t.done && t.due && t.due < TODAY;
       return "<tr><td>" + h(sc ? sc.name : "—") + "</td><td>" + h(t.text) + "</td><td>" + (t.due ? fullDate(t.due) : "—") + '</td><td><span class="st' + (late ? " bad" : "") + '">' + (t.done ? "منجزة" : late ? "متأخرة" : "قيد التنفيذ") + '</span></td><td><button class="btn danger sm" data-act="tkdel" data-id="' + t.id + '">حذف</button></td></tr>';
     }).join("") || '<tr><td colspan="5" class="empty">لا توجد مهام شخصية.</td></tr>';
-    return flashHtml("tasks") + '<div class="card"><h3>إضافة مهمة شخصية لكشاف</h3><form data-form="addTask"><div class="form-grid"><div class="field"><label for="tk-grade">الصف</label><select id="tk-grade"><option value="">اختر الصف</option>' + gradeOpts(tk.grade) + '</select></div><div class="field"><label for="tk-scout">الكشاف</label><select id="tk-scout"' + (tk.grade ? "" : " disabled") + ">" + sopt + '</select></div><div class="field"><label for="tk-text">المهمة</label><input id="tk-text" type="text" required></div><div class="field"><label for="tk-due">آخر موعد (اختياري)</label><input id="tk-due" type="date"></div></div><div style="margin-top:14px"><button class="btn" type="submit">إضافة المهمة</button></div></form></div>' +
+    return (lead ? "" : flashHtml("tasks")) + '<div class="card"><h3>إضافة مهمة شخصية لكشاف</h3><form data-form="addTask"><div class="form-grid"><div class="field"><label for="tk-grade">الصف</label><select id="tk-grade"><option value="">اختر الصف</option>' + gradeOpts(tk.grade) + '</select></div><div class="field"><label for="tk-scout">الكشاف</label><select id="tk-scout"' + (tk.grade ? "" : " disabled") + ">" + sopt + '</select></div><div class="field"><label for="tk-text">المهمة</label><input id="tk-text" type="text" required></div><div class="field"><label for="tk-due">آخر موعد (اختياري)</label><input id="tk-due" type="date"></div></div><div style="margin-top:14px"><button class="btn" type="submit">إضافة المهمة</button></div></form></div>' +
       '<div class="card"><h3>المهام الشخصية (' + S.tasks.length + ')</h3><div class="tbl"><table><thead><tr><th>الكشاف</th><th>المهمة</th><th>الموعد</th><th>الحالة</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div></div>";
   }
 
@@ -2149,6 +2177,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     }
     else if (a === "navtoggle") { ui.navOpen = !ui.navOpen; refresh(); }
     else if (a === "stab") { ui.stab = val; refresh(); }
+    else if (a === "ltab") { ui.ltab = val; refresh(); }
     else if (a === "ttab") { ui.ttab = val; refresh(); }
     else if (a === "ptdel") { S.ptasks = drop(S.ptasks, id); save(); ui.flash = { where: "patrols", text: "حُذفت المهمة." }; refresh(); }
     else if (a === "ptday") { var dd = ui.pt.days, di = Number(val), px = dd.indexOf(di); if (px > -1) dd.splice(px, 1); else dd.push(di); dd.sort(); refresh(); }
@@ -2309,6 +2338,11 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       ui.bg.badge = t.value; refresh();
     } else if (t.id === "bg-level") {
       ui.bg.level = Number(t.value); refresh();
+    } else if (t.matches && t.matches("[data-rank]")) {
+      var rm = byId(S.members, Number(t.getAttribute("data-rank")));
+      if (rm) { rm.rank = t.value; logEv && logEv("تغيير لقب " + rm.name + " إلى " + (t.value || "بدون لقب")); save(); ui.flash = { where: "member", text: t.value ? "منح " + rm.name + " لقب " + t.value + "." : "أُزيل لقب " + rm.name + "." }; refresh(); }
+    } else if (t.id === "ld-task") {
+      ui.ld = ui.ld || {}; ui.ld.task = t.value; refresh();
     } else if (t.id === "tk-grade") {
       ui.tk.grade = t.value; ui.tk.scout = ""; refresh();
     } else if (t.id === "tk-scout") {
@@ -2404,14 +2438,29 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     } else if (f === "addTask") {
       var tk = ui.tk, txt = v("tk-text"), due = v("tk-due");
       var tg = tk.scout === "all" ? S.members.filter(function (m) { return m.grade === tk.grade; }) : [byId(S.members, Number(tk.scout))].filter(Boolean);
-      if (!txt || !tg.length) { ui.flash = { where: "tasks", text: "اختر الصف والكشاف واكتب المهمة.", err: true }; refresh(); return; }
-      tg.forEach(function (m) { S.tasks.push({ id: nid(), scoutId: m.id, text: txt, due: due, done: false, date: TODAY }); });
-      save(); ui.flash = { where: "tasks", text: "أُضيفت المهمة إلى " + tg.length + (tg.length > 1 ? " كشافة." : " كشاف.") }; refresh();
+      if (!txt || !tg.length) { ui.flash = { where: session === "scout" ? "lead" : "tasks", text: "اختر الصف والكشاف واكتب المهمة.", err: true }; refresh(); return; }
+      tg.forEach(function (m) { S.tasks.push({ id: nid(), scoutId: m.id, text: txt, due: due, done: false, date: TODAY, by: session === "scout" ? S.meId : 0 }); });
+      save(); ui.flash = { where: session === "scout" ? "lead" : "tasks", text: "أُضيفت المهمة إلى " + tg.length + (tg.length > 1 ? " كشافة." : " كشاف.") }; refresh();
     } else if (f === "setPtask") {
       var pt2 = ui.pt, tk = pt2.task === "أخرى" ? v("pt-other") : pt2.task;
-      if (!pt2.patrol || !tk) { ui.flash = { where: "patrols", text: "اختر الطليعة والمهمة.", err: true }; refresh(); return; }
-      S.ptasks.push({ id: nid(), patrol: pt2.patrol, text: tk, days: (pt2.days || []).slice() }); var pn2 = pt2.patrol; ui.pt = { patrol: pn2, task: "", other: "", days: [] };
-      save(); ui.flash = { where: "patrols", text: "أُضيفت مهمة «" + tk + "» لطليعة " + pn2 + "." }; refresh();
+      if (!pt2.patrol || !tk) { ui.flash = { where: session === "scout" ? "lead" : "patrols", text: "اختر الطليعة والمهمة.", err: true }; refresh(); return; }
+      var tgp = pt2.patrol === "*" ? S.patrols.slice() : [pt2.patrol], by2 = session === "scout" ? S.meId : 0;
+      tgp.forEach(function (px) { S.ptasks.push({ id: nid(), patrol: px, text: tk, days: (pt2.days || []).slice(), by: by2 }); }); var pn2 = pt2.patrol; ui.pt = { patrol: pn2, task: "", other: "", days: [] };
+      save(); ui.flash = { where: ui.ltab ? "lead" : "patrols", text: pn2 === "*" ? "أُضيفت مهمة «" + tk + "» لكل الطلائع." : "أُضيفت مهمة «" + tk + "» لطليعة " + pn2 + "." }; refresh();
+    } else if (f === "ldrPtask" || f === "ldrTask") {
+      var lm = me();
+      if (session !== "scout" || !lm || !lm.rank || !lm.patrol) return;
+      if (f === "ldrPtask") {
+        var lt0 = v("ld-task"), ltx = lt0 === "أخرى" ? v("ld-other") : lt0;
+        if (!ltx) { ui.flash = { where: "lead", text: "اختر المهمة أو اكتبها.", err: true }; refresh(); return; }
+        S.ptasks.push({ id: nid(), patrol: lm.patrol, text: ltx, days: [], by: lm.id }); ui.ld = { task: "" };
+        save(); ui.flash = { where: "lead", text: "أُضيفت مهمة «" + ltx + "» لطليعة " + lm.patrol + "." }; refresh();
+      } else {
+        var tm = byId(S.members, Number(v("ld-scout"))), ttx = v("ld-text");
+        if (!tm || tm.patrol !== lm.patrol || !ttx) { ui.flash = { where: "lead", text: "اختر عضواً من طليعتك واكتب المهمة.", err: true }; refresh(); return; }
+        S.tasks.push({ id: nid(), scoutId: tm.id, text: ttx, due: v("ld-due"), done: false, date: TODAY, by: lm.id });
+        save(); ui.flash = { where: "lead", text: "أُضيفت المهمة إلى " + tm.name + "." }; refresh();
+      }
     } else if (f === "addPatrol") {
       var pn = v("pt-name");
       if (!pn) return;
