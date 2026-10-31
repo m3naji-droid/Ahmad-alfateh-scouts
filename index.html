@@ -830,6 +830,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
   function actEnd(a) { return a.daily ? (a.end || "9999-12-31") : (a.end || a.date); }
   function actStatus(a) {
+    if (a.cancelled) return { k: "done", t: "ملغى" };
     var s0 = a.date, e0 = a.daily ? (a.end && a.end >= a.date ? a.end : "9999-12-31") : (a.end && a.end >= a.date ? a.end : a.date);
     if (TODAY > e0) return { k: "done", t: "انتهت" };
     if (TODAY < s0) {
@@ -858,8 +859,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var st = actStatus(a), del = "";
       if (admin && (!a.occ || a.first)) del = ui.confirmAct === a.id
         ? '<span class="row-act"><button class="btn danger sm" data-act="actdelyes" data-id="' + a.id + '">حذف نهائي</button><button class="btn ghost sm" data-act="actno">إلغاء</button></span>'
-        : '<button class="btn danger sm" data-act="actdel" data-id="' + a.id + '">حذف</button>';
-      items += '<li class="ti ' + st.k + '"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3>' + h(a.title) + '</h3><div class="meta">' + actRange(a) + " · " + h(a.place) + albumLink(a) + '</div></div><div class="ti-s"><span class="stt ' + st.k + '">' + st.t + '</span><span class="kind' + (a.kind === "فعالية وطنية" ? " nat" : "") + '">' + h(a.kind) + "</span>" + del + "</div></li>";
+        : '<button class="btn sm" data-act="actedit" data-id="' + a.id + '">تعديل</button><button class="btn ghost sm" data-act="actcancel" data-id="' + a.id + '">' + (a.cancelled ? "استئناف" : "إلغاء النشاط") + '</button><button class="btn danger sm" data-act="actdel" data-id="' + a.id + '">حذف</button>';
+      items += '<li class="ti ' + st.k + '"><div class="date"><b>' + day(a.date) + "</b><span>" + mon(a.date) + '</span></div><div><h3>' + h(a.title) + '</h3><div class="meta">' + actRange(a) + " · " + h(a.place) + (a.note ? " · " + h(a.note) : "") + albumLink(a) + '</div></div><div class="ti-s"><span class="stt ' + st.k + '">' + st.t + '</span><span class="kind' + (a.kind === "فعالية وطنية" ? " nat" : "") + '">' + h(a.kind) + "</span>" + del + "</div></li>";
     });
     if (f === "all" && !marked && list.length) items += '<li class="now">اليوم · ' + longDate(TODAY) + "</li>";
     var fl = ui.flash && ui.flash.where === "act" ? '<div class="flash" role="status">' + h(ui.flash.text) + "</div>" : "";
@@ -872,7 +873,21 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       '<div class="field"><label for="aa-kind">النوع</label><select id="aa-kind"><option>اجتماع</option><option>تدريب</option><option>مخيم</option><option>خدمة مجتمع</option><option>مسابقة</option><option>فعالية وطنية</option></select></div>' +
       '<div class="field"><label for="aa-rep">التكرار</label><select id="aa-rep"><option value="">مرة واحدة</option><option value="daily">يومياً</option></select></div></div>' +
       '<div class="row-act" style="margin-top:14px"><button class="btn" type="submit">نشر النشاط</button><button class="btn ghost" type="button" data-act="cancelact">إلغاء</button></div></form>';
-    var add = admin && !ui.newAct ? '<button class="btn" type="button" data-act="newact">+ إضافة نشاط</button>' : "";
+    var ea = admin && ui.editAct ? S.activities.filter(function (x) { return x.id === ui.editAct; })[0] : null;
+    if (ea) {
+      var kinds = ["اجتماع", "تدريب", "مخيم", "خدمة مجتمع", "مسابقة", "فعالية وطنية"]; if (kinds.indexOf(ea.kind) < 0) kinds.push(ea.kind);
+      form = '<form class="join" data-form="editActivity" style="margin-bottom:22px"><h3 style="margin-bottom:12px">تعديل النشاط</h3><div class="form-grid">' +
+        '<div class="field full"><label for="ea-title">اسم النشاط</label><input id="ea-title" type="text" required value="' + h(ea.title) + '"></div>' +
+        '<div class="field"><label for="ea-date">يبدأ في</label><input id="ea-date" type="date" required value="' + h(ea.date) + '"></div>' +
+        '<div class="field"><label for="ea-end">ينتهي في (اختياري)</label><input id="ea-end" type="date" value="' + h(ea.end || "") + '"></div>' +
+        '<div class="field"><label for="ea-place">المكان</label><input id="ea-place" type="text" required value="' + h(ea.place) + '"></div>' +
+        '<div class="field"><label for="ea-kind">النوع</label><select id="ea-kind">' + kinds.map(function (k) { return "<option" + (k === ea.kind ? " selected" : "") + ">" + h(k) + "</option>"; }).join("") + '</select></div>' +
+        '<div class="field"><label for="ea-rep">التكرار</label><select id="ea-rep"><option value="">مرة واحدة</option><option value="daily"' + (ea.daily ? " selected" : "") + '>يومياً</option></select></div>' +
+        '<div class="field"><label for="ea-st">الحالة</label><select id="ea-st"><option value="">قائم</option><option value="1"' + (ea.cancelled ? " selected" : "") + '>ملغى</option></select></div>' +
+        '<div class="field full"><label for="ea-note">ملاحظة تظهر مع النشاط (اختياري)</label><input id="ea-note" type="text" value="' + h(ea.note || "") + '"></div></div>' +
+        '<div class="row-act" style="margin-top:14px"><button class="btn" type="submit">حفظ التعديل</button><button class="btn ghost" type="button" data-act="canceledit">إلغاء</button></div></form>';
+    }
+    var add = admin && !ui.newAct && !ea ? '<button class="btn" type="button" data-act="newact">+ إضافة نشاط</button>' : "";
     return '<section class="sec"><div class="sec-h"><div><h2>الأنشطة والبرامج</h2><p style="margin-top:6px">خطة الفرقة على خط زمني، وتتغير حالة كل نشاط تلقائياً بحسب تاريخ اليوم.</p></div>' + add + "</div>" + fl + form + nextHtml +
       '<div class="fcs" role="group" aria-label="تصفية الأنشطة">' + chips + "</div>" + (items ? '<ol class="tline">' + items + "</ol>" : '<p class="empty">لا توجد أنشطة في هذا التصنيف.</p>') + "</section>";
   }
@@ -1521,7 +1536,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 
   function aContent() {
     var f = ui.flash && ui.flash.where === "content" ? '<div class="flash" role="status">' + h(ui.flash.text) + "</div>" : "";
-    var acts = sortedActs().map(function (a) { return "<tr><td>" + h(a.title) + '</td><td class="num">' + longDate(a.date) + "</td><td>" + h(a.kind) + '</td><td><button class="btn danger sm" data-act="delact" data-id="' + a.id + '">حذف</button></td></tr>'; }).join("");
+    var acts = sortedActs().map(function (a) { return "<tr><td>" + h(a.title) + '</td><td class="num">' + longDate(a.date) + "</td><td>" + h(a.kind) + '</td><td><button class="btn sm" data-act="actedit" data-id="' + a.id + '">تعديل</button> <button class="btn danger sm" data-act="delact" data-id="' + a.id + '">حذف</button></td></tr>'; }).join("");
     var anns = S.announcements.map(function (a) { return "<tr><td>" + h(a.title) + '</td><td class="num">' + longDate(a.date) + '</td><td></td><td><button class="btn danger sm" data-act="delann" data-id="' + a.id + '">حذف</button></td></tr>'; }).join("");
     return f + '<div class="card"><h3>صورة الواجهة الرئيسية</h3>' + (heroImg() ? '<img src="' + heroImg() + '" alt="" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:10px">' : '<p class="muted">لا توجد صورة حالياً.</p>') + '<div class="row-act" style="flex-wrap:wrap"><label class="btn sm" for="hero-in">' + (heroImg() ? "تغيير الصورة" : "اختيار صورة") + '</label><input id="hero-in" class="evin" type="file" accept="image/*">' + (heroImg() ? '<button class="btn danger sm" data-act="herodel">إزالة</button>' : "") + (S.hero ? '<button class="btn ghost sm" data-act="herodef">الصورة الأصلية</button>' : "") + '</div></div>' +
       '<div class="card"><h3>إضافة نشاط</h3><form data-form="addAct"><div class="form-grid"><div class="field"><label for="a-title">اسم النشاط</label><input id="a-title" type="text" required></div><div class="field"><label for="a-date">يبدأ في</label><input id="a-date" type="date" value="' + TODAY + '" required></div><div class="field"><label for="a-end">ينتهي في (اختياري)</label><input id="a-end" type="date"></div>' +
@@ -2165,6 +2180,9 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "newact") { ui.newAct = true; refresh(); }
     else if (a === "cancelact") { ui.newAct = false; refresh(); }
     else if (a === "actdel") { ui.confirmAct = id; refresh(); }
+    else if (a === "actedit") { ui.editAct = id; ui.newAct = false; ui.confirmAct = null; if (location.hash.slice(1) === "activities") refresh(); else location.hash = "activities"; }
+    else if (a === "canceledit") { ui.editAct = null; refresh(); }
+    else if (a === "actcancel") { S.activities.forEach(function (x) { if (x.id === id) x.cancelled = !x.cancelled; }); save(); ui.flash = { where: "act", text: "تم تحديث حالة النشاط." }; refresh(); }
     else if (a === "actno") { ui.confirmAct = null; refresh(); }
     else if (a === "actdelyes") { S.activities = drop(S.activities, id); ui.confirmAct = null; save(); ui.flash = { where: "act", text: "تم حذف النشاط." }; refresh(); }
     else if (a === "lbweek") { ui.lbWeek = Number(val); refresh(); }
@@ -2431,6 +2449,15 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       if (c2.err) { ui.flash = { where: "staff", text: c2.err, err: true }; refresh(); return; }
       S.staff.push({ id: nid(), name: v("st-name"), title: v("st-title") || "عضو إدارة", user: c2.user, pass: c2.pass });
       save(); ui.flash = { where: "staff", text: "تمت إضافة " + v("st-name") + ". اسم المستخدم: " + c2.user + " · كلمة المرور: " + c2.pass }; refresh();
+    } else if (f === "editActivity") {
+      var sd3 = v("ea-date"), ed3 = v("ea-end");
+      if (ed3 && ed3 < sd3) { var sw3 = sd3; sd3 = ed3; ed3 = sw3; }
+      S.activities.forEach(function (x) {
+        if (x.id !== ui.editAct) return;
+        x.title = v("ea-title"); x.date = sd3; x.end = ed3 && ed3 !== sd3 ? ed3 : ""; x.place = v("ea-place"); x.kind = v("ea-kind");
+        x.daily = v("ea-rep") === "daily"; x.cancelled = v("ea-st") === "1"; x.note = v("ea-note");
+      });
+      ui.editAct = null; save(); ui.flash = { where: "act", text: "تم حفظ تعديل النشاط." }; refresh();
     } else if (f === "addActivity") {
       var sd = v("aa-date") || TODAY, ed2 = v("aa-end");
       if (ed2 && ed2 < sd) { var sw = sd; sd = ed2; ed2 = sw; }
