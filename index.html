@@ -446,6 +446,8 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .subnav a.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .subnav button { font-family: inherit; font-size: .95rem; padding: 8px 16px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; font-weight: 700; }
 .subnav button.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.keep { display: flex; align-items: center; gap: 10px; margin: 4px 0 12px; font-size: .95rem; color: var(--muted); cursor: pointer; }
+.keep input { width: 20px; height: 20px; accent-color: var(--primary); }
 .rk-sel { font-family: inherit; padding: 4px 6px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); }
 .side a { display: block; flex: none; white-space: nowrap; padding: 6px 11px; font-size: .88rem; border-radius: 7px; text-decoration: none; color: var(--muted); font-weight: 500; }
 .side a:hover { color: var(--fg); }
@@ -945,8 +947,9 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function loginForm() {
     var sc = ui.role === "scout";
     return '<form class="login" data-form="login"><h1>دخول الأعضاء</h1><div class="seg" role="group" aria-label="نوع الحساب"><button type="button" data-act="role" data-v="scout" class="' + (ui.role === "scout" ? "on" : "") + '">كشاف</button><button type="button" data-act="role" data-v="teacher" class="' + (ui.role === "teacher" ? "on" : "") + '">معلم</button><button type="button" data-act="role" data-v="admin" class="' + (ui.role === "admin" ? "on" : "") + '">الإدارة</button></div>' +
-      '<div class="field"><label for="l-user">' + "اسم المستخدم" + '</label><input id="l-user" type="text" autocomplete="off" required></div>' +
-      '<div class="field"><label for="l-pass">' + "كلمة المرور" + '</label><input id="l-pass" type="password" autocomplete="off" required></div>' +
+      '<div class="field"><label for="l-user">' + "اسم المستخدم" + '</label><input id="l-user" name="username" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" required></div>' +
+      '<div class="field"><label for="l-pass">' + "كلمة المرور" + '</label><input id="l-pass" name="password" type="password" autocomplete="current-password" required></div>' +
+      '<label class="keep"><input id="l-keep" type="checkbox"' + (ui.role === "admin" ? "" : " checked") + '><span>ابقَ داخل حسابي على هذا الجهاز</span></label>' +
       '<div class="err" role="alert">' + h(ui.loginErr) + '</div><button class="btn" type="submit">دخول</button>' +
       '</form>';
   }
@@ -2133,7 +2136,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     if (a === "role") { ui.role = val; ui.loginErr = ""; refresh(); }
     else if (a === "herodel") { S.hero = "none"; save(); refresh(); }
     else if (a === "herodef") { delete S.hero; save(); refresh(); }
-    else if (a === "logout") { ui.cert = null; session = null; uid = null; ui.loginErr = ""; location.hash = "home"; shown = ""; go(); }
+    else if (a === "logout") { try { localStorage.removeItem("afs-login"); } catch (e) {} ui.cert = null; session = null; uid = null; ui.loginErr = ""; location.hash = "home"; shown = ""; go(); }
     else if (a === "tab") { ui.tab = val; ui.confirmDel = null; refresh(); }
     else if (a === "delask") { ui.confirmDel = id; refresh(); }
     else if (a === "delno") { ui.confirmDel = null; refresh(); }
@@ -2434,7 +2437,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var u = v("l-user").toLowerCase(), p = v("l-pass");
       var acct = (ui.role === "scout" ? S.members : ui.role === "teacher" ? S.teachers : S.staff).filter(function (x) { return String(x.user).toLowerCase() === u && x.pass === p; })[0], ok = !!acct;
       if (!ok) { ui.loginErr = "اسم المستخدم أو كلمة المرور غير صحيحة."; refresh(); return; }
-      session = ui.role; uid = acct.id; if (session === "scout") S.meId = acct.id; ui.loginErr = ""; shown = ""; location.hash = session; go();
+      session = ui.role; uid = acct.id; if (session === "scout") S.meId = acct.id; ui.loginErr = "";
+      try { var kp = document.getElementById("l-keep"); if (kp && kp.checked) localStorage.setItem("afs-login", JSON.stringify({ role: session, uid: uid })); else localStorage.removeItem("afs-login"); } catch (e) {} shown = ""; location.hash = session; go();
     } else if (f === "setJoin") {
       var jf = v("jc-from"), jt = v("jc-to"); if (jf && jt && jt < jf) { var jx = jf; jf = jt; jt = jx; }
       S.joinCfg = { on: v("jc-on") === "1", from: jf, to: jt };
@@ -2714,6 +2718,13 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     }).catch(function () {}).then(function () { phBusy = false; });
   }
 
+  try {
+    var lg = JSON.parse(localStorage.getItem("afs-login") || "null");
+    if (lg && lg.role && lg.uid) {
+      var lacct = byId(lg.role === "scout" ? S.members : lg.role === "teacher" ? S.teachers : lg.role === "admin" ? S.staff : [], lg.uid);
+      if (lacct) { session = lg.role; uid = lacct.id; if (session === "scout") S.meId = lacct.id; } else localStorage.removeItem("afs-login");
+    }
+  } catch (e) {}
   go();
   if (shown === "") render("home");
   clConnect();
