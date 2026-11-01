@@ -446,6 +446,17 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .subnav a.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .subnav button { font-family: inherit; font-size: .95rem; padding: 8px 16px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; font-weight: 700; }
 .subnav button.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+#scanov { position: fixed; inset: 0; z-index: 90; background: rgba(8, 18, 34, .9); display: grid; place-items: center; padding: 14px; overflow: auto; }
+.sc-box { width: 100%; max-width: 480px; background: var(--surface); border-radius: 18px; padding: 16px; display: grid; gap: 12px; }
+.sc-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.sc-top small { display: block; color: var(--muted); }
+.sc-vid { position: relative; border-radius: 14px; overflow: hidden; background: #000; aspect-ratio: 4 / 3; }
+.sc-vid video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sc-frame { position: absolute; inset: 18% 22%; border: 3px solid var(--gold); border-radius: 16px; box-shadow: 0 0 0 999px rgba(0,0,0,.28); pointer-events: none; }
+.sc-st { padding: 10px 14px; border-radius: 10px; background: var(--bg); font-weight: 700; text-align: center; }
+.sc-st.ok { background: #d9efdd; color: #14532d; }
+.sc-st.bad { background: #f6d9d4; color: var(--danger); }
+.sc-list { max-height: 180px; overflow: auto; }
 .keep { display: flex; align-items: center; gap: 10px; margin: 4px 0 12px; font-size: .95rem; color: var(--muted); cursor: pointer; }
 .keep input { width: 20px; height: 20px; accent-color: var(--primary); }
 .rk-sel { font-family: inherit; padding: 4px 6px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); }
@@ -1000,23 +1011,23 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var stabs = [["profile", "بياناتي"], ["points", "نقاطي"], ["badges", "الشارات"], ["acts", "الأنشطة والإعلانات"]].concat(m.rank ? [["lead", "القيادة"]] : []).concat([["msg", "مراسلة الإدارة"], ["cred", "بيانات الدخول"]]);
     var sb = ui.stab || "profile";
     var fixed = ptaskHtml(m) + (mt.length ? tasksC : "");
-    var sbody = sb === "points" ? '<div class="pdfbar"><button type="button" class="btn ghost sm" data-act="myreport" data-id="' + m.id + '">تحميل تقريري PDF</button></div>' + pointsHtml(m) + '<div class="card"><h3>تحدي الطلائع هذا الشهر</h3>' + patrolBoard(TODAY.slice(0, 7)) + "</div>" : sb === "badges" ? badgesC : sb === "acts" ? actsC + annsC : sb === "cred" ? credCard(m) : sb === "msg" ? msgPage() : sb === "lead" && m.rank ? leadPage(m) : profileC;
+    var sbody = sb === "points" ? '<div class="pdfbar"><button type="button" class="btn ghost sm" data-act="myreport" data-id="' + m.id + '">تحميل تقريري PDF</button></div>' + pointsHtml(m) + '<div class="card"><h3>تحدي الطلائع هذا الشهر</h3>' + patrolBoard(TODAY.slice(0, 7)) + "</div>" : sb === "badges" ? badgesC : sb === "acts" ? actsC + annsC : sb === "cred" ? credCard(m) : sb === "msg" ? msgPage() : sb === "lead" && m.rank ? leadPage(m) : profileC + memCardCard(m);
     return pre + '<div class="dash-h"><div><span class="chip">صفحة الكشاف' + (m.rank ? " · " + h(m.rank) : "") + '</span><h1>أهلاً، ' + h(m.name) + '</h1></div></div><div class="tbody" style="margin-bottom:20px">' + fixed + '</div><nav class="ttabs" aria-label="أقسام صفحة الكشاف">' + stabs.map(function (x) { return '<button type="button" data-act="stab" data-v="' + x[0] + '" class="' + (sb === x[0] ? "on" : "") + '" aria-pressed="' + (sb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + sbody + "</div>";
   }
 
   function vAdmin(k) {
     var sub = k && k.indexOf("admin-") === 0 ? k.slice(6) : "stats";
     var rq = S.requests.length;
-    var items = [["stats", "الإحصاءات"], ["members", "الكشافة"], ["patrols", "الطلائع"], ["tasks", "مهام الكشافة"], ["badges", "الشارات"], ["attendance", "الحضور"], ["reports", "التقارير والسجل"], ["behavior", "السلوك والنقاط" + (S.cases.filter(function (c) { return c.status === "pending"; }).length ? " (" + S.cases.filter(function (c) { return c.status === "pending"; }).length + ")" : "")], ["teachers", "المعلمون والمشرفون"], ["staff", "الإدارة"], ["requests", "طلبات الانضمام" + (rq ? " (" + rq + ")" : "")], ["messages", "الرسائل والاقتراحات" + (unreadMsgs() ? " (" + unreadMsgs() + ")" : "")], ["content", "الأنشطة والإعلانات"], ["photos", "الصور"]];
+    var items = [["stats", "الإحصاءات"], ["members", "الكشافة"], ["patrols", "الطلائع"], ["tasks", "مهام الكشافة"], ["badges", "الشارات"], ["attendance", "الحضور"], ["memcards", "بطاقات العضوية"], ["reports", "التقارير والسجل"], ["behavior", "السلوك والنقاط" + (S.cases.filter(function (c) { return c.status === "pending"; }).length ? " (" + S.cases.filter(function (c) { return c.status === "pending"; }).length + ")" : "")], ["teachers", "المعلمون والمشرفون"], ["staff", "الإدارة"], ["requests", "طلبات الانضمام" + (rq ? " (" + rq + ")" : "")], ["messages", "الرسائل والاقتراحات" + (unreadMsgs() ? " (" + unreadMsgs() + ")" : "")], ["content", "الأنشطة والإعلانات"], ["photos", "الصور"]];
     var ck = sub === "scoutcards" ? "members" : sub === "teachercards" ? "teachers" : sub;
     var pend = S.cases.filter(function (c) { return c.status === "pending"; }).length;
-    var GR = [["stats", "الإحصاءات", ["stats"], 0], ["scouts", "الكشافة", ["members", "patrols", "tasks", "badges", "attendance"], 0], ["conduct", "السلوك والتقارير", ["behavior", "reports"], pend], ["accounts", "الحسابات", ["teachers", "staff"], 0], ["site", "الموقع", ["requests", "messages", "content", "photos"], rq + unreadMsgs()]];
+    var GR = [["stats", "الإحصاءات", ["stats"], 0], ["scouts", "الكشافة", ["members", "patrols", "tasks", "badges", "attendance", "memcards"], 0], ["conduct", "السلوك والتقارير", ["behavior", "reports"], pend], ["accounts", "الحسابات", ["teachers", "staff"], 0], ["site", "الموقع", ["requests", "messages", "content", "photos"], rq + unreadMsgs()]];
     var cg = GR.filter(function (g) { return g[2].indexOf(ck) > -1; })[0] || GR[0];
     var lnk = function (k) { return "#" + (k === "stats" ? "admin" : "admin-" + k); };
     var nav = GR.map(function (g) { return '<a href="' + lnk(g[2][0]) + '" class="' + (g === cg ? "on" : "") + '">' + g[1] + (g[3] ? " (" + g[3] + ")" : "") + "</a>"; }).join("");
     var curLbl = h(cg[1]);
     var subNav = cg[2].length > 1 ? '<nav class="subnav" aria-label="أقسام ' + h(cg[1]) + '">' + cg[2].map(function (k) { var it = items.filter(function (x) { return x[0] === k; })[0]; return '<a href="' + lnk(k) + '" class="' + (ck === k ? "on" : "") + '">' + (it ? it[1] : k) + "</a>"; }).join("") + "</nav>" : "";
-    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
+    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "memcards" ? aMemCards() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
     return '<div class="dash-h"><div><span class="chip">صفحة الإدارة</span><h1>لوحة قيادة الفرقة</h1></div></div><div class="adm"><div class="admnav' + (ui.navOpen ? " open" : "") + '"><button type="button" class="navtoggle" data-act="navtoggle" aria-expanded="' + (!!ui.navOpen) + '"><div><span>القسم الحالي</span><br>' + curLbl + '</div><b aria-hidden="true">' + (ui.navOpen ? "▲" : "▼") + '</b></button><nav class="side" aria-label="أقسام الإدارة">' + nav + '</nav></div><div class="main">' + body + "</div></div>";
   }
 
@@ -1168,7 +1179,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     }).join("") || '<p class="empty">لا يوجد كشافة بحسب التصفية.</p>';
     var gopt = '<option value="">كل الصفوف</option>' + gradeOpts(at.grade), popt = '<option value="">كل الطلائع</option>' + S.patrols.map(function (x) { return "<option" + (x === at.patrol ? " selected" : "") + ">" + h(x) + "</option>"; }).join("");
     return '<div class="card"><h3>تسجيل الحضور</h3><div class="form-grid"><div class="field"><label for="at-date">التاريخ</label><input id="at-date" type="date" value="' + at.date + '"></div><div class="field"><label for="at-grade">الصف</label><select id="at-grade">' + gopt + '</select></div><div class="field"><label for="at-patrol">الطليعة</label><select id="at-patrol">' + popt + '</select></div></div>' +
-      '<p class="muted" style="margin:12px 0">حاضر: ' + arNum(cnt.p) + " · غائب: " + arNum(cnt.a) + " · معذور: " + arNum(cnt.e) + " · من " + arNum(list.length) + '</p><div class="row-act" style="margin-bottom:8px"><button class="btn ghost sm" data-act="attall">تحديد الكل حاضراً</button><button class="btn ghost sm" data-act="attclr">مسح اليوم</button></div>' + rows + '</div><p class="note">يُحسب الحضور = الحاضر ÷ (الحاضر + الغائب)، ولا يدخل المعذور في الحساب.</p>';
+      '<p class="muted" style="margin:12px 0">حاضر: ' + arNum(cnt.p) + " · غائب: " + arNum(cnt.a) + " · معذور: " + arNum(cnt.e) + " · من " + arNum(list.length) + '</p><div class="row-act" style="margin-bottom:8px"><button class="btn sm" data-act="scanopen">مسح البطاقات بالكاميرا</button><button class="btn ghost sm" data-act="attall">تحديد الكل حاضراً</button><button class="btn ghost sm" data-act="attclr">مسح اليوم</button></div>' + rows + '</div><p class="note">يُحسب الحضور = الحاضر ÷ (الحاضر + الغائب)، ولا يدخل المعذور في الحساب.</p>';
   }
 
   function reportData(mo) {
@@ -1281,6 +1292,21 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         c.fillText(SITE_SHOW[0], x0 + cwd - 28, qy + 54); c.fillText(SITE_SHOW[1], x0 + cwd - 28, qy + 80); c.direction = "rtl";
       });
     };
+    d.mcards = function (items) {
+      var mx = 40, gx = 20, gy = 16, cwd = Math.floor((PGW - 2 * mx - gx) / 2), chh = 385, per = 8, top = 50;
+      items.forEach(function (m, idx) {
+        if (idx % per === 0) { d.page(); d.y = top; }
+        var pos = idx % per, col = pos % 2, row = Math.floor(pos / 2), c = d.c, x0 = PGW - mx - col * (cwd + gx) - cwd, y0 = top + row * (chh + gy);
+        c.fillStyle = "#fff"; c.fillRect(x0, y0, cwd, chh); c.setLineDash([10, 8]); c.strokeStyle = "#8d9a7c"; c.lineWidth = 2; c.strokeRect(x0, y0, cwd, chh); c.setLineDash([]);
+        c.fillStyle = PGREEN; c.fillRect(x0, y0, cwd, 58); c.fillStyle = "#fff"; c.font = d.f(24, true); c.textAlign = "right"; c.fillText("بطاقة عضوية · فرقة أحمد الفاتح الكشفية", x0 + cwd - 18, y0 + 14);
+        c.fillStyle = "#111"; c.font = d.f(34, true); c.fillText(m.name, x0 + cwd - 18, y0 + 76); c.fillStyle = "#555"; c.font = d.f(24, false); c.fillText(m.grade + (m.patrol ? " · طليعة " + m.patrol : ""), x0 + cwd - 18, y0 + 124);
+        if (m.rank) { c.fillStyle = PGREEN; c.font = d.f(24, true); c.fillText(m.rank, x0 + cwd - 18, y0 + 164); }
+        c.fillStyle = "#777"; c.font = d.f(20, false); c.fillText("أبرز البطاقة للمسح عند تسجيل الحضور", x0 + cwd - 18, y0 + chh - 52);
+        var qs = 240, qx = x0 + 22, qy = y0 + 88;
+        qrDraw(c, "AFS:" + m.pcode, qx, qy, qs);
+        c.fillStyle = "#555"; c.font = "700 22px ui-monospace, Menlo, Consolas, monospace"; c.textAlign = "center"; c.direction = "ltr"; c.fillText(m.pcode, qx + qs / 2, qy + qs + 8); c.direction = "rtl"; c.textAlign = "right";
+      });
+    };
     d.finish = function () {
       var n = d.pages.length;
       d.pages.forEach(function (cv, i) { var c = cv.getContext("2d"); c.direction = "rtl"; c.textAlign = "center"; c.textBaseline = "top"; c.fillStyle = "#888"; c.font = d.f(20, false); c.fillText("فرقة أحمد الفاتح الكشفية · صفحة " + arNum(i + 1) + " من " + arNum(n), PGW / 2, PGH - 60); });
@@ -1327,6 +1353,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       d.table(["الاسم", "المسمى", "اسم المستخدم"], S.teachers.map(function (t) { return [t.name, t.title, t.user]; }), [.4, .3, .3]);
     },
     scards: function (d) { d.cards(pdfCredCards("m")); },
+    mcards: function (d) { ensureCodes(); d.mcards(memList()); },
     tcards: function (d) { d.cards(pdfCredCards("t")); },
     patrols: function (d) {
       d.title("قوائم الطلائع", "عدد الطلائع: " + S.patrols.length);
@@ -1380,7 +1407,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       d.table(["النشاط", "النوع", "المكان", "التاريخ", "الحالة"], sortedActs().map(function (a) { return [a.title, a.kind, a.place, (a.daily ? "يومياً من " : "") + fullDate(a.date) + (a.end && a.end > a.date ? " إلى " + fullDate(a.end) : ""), actStatus(a).t]; }), [.27, .13, .2, .25, .15]);
     }
   };
-  var PDFNAME = { stats: "إحصاءات الفرقة", members: "قائمة الكشافة", teachers: "المعلمون", scards: "بطاقات الكشافة", tcards: "بطاقات المعلمين", patrols: "قوائم الطلائع", duty: "جدول المناوبات", tasks: "مهام الكشافة", awards: "الشارات الممنوحة", att: "كشف الحضور", report: "التقرير الشهري", log: "سجل العمليات", records: "سجل السلوك", requests: "طلبات الانضمام", acts: "الأنشطة" };
+  var PDFNAME = { stats: "إحصاءات الفرقة", members: "قائمة الكشافة", teachers: "المعلمون", scards: "بطاقات الكشافة", mcards: "بطاقات العضوية", tcards: "بطاقات المعلمين", patrols: "قوائم الطلائع", duty: "جدول المناوبات", tasks: "مهام الكشافة", awards: "الشارات الممنوحة", att: "كشف الحضور", report: "التقرير الشهري", log: "سجل العمليات", records: "سجل السلوك", requests: "طلبات الانضمام", acts: "الأنشطة" };
   function pdfCertDraw(d, m, b, a) {
     d.page(); var c = d.c, cx = PGW / 2;
     c.strokeStyle = PGOLD; c.lineWidth = 10; c.strokeRect(60, 60, PGW - 120, PGH - 120); c.lineWidth = 3; c.strokeRect(86, 86, PGW - 172, PGH - 172);
@@ -1448,7 +1475,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     }).catch(function (er) { try { console.error("pdf", er && er.stack || er); } catch (x) {} toast("تعذر إنشاء الملف."); });
   }
   function pdfBarHtml(sub) {
-    var map = { stats: [["الإحصاءات", "stats"]], members: [["قائمة الكشافة", "members"]], scoutcards: [["بطاقات الكشافة", "scards"]], teachercards: [["بطاقات المعلمين", "tcards"]], teachers: [["قائمة المعلمين", "teachers"]], patrols: [["قوائم الطلائع", "patrols"], ["جدول المناوبات", "duty"]], tasks: [["المهام", "tasks"]], badges: [["الشارات الممنوحة", "awards"]], attendance: [["كشف الحضور", "att"]], reports: [["التقرير الشهري", "report"], ["سجل العمليات", "log"]], behavior: [["سجل السلوك", "records"]], requests: [["طلبات الانضمام", "requests"]], content: [["الأنشطة", "acts"]] };
+    var map = { stats: [["الإحصاءات", "stats"]], members: [["قائمة الكشافة", "members"]], scoutcards: [["بطاقات الكشافة", "scards"]], teachercards: [["بطاقات المعلمين", "tcards"]], teachers: [["قائمة المعلمين", "teachers"]], patrols: [["قوائم الطلائع", "patrols"], ["جدول المناوبات", "duty"]], tasks: [["المهام", "tasks"]], badges: [["الشارات الممنوحة", "awards"]], attendance: [["كشف الحضور", "att"]], memcards: [["بطاقات العضوية PDF", "mcards"]], reports: [["التقرير الشهري", "report"], ["سجل العمليات", "log"]], behavior: [["سجل السلوك", "records"]], requests: [["طلبات الانضمام", "requests"]], content: [["الأنشطة", "acts"]] };
     var it = map[sub]; if (!it) return "";
     return '<div class="pdfbar"><span class="muted">تحميل PDF:</span>' + it.map(function (x) { return '<button type="button" class="btn ghost sm" data-act="pdf" data-v="' + x[1] + '">' + x[0] + "</button>"; }).join("") + "</div>";
   }
@@ -1560,6 +1587,72 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var ok = function () { if (ta) ta.hidden = true; if (box) box.textContent = "تم النسخ."; };
     try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, fall); else fall(); } catch (err) { fall(); }
   }
+  function memList() { ensureCodes(); return S.members.filter(function (m) { return (!ui.mcPatrol || m.patrol === ui.mcPatrol) && (!ui.mcGrade || m.grade === ui.mcGrade); }); }
+  function memCardHtml(m) {
+    if (!m.pcode) m.pcode = ranStr(6);
+    return '<article class="idc s mem"><header>' + emblem("", "#234a78", "#fbf3e1", "#e8d3a2") + "<div><b>فرقة أحمد الفاتح الكشفية</b><span>بطاقة عضوية" + (m.rank ? " · " + h(m.rank) : "") + '</span></div></header><div class="idb"><div class="idn">' + h(m.name) + '</div><div class="muted">' + h(m.grade) + (m.patrol ? " · طليعة " + h(m.patrol) : "") + '</div></div><div class="idq">' + qrSvg("AFS:" + m.pcode, 150) + '<div><b>أبرز البطاقة عند تسجيل الحضور</b><small dir="ltr">' + h(m.pcode) + "</small></div></div></article>";
+  }
+  function aMemCards() {
+    var list = memList();
+    var popt = '<option value="">كل الطلائع</option>' + S.patrols.map(function (x) { return "<option" + (ui.mcPatrol === x ? " selected" : "") + ">" + h(x) + "</option>"; }).join("");
+    return '<div class="cc-head"><div><h2 style="font-size:1.8rem">بطاقات العضوية</h2><p class="muted">بطاقة لكل كشاف برمز QR خاص بالحضور (لا تحتوي كلمة المرور) · ' + list.length + ' بطاقة</p></div></div>' +
+      '<div class="form-grid" style="margin-bottom:14px"><div class="field"><label for="mc-patrol">الطليعة</label><select id="mc-patrol">' + popt + '</select></div><div class="field"><label for="mc-grade">الصف</label><select id="mc-grade"><option value="">كل الصفوف</option>' + gradeOpts(ui.mcGrade) + "</select></div></div>" +
+      '<p class="note" style="margin:0 0 18px">حمّل ملف PDF للطباعة من الزر أعلاه، وتظهر البطاقة لكل كشاف أيضاً في صفحته ليعرضها من جواله. لتسجيل الحضور: الحضور ← «مسح البطاقات بالكاميرا».</p><div class="cards">' + (list.map(memCardHtml).join("") || '<p class="empty">لا يوجد كشافة.</p>') + "</div>";
+  }
+  function memCardCard(m) {
+    return '<div class="card"><h3>بطاقة العضوية</h3><p class="muted" style="margin-bottom:12px">اعرض هذه البطاقة على المشرف لتسجيل حضورك بمسح الرمز.</p><div class="cards" style="grid-template-columns:minmax(0,420px)">' + memCardHtml(m) + "</div></div>";
+  }
+  /* ---------- مسح البطاقات بالكاميرا ---------- */
+  var SCN = null;
+  function loadJsQR() {
+    if (window.jsQR) return Promise.resolve(true);
+    return new Promise(function (res) { var sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"; sc.onload = function () { res(!!window.jsQR); }; sc.onerror = function () { res(false); }; document.head.appendChild(sc); });
+  }
+  function scanBeep() { try { var ac = new (window.AudioContext || window.webkitAudioContext)(), o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 880; g.gain.value = .15; o.connect(g); g.connect(ac.destination); o.start(); setTimeout(function () { o.stop(); ac.close(); }, 140); } catch (e) {} try { navigator.vibrate && navigator.vibrate(60); } catch (e) {} }
+  function closeScanner() {
+    if (!SCN) return;
+    clearInterval(SCN.tm); try { SCN.stream && SCN.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+    SCN.el.remove(); SCN = null;
+  }
+  function scanHandle(txt) {
+    var st = document.getElementById("sc-st"), at = ui.at, now = Date.now();
+    if (SCN.last === txt && now - SCN.lastAt < 2500) return; SCN.last = txt; SCN.lastAt = now;
+    var m = /^AFS:/.test(txt) ? S.members.filter(function (x) { return x.pcode === txt.slice(4); })[0] : null;
+    if (!m) { st.className = "sc-st bad"; st.textContent = "رمز غير معروف."; return; }
+    S.att[at.date] = S.att[at.date] || {};
+    if (S.att[at.date][m.id] === "p") { st.className = "sc-st"; st.textContent = "سُجّل مسبقاً: " + m.name; return; }
+    S.att[at.date][m.id] = "p"; save(); refresh(); scanBeep(); SCN.n++;
+    st.className = "sc-st ok"; st.textContent = "✓ حاضر: " + m.name;
+    var li = document.createElement("div"); li.className = "prow"; li.textContent = m.name + " · " + m.grade; var lst = document.getElementById("sc-list"); lst.insertBefore(li, lst.firstChild);
+    document.getElementById("sc-n").textContent = String(SCN.n);
+  }
+  function openScanner() {
+    if (SCN) return;
+    var ok = session === "admin" || (session === "scout" && me() && me().rank === "عريف أول"); if (!ok) return;
+    ui.at = ui.at || { date: TODAY, grade: "", patrol: "" };
+    var el = document.createElement("div"); el.id = "scanov"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "مسح بطاقات الحضور");
+    el.innerHTML = '<div class="sc-box"><div class="sc-top"><div><b>مسح بطاقات الحضور</b><small>التاريخ: ' + h(fullDate(ui.at.date)) + ' · المسجَّلون الآن: <span id="sc-n">0</span></small></div><button type="button" class="btn ghost sm" id="sc-close">إغلاق</button></div><div class="sc-vid"><video id="sc-v" playsinline muted autoplay></video><div class="sc-frame"></div></div><div id="sc-st" class="sc-st" role="status">جارٍ تشغيل الكاميرا…</div><div id="sc-list" class="sc-list"></div></div>';
+    document.body.appendChild(el); SCN = { el: el, n: 0, last: "", lastAt: 0, tm: 0, stream: null };
+    document.getElementById("sc-close").onclick = closeScanner;
+    var st = document.getElementById("sc-st"), vid = document.getElementById("sc-v");
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { st.className = "sc-st bad"; st.textContent = "المتصفح لا يدعم الكاميرا هنا. افتح الموقع من متصفح الجوال مباشرة."; return; }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false }).then(function (stream) {
+      if (!SCN) { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
+      SCN.stream = stream; vid.srcObject = stream; vid.play && vid.play();
+      var det = null, cv = document.createElement("canvas"), cx = cv.getContext("2d", { willReadFrequently: true }), busy = false;
+      var start = function () {
+        st.className = "sc-st"; st.textContent = "وجّه الكاميرا نحو رمز البطاقة.";
+        SCN.tm = setInterval(function () {
+          if (busy || !SCN || vid.readyState < 2 || !vid.videoWidth) return; busy = true;
+          if (det) det.detect(vid).then(function (r) { if (SCN && r && r[0] && r[0].rawValue) scanHandle(r[0].rawValue); }, function () {}).then(function () { busy = false; });
+          else { var w = 480, hh = Math.round(480 * vid.videoHeight / vid.videoWidth); cv.width = w; cv.height = hh; cx.drawImage(vid, 0, 0, w, hh); var q = window.jsQR && window.jsQR(cx.getImageData(0, 0, w, hh).data, w, hh, { inversionAttempts: "dontInvert" }); if (q && q.data && SCN) scanHandle(q.data); busy = false; }
+        }, 220);
+      };
+      if (window.BarcodeDetector) { try { det = new window.BarcodeDetector({ formats: ["qr_code"] }); } catch (e) { det = null; } }
+      if (det) start(); else { st.textContent = "جارٍ تحميل أداة القراءة…"; loadJsQR().then(function (okq) { if (!SCN) return; if (okq) start(); else { st.className = "sc-st bad"; st.textContent = "تعذر تحميل أداة قراءة الرمز، تأكد من الاتصال بالإنترنت."; } }); }
+    }, function () { if (SCN) { st.className = "sc-st bad"; st.textContent = "لم يُسمح باستخدام الكاميرا. فعّل الإذن من إعدادات المتصفح ثم أعد المحاولة."; } });
+  }
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && SCN) closeScanner(); });
   function aCards(kind) {
     var teach = kind === "t", list = credList(kind), back = teach ? "#admin-teachers" : "#admin-members";
     var filter = teach ? "" : '<div class="field" style="min-width:200px"><label for="cf-patrol">الطليعة</label><select id="cf-patrol"><option value="">كل الطلائع</option>' + S.patrols.map(function (pt) { return "<option" + (ui.cardPatrol === pt ? " selected" : "") + ">" + h(pt) + "</option>"; }).join("") + "</select></div>";
@@ -2171,6 +2264,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "tkdel") { S.tasks = drop(S.tasks, id); save(); ui.flash = { where: "tasks", text: "حُذفت المهمة." }; refresh(); }
     else if (a === "awdel") { var awx = byId(S.awards, id); if (awx) logEv("سحب شارة من " + ((byId(S.members, awx.scoutId) || {}).name || "كشاف")); S.awards = drop(S.awards, id); save(); ui.flash = { where: "badges", text: "سُحبت الشارة." }; refresh(); }
     else if (a === "pdf") { exportPdf(val); }
+    else if (a === "scanopen") { openScanner(); }
     else if (a === "toppdf") { exportPdf("top", val); }
     else if (a === "certpdf") { exportPdf("cert", [id, val]); }
     else if (a === "myreport") { exportPdf("myreport", id); }
@@ -2368,6 +2462,10 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         if (err) { ui.flash = { where: wh, text: err, err: true }; refresh(); }
         else { rm.rank = nv; logEv && logEv("تغيير لقب " + rm.name + " إلى " + (nv || "بدون لقب")); save(); ui.flash = { where: wh, text: nv ? "منح " + rm.name + " لقب " + nv + "." : "أُزيل لقب " + rm.name + "." }; refresh(); }
       }
+    } else if (t.id === "mc-patrol") {
+      ui.mcPatrol = t.value; refresh();
+    } else if (t.id === "mc-grade") {
+      ui.mcGrade = t.value; refresh();
     } else if (t.id === "ld-task") {
       ui.ld = ui.ld || {}; ui.ld.task = t.value; refresh();
     } else if (t.id === "tk-grade") {
