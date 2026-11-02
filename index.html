@@ -458,6 +458,10 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .sc-st.bad { background: #f6d9d4; color: var(--danger); }
 .sc-list { max-height: 180px; overflow: auto; }
 .dept-in { font-family: inherit; padding: 4px 8px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); min-width: 130px; }
+.login .lbl2 { color: var(--fg); margin: 14px 0 8px; }
+.lgc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-height: 340px; overflow: auto; padding: 2px; }
+.lgc button { font-family: inherit; font-size: 1rem; font-weight: 700; padding: 12px 8px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--fg); cursor: pointer; line-height: 1.4; }
+.lgc button.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .keep { display: flex; align-items: center; gap: 10px; margin: 4px 0 12px; font-size: .95rem; color: var(--muted); cursor: pointer; }
 .keep input { width: 20px; height: 20px; accent-color: var(--primary); }
 .rk-sel { font-family: inherit; padding: 4px 6px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); }
@@ -957,34 +961,34 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
 
   var DEPTS = ["التربية الإسلامية", "اللغة العربية", "اللغة الإنجليزية", "الرياضيات", "العلوم", "الاجتماعيات", "التربية الفنية", "التربية الرياضية", "الحاسوب", "الفرقة الكشفية", "الإدارة المدرسية", "الإرشاد الطلابي"];
-  function deptOf(t) { return t.dept || "بدون قسم"; }
+  function deptOf(t) { return t.dept || t.title || "بدون قسم"; }
   function loginForm() {
     var rl = ui.role, lg = ui.lgf || (ui.lgf = {});
     var seg = '<form class="login" data-form="login"><h1>دخول الأعضاء</h1><div class="seg" role="group" aria-label="نوع الحساب"><button type="button" data-act="role" data-v="scout" class="' + (rl === "scout" ? "on" : "") + '">كشاف</button><button type="button" data-act="role" data-v="teacher" class="' + (rl === "teacher" ? "on" : "") + '">معلم</button><button type="button" data-act="role" data-v="admin" class="' + (rl === "admin" ? "on" : "") + '">الإدارة</button></div>';
     var opt = function (v0, t, sel) { return '<option value="' + h(v0) + '"' + (String(sel) === String(v0) ? " selected" : "") + ">" + h(t) + "</option>"; };
-    var fld = function (id, lbl, opts) { return '<div class="field"><label for="' + id + '">' + lbl + '</label><select id="' + id + '">' + opts + "</select></div>"; };
+    var fld = function (key, lbl, items, sel) { return '<div class="field"><span class="lbl2">' + lbl + '</span><div class="lgc" role="group" aria-label="' + lbl + '">' + items.map(function (x) { return '<button type="button" data-act="lgpick" data-k="' + key + '" data-v="' + h(x[0]) + '" class="' + (String(sel) === String(x[0]) ? "on" : "") + '" aria-pressed="' + (String(sel) === String(x[0])) + '">' + h(x[1]) + "</button>"; }).join("") + "</div></div>"; };
     var body = "", ready = false;
     if (rl === "admin") {
       body = '<div class="field"><label for="l-user">اسم المستخدم</label><input id="l-user" name="username" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" required></div>';
       ready = true;
     } else if (rl === "teacher") {
       var ds = []; S.teachers.forEach(function (t) { if (ds.indexOf(deptOf(t)) < 0) ds.push(deptOf(t)); }); ds.sort();
-      body = fld("lg-dept", "القسم", opt("", "اختر القسم", lg.dept || "") + ds.map(function (d) { return opt(d, d, lg.dept); }).join(""));
+      body = fld("dept", "القسم", ds.map(function (d) { return [d, d]; }), lg.dept);
       if (lg.dept) {
         var ts = S.teachers.filter(function (t) { return deptOf(t) === lg.dept; }).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
-        body += fld("lg-name", "الاسم", opt("", "اختر اسمك", lg.id || "") + ts.map(function (t) { return opt(t.id, t.name + (t.title ? " · " + t.title : ""), lg.id); }).join(""));
+        body += fld("id", "اختر اسمك", ts.map(function (t) { return [t.id, t.name]; }), lg.id);
         ready = !!lg.id;
       }
     } else {
-      body = fld("lg-grade", "الصف", opt("", "اختر الصف", lg.grade || "") + GRADES.map(function (g) { return opt(g[0], g[0], lg.grade); }).join(""));
+      body = fld("grade", "الصف", GRADES.map(function (g) { return [g[0], g[0]]; }), lg.grade);
       var gr = GRADES.filter(function (g) { return g[0] === lg.grade; })[0];
       if (gr) {
         var cls = []; for (var k = 1; k <= gr[1]; k++) cls.push(gr[2] + " " + k);
         cls = cls.filter(function (c) { return S.members.some(function (m) { return m.grade === c; }); });
-        body += fld("lg-class", "الفصل", opt("", cls.length ? "اختر الفصل" : "لا يوجد كشافة في هذا الصف", lg.cls || "") + cls.map(function (c) { return opt(c, c + " (" + S.members.filter(function (m) { return m.grade === c; }).length + ")", lg.cls); }).join(""));
+        body += cls.length ? fld("cls", "الفصل", cls.map(function (c) { return [c, c]; }), lg.cls) : '<p class="empty">لا يوجد كشافة في هذا الصف.</p>';
         if (lg.cls) {
           var ms = S.members.filter(function (m) { return m.grade === lg.cls; }).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
-          body += fld("lg-name", "الاسم", opt("", "اختر اسمك", lg.id || "") + ms.map(function (m) { return opt(m.id, m.name, lg.id); }).join(""));
+          body += fld("id", "اختر اسمك", ms.map(function (m) { return [m.id, m.name]; }), lg.id);
           ready = !!lg.id;
         }
       }
@@ -2321,6 +2325,11 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     }
     else if (a === "navtoggle") { ui.navOpen = !ui.navOpen; refresh(); }
     else if (a === "stab") { ui.stab = val; refresh(); }
+    else if (a === "lgpick") {
+      var lk = t.getAttribute("data-k"), lf = ui.lgf || (ui.lgf = {});
+      if (lk === "dept") ui.lgf = { dept: val }; else if (lk === "grade") ui.lgf = { grade: val }; else if (lk === "cls") ui.lgf = { grade: lf.grade, cls: val }; else lf.id = val;
+      ui.loginErr = ""; refresh(); if (lk === "id") { var lp = document.getElementById("l-pass"); if (lp) lp.focus(); }
+    }
     else if (a === "ltab") { ui.ltab = val; refresh(); }
     else if (a === "ttab") { ui.ttab = val; refresh(); }
     else if (a === "ptdel") { S.ptasks = drop(S.ptasks, id); save(); ui.flash = { where: "patrols", text: "حُذفت المهمة." }; refresh(); }
@@ -2492,14 +2501,6 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         if (err) { ui.flash = { where: wh, text: err, err: true }; refresh(); }
         else { rm.rank = nv; logEv && logEv("تغيير لقب " + rm.name + " إلى " + (nv || "بدون لقب")); save(); ui.flash = { where: wh, text: nv ? "منح " + rm.name + " لقب " + nv + "." : "أُزيل لقب " + rm.name + "." }; refresh(); }
       }
-    } else if (t.id === "lg-dept") {
-      ui.lgf = { dept: t.value }; ui.loginErr = ""; refresh();
-    } else if (t.id === "lg-grade") {
-      ui.lgf = { grade: t.value }; ui.loginErr = ""; refresh();
-    } else if (t.id === "lg-class") {
-      ui.lgf = { grade: ui.lgf.grade, cls: t.value }; ui.loginErr = ""; refresh();
-    } else if (t.id === "lg-name") {
-      ui.lgf.id = t.value; ui.loginErr = ""; refresh(); var lp = document.getElementById("l-pass"); if (lp) lp.focus();
     } else if (t.matches && t.matches("[data-tdept]")) {
       var td = byId(S.teachers, Number(t.getAttribute("data-tdept"))); if (td) { td.dept = t.value.trim(); save(); ui.flash = { where: "teachers", text: "حُدّث قسم " + td.name + "." }; refresh(); }
     } else if (t.id === "mc-patrol") {
