@@ -3202,10 +3202,10 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       rd.onload = function () {
         var img = new Image();
         img.onload = function () {
-          var c = document.createElement("canvas"), s = 240; c.width = s; c.height = s;
+          var c = document.createElement("canvas"), s = 180; c.width = s; c.height = s;
           var side = Math.min(img.width, img.height), sx = (img.width - side) / 2, sy = (img.height - side) / 2;
           c.getContext("2d").drawImage(img, sx, sy, side, side, 0, 0, s, s);
-          me().photo = c.toDataURL("image/jpeg", 0.82); save(); ui.flash = { where: "profile", text: "تم تحديث صورتك." }; refresh();
+          me().photo = c.toDataURL("image/jpeg", 0.7); save(); ui.flash = { where: "profile", text: "تم تحديث صورتك." }; refresh();
         };
         img.src = rd.result;
       };
