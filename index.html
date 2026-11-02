@@ -1942,12 +1942,12 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return '<div class="card"><h3>جدول حصصي</h3><p class="muted" style="margin-bottom:10px">اختر الصف الذي تدرّسه في كل حصة. الأوقات تحددها الإدارة، وعند فتحك الموقع يفتح مباشرة على صف الحصة الحالية.</p>' + seg + rows + '<div class="row-act" style="margin-top:12px"><button class="btn ghost sm" data-act="ttcopy">نسخ هذا اليوم إلى باقي الأيام</button></div></div>';
   }
   function aPeriods() {
-    var head = "<tr><th>الحصة</th>" + WDAYS.map(function (n) { return "<th>" + n + "</th>"; }).join("") + "</tr>";
     var rows = PERIODS.map(function (p) {
-      return "<tr><th>" + p[1] + "</th>" + [0, 1, 2, 3, 4].map(function (d) { var tm = ptime(p[0], d); return '<td class="ptt"><input type="time" data-pt="' + p[0] + "|" + d + '|0" value="' + h(tm[0]) + '" aria-label="' + p[1] + " " + WDAYS[d] + ' من"><br><input type="time" data-pt="' + p[0] + "|" + d + '|1" value="' + h(tm[1]) + '" aria-label="' + p[1] + " " + WDAYS[d] + ' إلى"></td>'; }).join("") + "</tr>";
+      var tm = ptime(p[0], 0);
+      return "<tr><th>" + p[1] + '</th><td class="ptt"><input type="time" data-pt="' + p[0] + '|0" value="' + h(tm[0]) + '" aria-label="' + p[1] + ' من"></td><td class="ptt"><input type="time" data-pt="' + p[0] + '|1" value="' + h(tm[1]) + '" aria-label="' + p[1] + ' إلى"></td></tr>';
     }).join("");
     var qb = S.quick.map(function (x) { return '<div class="row-act" style="gap:8px;margin-bottom:8px;flex-wrap:wrap"><span class="chip" style="' + (x.t === "b" ? "background:var(--danger);color:#fff" : "") + '">' + (x.t === "g" ? "حسن" : "سيئ") + '</span><input type="text" data-qb="' + x.id + '|n" value="' + h(x.name) + '" style="flex:1;min-width:140px"><input type="number" min="1" max="10" data-qb="' + x.id + '|p" value="' + x.pts + '" style="width:80px"><button class="btn danger sm" data-act="qbdel" data-id="' + x.id + '">حذف</button></div>'; }).join("");
-    return flashHtml("periods") + '<div class="card"><h3>أوقات الحصص</h3><p class="muted" style="margin-bottom:10px">لكل خانة وقت البداية (أعلى) والنهاية (أسفل). الأوقات تختلف حسب اليوم. أوقات مبدئية، عدّلها حسب جدولكم.</p><div class="tbl"><table>' + head + rows + '</table></div><div class="row-act" style="margin-top:12px"><button class="btn ghost sm" data-act="ptcopy">نسخ أوقات الأحد إلى باقي الأيام</button></div></div>' +
+    return flashHtml("periods") + '<div class="card"><h3>أوقات الحصص</h3><p class="muted" style="margin-bottom:10px">الأوقات ثابتة طوال الأسبوع (الأحد – الخميس). أوقات مبدئية، عدّلها حسب جدولكم.</p><div class="tbl"><table><tr><th>الحصة</th><th>من</th><th>إلى</th></tr>' + rows + '</table></div></div>' +
       '<div class="card"><h3>أزرار السلوك السريع</h3><p class="muted" style="margin-bottom:10px">هذه الأزرار تظهر للمعلم في «حصتي الآن». تُخصم/تُضاف النقاط مباشرة.</p>' + qb + '<form data-form="addQB" class="row-act" style="gap:8px;flex-wrap:wrap;margin-top:12px"><select id="qb-t" style="width:auto"><option value="g">سلوك حسن</option><option value="b">سلوك سيئ</option></select><input id="qb-n" type="text" placeholder="اسم الزر" required style="flex:1;min-width:140px"><input id="qb-p" type="number" min="1" max="10" value="1" style="width:80px"><button class="btn sm" type="submit">إضافة زر</button></form></div>';
   }
   function caseLabel(st) { return st === "pending" ? "بانتظار الاعتماد" : st === "approved" ? "معتمد" : st === "returned" ? "أُعيد للمراجعة" : "مسحوب"; }
@@ -2605,7 +2605,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var tdd = ui.ttd !== undefined ? ui.ttd : (new Date().getDay() <= 4 ? new Date().getDay() : 0), tt1 = S.ttable[uid] || (S.ttable[uid] = {}), dy = tt1[tdd] || (tt1[tdd] = {});
       dy[t.getAttribute("data-tt")] = t.value; save(); toast("حُفظ.", 900);
     } else if (t.matches && t.matches("[data-pt]")) {
-      var pp = t.getAttribute("data-pt").split("|"); S.ptimes[pp[0]][Number(pp[1])][Number(pp[2])] = t.value; save();
+      var pp = t.getAttribute("data-pt").split("|"); for (var dd9 = 0; dd9 < 5; dd9++) S.ptimes[pp[0]][dd9][Number(pp[1])] = t.value; save();
     } else if (t.matches && t.matches("[data-qb]")) {
       var qq = t.getAttribute("data-qb").split("|"), qo = byId(S.quick, Number(qq[0]));
       if (qo) { if (qq[1] === "n") qo.name = t.value.trim() || qo.name; else qo.pts = Math.min(10, Math.max(1, Number(t.value) || 1)); save(); }
