@@ -720,8 +720,38 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return { user: u, pass: pw || ranStr(6) };
   }
   function flashHtml(where) { return ui.flash && ui.flash.where === where ? '<div class="flash' + (ui.flash.err ? " bad" : "") + '" role="status">' + h(ui.flash.text).replace(/ · كلمة المرور/g, "<br>كلمة المرور").replace(/([A-Za-z0-9._-]{3,})/g, '<bdi dir="ltr">$1</bdi>') + "</div>" : ""; }
+
+  /* ---------- حماية كلمات المرور: تُحفظ مشفّرة (SHA-256 مع ملح وتكرار) ولا تُحفظ نصاً ---------- */
+  var PWM = {};
+  var SHAK = (function () { var k = [], n = 2, c = 0; while (c < 64) { var p = true; for (var i = 2; i * i <= n; i++) if (n % i === 0) { p = false; break; } if (p) { k[c++] = (Math.pow(n, 1 / 3) % 1) * 4294967296 | 0; } n++; } return k; })();
+  function sha256(str) {
+    var enc = unescape(encodeURIComponent(str)), l = enc.length, w = [], i, j;
+    var tot = (((l + 8) >> 6) + 1) * 16; for (i = 0; i < tot; i++) w[i] = 0;
+    for (i = 0; i < l; i++) w[i >> 2] |= enc.charCodeAt(i) << (24 - (i % 4) * 8);
+    w[l >> 2] |= 0x80 << (24 - (l % 4) * 8); w[tot - 1] = l * 8;
+    var H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19], K = SHAK;
+    for (j = 0; j < w.length; j += 16) {
+      var W = w.slice(j, j + 16), a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], hh = H[7];
+      for (i = 0; i < 64; i++) {
+        if (i >= 16) { var x = W[i - 15], y = W[i - 2]; W[i] = (W[i - 16] + (((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3)) + W[i - 7] + (((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10))) | 0; }
+        var t1 = (hh + (((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7))) + ((e & f) ^ (~e & g)) + K[i] + W[i]) | 0, t2 = ((((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10))) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+        hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+      }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0; H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + hh) | 0;
+    }
+    return H.map(function (v) { return ("00000000" + (v >>> 0).toString(16)).slice(-8); }).join("");
+  }
+  function hashPw(pw, salt) { var d = salt + "|" + pw; for (var i = 0; i < 3000; i++) d = sha256(d + salt); return d; }
+  function checkPw(a, pw) { if (!a) return false; if (a.ph) return hashPw(pw, a.ps) === a.ph; return a.pass === pw; }
+  function securePw() {
+    var ch = false;
+    [S.members, S.teachers, S.staff].forEach(function (list) {
+      (list || []).forEach(function (a) { if (typeof a.pass === "string" && a.pass) { PWM[a.id] = a.pass; a.ps = ranStr(12); a.ph = hashPw(a.pass, a.ps); delete a.pass; ch = true; } });
+    });
+    return ch;
+  }
   var saveFail = false;
-  function save() { try { if (S.members) ensureCodes(); localStorage.setItem(KEY, JSON.stringify(S)); saveFail = false; } catch (e) { if (!saveFail) { saveFail = true; try { toast("تنبيه: امتلأت مساحة الحفظ في هذا الجهاز، قد لا تُحفظ التعديلات.", 6000); } catch (e2) {} } } cloudPush(); }
+  function save() { try { if (S.members) ensureCodes(); securePw(); localStorage.setItem(KEY, JSON.stringify(S)); saveFail = false; } catch (e) { if (!saveFail) { saveFail = true; try { toast("تنبيه: امتلأت مساحة الحفظ في هذا الجهاز، قد لا تُحفظ التعديلات.", 6000); } catch (e2) {} } } cloudPush(); }
   var PTASKS = ["رفع العلم في الطابور", "استقبال الطلاب صباحاً", "تنظيم الطابور الصباحي", "تنظيم فسحة الابتدائي", "تنظيم فسحة الإعدادي", "تسجيل مخالفات الفسحة", "تنظيم دخول الطلاب إلى الفصول", "تنظيم الانصراف", "المناوبة في المصلى", "حراسة بوابة المدرسة", "تنظيم المقصف", "الإسعافات الأولية", "نظافة الساحة والممرات", "تنظيم الحفلات والفعاليات المدرسية", "استقبال الضيوف والزوار", "المرور على الفصول وتنظيمها"];
   var BCATS = [["hob", "شارات الهوايات والمهارات"], ["srv", "شارات الخدمة العامة والمواطنة"], ["lead", "الشارات القيادية الكشفية والأنشطة"]];
   var BADGES = [
@@ -837,6 +867,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     { id: 9002, name: "عيد العمال", from: "05-01", to: "05-01", yearly: true },
     { id: 9003, name: "اليوم الوطني ويوم الجلوس", from: "12-16", to: "12-17", yearly: true }];
   S.members.forEach(function (m) { if (!m.user) { m.user = "scout" + m.id; m.pass = ranStr(6); } });
+  if (securePw()) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   S.albums = S.albums.filter(function (a) { return !a.sample; }); S.samples = [];
   ensureCodes();
   var session = null, uid = null;
@@ -1200,6 +1231,10 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return { total: tot, rows: rows, ratio: tot / LOCAL_LIM };
   }
   function fmtSize(n) { return n >= 1000000 ? (n / 1000000).toFixed(2) + " ميغابايت" : Math.max(1, Math.round(n / 1000)) + " كيلوبايت"; }
+  function defPwBanner() {
+    var d = S.staff.filter(function (a) { return String(a.user).toLowerCase() === "admin" && checkPw(a, "admin"); })[0];
+    return d ? '<div class="flash bad" role="alert"><b>تنبيه أمني:</b> كلمة مرور الإدارة ما زالت الافتراضية (admin). غيّرها قبل فتح الموقع للكشافة. <a href="#admin-staff">تغييرها ←</a></div>' : "";
+  }
   function dataBanner() {
     var d = dataUse(); if (d.ratio < .7 && !saveFail) return "";
     var pc = Math.round(d.ratio * 100), red = d.ratio >= .9 || saveFail;
@@ -1222,7 +1257,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var nav = GR.map(function (g) { return '<a href="' + lnk(g[2][0]) + '" class="' + (g === cg ? "on" : "") + '">' + g[1] + (g[3] ? " (" + g[3] + ")" : "") + "</a>"; }).join("");
     var curLbl = h(cg[1]);
     var subNav = cg[2].length > 1 ? '<nav class="subnav" aria-label="أقسام ' + h(cg[1]) + '">' + cg[2].map(function (k) { var it = items.filter(function (x) { return x[0] === k; })[0]; return '<a href="' + lnk(k) + '" class="' + (ck === k ? "on" : "") + '">' + (it ? it[1] : k) + "</a>"; }).join("") + "</nav>" : "";
-    var body = subNav + dataBanner() + pdfBarHtml(sub) + (sub === "stats" ? dataCard() : "") + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "memcards" ? aMemCards() : sub === "periods" ? aPeriods() : sub === "stories" ? aStories() : sub === "magazine" ? aMagazine() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
+    var body = subNav + defPwBanner() + dataBanner() + pdfBarHtml(sub) + (sub === "stats" ? dataCard() : "") + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "memcards" ? aMemCards() : sub === "periods" ? aPeriods() : sub === "stories" ? aStories() : sub === "magazine" ? aMagazine() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
     return storyStrip() + '<div class="dash-h"><div><span class="chip">صفحة الإدارة</span><h1>لوحة قيادة الفرقة</h1></div></div><div class="adm"><div class="admnav' + (ui.navOpen ? " open" : "") + '"><button type="button" class="navtoggle" data-act="navtoggle" aria-expanded="' + (!!ui.navOpen) + '"><div><span>القسم الحالي</span><br>' + curLbl + '</div><b aria-hidden="true">' + (ui.navOpen ? "▲" : "▼") + '</b></button><nav class="side" aria-label="أقسام الإدارة">' + nav + '</nav></div><div class="main">' + body + "</div></div>";
   }
 
@@ -1246,7 +1281,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 
   function pwCell(kind, a) {
     var on = ui.showPw[kind + a.id];
-    return '<span class="row-act">' + (on ? '<code class="pw">' + h(a.pass) + "</code>" : '<code class="pw">••••••</code>') + '<button class="btn ghost sm" type="button" data-act="pwshow" data-kind="' + kind + '" data-id="' + a.id + '">' + (on ? "إخفاء" : "إظهار") + '</button><button class="btn ghost sm" type="button" data-act="pwreset" data-kind="' + kind + '" data-id="' + a.id + '">كلمة جديدة</button></span>';
+    return '<span class="row-act">' + (on ? '<code class="pw">' + (PWM[a.id] ? h(PWM[a.id]) : "غير متاحة") + "</code>" : '<code class="pw">••••••</code>') + '<button class="btn ghost sm" type="button" data-act="pwshow" data-kind="' + kind + '" data-id="' + a.id + '">' + (on ? "إخفاء" : "إظهار") + '</button><button class="btn ghost sm" type="button" data-act="pwreset" data-kind="' + kind + '" data-id="' + a.id + '">كلمة جديدة</button></span>';
   }
 
   function aMembers() {
@@ -1530,7 +1565,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
   function pdfCredCards(kind) {
     var teach = kind === "t", list = credList(teach ? "t" : "m");
-    return list.map(function (a) { return teach ? { name: a.name, sub: a.title, color: "#cfae6d", fg: "#2a1d00", fields: [["اسم المستخدم", a.user], ["كلمة المرور", a.pass]] } : { name: a.name, sub: a.grade + (a.patrol ? " · " + a.patrol : ""), fields: [["اسم المستخدم", a.user], ["كلمة المرور", a.pass]] }; });
+    return list.map(function (a) { return teach ? { name: a.name, sub: a.title, color: "#cfae6d", fg: "#2a1d00", fields: [["اسم المستخدم", a.user], ["كلمة المرور", PWM[a.id] || "—"]] } : { name: a.name, sub: a.grade + (a.patrol ? " · " + a.patrol : ""), fields: [["اسم المستخدم", a.user], ["كلمة المرور", PWM[a.id] || "—"]] }; });
   }
   var PDFB = {
     stats: function (d) {
@@ -1776,7 +1811,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   /* credential cards */
   function credList(kind) { return kind === "t" ? S.teachers : S.members.filter(function (m) { return !ui.cardPatrol || m.patrol === ui.cardPatrol; }); }
   function credTsv(kind, list) {
-    var rows = kind === "t" ? [["الاسم", "المسمى", "اسم المستخدم", "كلمة المرور"]].concat(list.map(function (a) { return [a.name, a.title, a.user, a.pass]; })) : [["الاسم", "الصف", "الطليعة", "اسم المستخدم", "كلمة المرور"]].concat(list.map(function (a) { return [a.name, a.grade, a.patrol, a.user, a.pass]; }));
+    var rows = kind === "t" ? [["الاسم", "المسمى", "اسم المستخدم", "كلمة المرور"]].concat(list.map(function (a) { return [a.name, a.title, a.user, PWM[a.id] || "—"]; })) : [["الاسم", "الصف", "الطليعة", "اسم المستخدم", "كلمة المرور"]].concat(list.map(function (a) { return [a.name, a.grade, a.patrol, a.user, PWM[a.id] || "—"]; }));
     return rows.map(function (r) { return r.join("\t"); }).join("\n");
   }
   function copyText(txt) {
@@ -1857,7 +1892,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var cards = list.map(function (a) {
       var em = teach ? emblem("", "#fff8e1", "#2a1d00", "#2a1d00") : emblem("", "#234a78", "#fbf3e1", "#e8d3a2");
       return '<article class="idc ' + (teach ? "t" : "s") + '"><header>' + em + "<div><b>فرقة أحمد الفاتح الكشفية</b><span>" + (teach ? "بطاقة دخول · معلم أو مشرف" : "بطاقة دخول · كشاف") + '</span></div></header><div class="idb"><div class="idn">' + h(a.name) + '</div><div class="idm">' + (teach ? h(a.title) : h(a.grade) + (a.patrol ? " · " + h(a.patrol) : "")) +
-        '</div><dl><div><dt>اسم المستخدم</dt><dd><code>' + h(a.user) + '</code></dd></div><div><dt>كلمة المرور</dt><dd><code>' + h(a.pass) + '</code></dd></div>' + "" + '</dl><div class="idq">' + qrSvg(SITE_URL, 84) + '<div><b>امسح الرمز لفتح الموقع</b><small dir="ltr">' + SITE_SHOW[0] + SITE_SHOW[1] + '</small></div></div></div><footer><span>كن مستعداً</span><button class="btn ghost sm" type="button" data-act="copyone" data-kind="' + kind + '" data-id="' + a.id + '">نسخ</button></footer></article>';
+        '</div><dl><div><dt>اسم المستخدم</dt><dd><code>' + h(a.user) + '</code></dd></div><div><dt>كلمة المرور</dt><dd><code>' + h(PWM[a.id] || "—") + '</code></dd></div>' + "" + '</dl><div class="idq">' + qrSvg(SITE_URL, 84) + '<div><b>امسح الرمز لفتح الموقع</b><small dir="ltr">' + SITE_SHOW[0] + SITE_SHOW[1] + '</small></div></div></div><footer><span>كن مستعداً</span><button class="btn ghost sm" type="button" data-act="copyone" data-kind="' + kind + '" data-id="' + a.id + '">نسخ</button></footer></article>';
     }).join("") || '<p class="empty">لا توجد حسابات لعرضها.</p>';
     return '<a class="back" href="' + back + '">→ ' + (teach ? "المعلمون والمشرفون" : "الكشافة") + '</a><div class="cc-head"><div><h2 style="font-size:1.8rem">بطاقات الدخول</h2><p class="muted">' + (teach ? "المعلمون والمشرفون" : "الكشافة") + " · " + list.length + ' حساب</p></div><div class="row-act" style="flex-wrap:wrap;align-items:end">' + filter + '<button class="btn" type="button" data-act="copycreds" data-kind="' + kind + '">نسخ الجدول كاملاً لإكسل</button></div></div>' +
       '<div class="muted" id="cc-msg" role="status" style="min-height:1.6em"></div><textarea id="cc-ta" hidden readonly style="margin-bottom:14px" aria-label="النص للنسخ"></textarea>' +
@@ -2972,7 +3007,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "copycreds") { var ck = t.getAttribute("data-kind"); copyText(credTsv(ck, credList(ck))); }
     else if (a === "copyone") {
       var ck2 = t.getAttribute("data-kind"), acc2 = byId(ck2 === "t" ? S.teachers : S.members, id);
-      if (acc2) copyText("الاسم: " + acc2.name + "\nاسم المستخدم: " + acc2.user + "\nكلمة المرور: " + acc2.pass);
+      if (acc2) copyText("الاسم: " + acc2.name + "\nاسم المستخدم: " + acc2.user + "\nكلمة المرور: " + (PWM[acc2.id] || "(مخفية — استخدم كلمة جديدة)"));
     }
     else if (a === "doimport") {
       var ik = ui.imp ? ui.imp.kind : "members", good = ui.imp ? ui.imp.rows.filter(function (r) { return !r.bad; }) : [];
@@ -3036,7 +3071,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "pwshow") { var pk = t.getAttribute("data-kind") + id; ui.showPw[pk] = !ui.showPw[pk]; refresh(); }
     else if (a === "pwreset") {
       var kd = t.getAttribute("data-kind"), ac = byId(kd === "s" ? S.staff : kd === "t" ? S.teachers : S.members, id);
-      if (ac) { ac.pass = ranStr(6); ui.showPw[kd + id] = true; save(); ui.flash = { where: kd === "s" ? "staff" : kd === "t" ? "teachers" : "member", text: "كلمة المرور الجديدة لـ " + ac.name + ": " + ac.pass }; }
+      if (ac) { ac.pass = ranStr(6); ui.showPw[kd + id] = true; save(); ui.flash = { where: kd === "s" ? "staff" : kd === "t" ? "teachers" : "member", text: "كلمة المرور الجديدة لـ " + ac.name + ": " + PWM[ac.id] }; }
       refresh();
     }
     else if (a === "staffdel") { ui.confirmStaff = id; refresh(); }
@@ -3226,7 +3261,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     e.preventDefault();
     if (f === "login") {
       var u = v("l-user").toLowerCase(), p = v("l-pass");
-      var acct = (ui.role === "scout" ? S.members : ui.role === "teacher" ? S.teachers : S.staff).filter(function (x) { return String(x.user).toLowerCase() === u && x.pass === p; })[0];
+      var acct = (ui.role === "scout" ? S.members : ui.role === "teacher" ? S.teachers : S.staff).filter(function (x) { return String(x.user).toLowerCase() === u && checkPw(x, p); })[0];
       if (!acct) { ui.loginErr = "اسم المستخدم أو كلمة المرور غير صحيحة."; refresh(); return; }
       session = ui.role; uid = acct.id; if (session === "scout") S.meId = acct.id; ui.loginErr = "";
       try { var kp = document.getElementById("l-keep"); if (kp && kp.checked) localStorage.setItem("afs-login", JSON.stringify({ role: session, uid: uid })); else localStorage.removeItem("afs-login"); } catch (e) {} shown = ""; location.hash = session; go();
@@ -3243,7 +3278,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       save(); ui.flash = { where: "profile", text: "تم حفظ بياناتك." }; refresh();
     } else if (f === "cred") {
       var acc = session === "teacher" ? byId(S.teachers, uid) : byId(S.members, uid), nu = v("c-user").toLowerCase(), np = document.getElementById("c-new").value.trim(), op = document.getElementById("c-old").value;
-      var bad = !acc ? "تعذر العثور على الحساب." : op !== acc.pass ? "كلمة المرور الحالية غير صحيحة." : !/^[a-z0-9._-]{3,20}$/.test(nu) ? "اسم المستخدم من ٣ إلى ٢٠ حرفاً إنجليزياً أو أرقاماً." : np && np.length < 4 ? "كلمة المرور الجديدة يجب ألا تقل عن ٤ أحرف." : "";
+      var bad = !acc ? "تعذر العثور على الحساب." : !checkPw(acc, op) ? "كلمة المرور الحالية غير صحيحة." : !/^[a-z0-9._-]{3,20}$/.test(nu) ? "اسم المستخدم من ٣ إلى ٢٠ حرفاً إنجليزياً أو أرقاماً." : np && np.length < 4 ? "كلمة المرور الجديدة يجب ألا تقل عن ٤ أحرف." : "";
       if (!bad && nu !== String(acc.user).toLowerCase() && userTaken(nu)) bad = "اسم المستخدم «" + nu + "» مستخدم من قبل.";
       if (bad) { ui.flash = { where: "cred", text: bad, err: true }; refresh(); return; }
       acc.user = nu; if (np) acc.pass = np; acc.credEdit = TODAY; logEv("عدّل " + acc.name + " بيانات دخوله" + (np ? " (واسم المرور)" : "")); save();
@@ -3459,6 +3494,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       if (!cl.first && loc !== cl.last[k]) return; /* تعديل محلي لم يُرسل بعد */
       try { S[k] = JSON.parse(r); cl.last[k] = r; changed = true; } catch (e) {}
     });
+    if (securePw()) { changed = true; cloudPush(); }
     if (cl.first) { cl.first = false; clFlush(); }
     if (changed) { clRefresh(); }
   }
