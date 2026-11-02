@@ -417,6 +417,40 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 #stv .stsheet ul { margin: 0; padding: 0; }
 .stadm { display: grid; grid-template-columns: 90px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: start; }
 .stadm img { width: 90px; height: 120px; object-fit: cover; border-radius: 8px; }
+.mgwrap { max-width: 560px; margin: 0 auto; }
+.mgtop { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.mgpager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 0; border-radius: 14px; box-shadow: 0 6px 28px rgba(0,0,0,.18); background: #fff; }
+.mgpager::-webkit-scrollbar { display: none; }
+.mgp { flex: 0 0 100%; scroll-snap-align: center; box-sizing: border-box; min-height: 560px; background: #fffdf7; color: #2b1a14; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.mgcover { background: linear-gradient(160deg, #1b3a63, #234a78 55%, #163052); color: #fbf3e1; justify-content: flex-end; padding: 34px 26px; min-height: 620px; }
+.mgcover .cbg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: .26; }
+.mgcover > * { position: relative; }
+.mgcover .em { width: 74px; height: 74px; margin-bottom: auto; }
+.mgcover h2 { font-size: 3rem; color: #fbf3e1; line-height: 1.2; margin-bottom: 8px; }
+.mgcover .sub { font-size: 1.15rem; opacity: .9; margin-bottom: 18px; }
+.mgcover .mo { display: inline-block; align-self: flex-start; border: 1.5px solid #e8d3a2; color: #e8d3a2; padding: 6px 16px; border-radius: 99px; font-weight: 700; }
+.mgcover .no { font-size: .95rem; opacity: .8; margin-top: 14px; }
+.mgbar { height: 10px; background: linear-gradient(90deg, #d4a017, #c1272d); }
+.mgbody { padding: 22px 22px 12px; flex: 1; }
+.mgbody h3 { font-size: 1.7rem; color: #234a78; margin-bottom: 12px; line-height: 1.35; }
+.mgbody p { line-height: 1.95; font-size: 1.05rem; white-space: pre-wrap; margin: 0 0 12px; }
+.mgbody img.big { width: 100%; max-height: 280px; object-fit: cover; border-radius: 10px; margin-bottom: 12px; }
+.mggrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.mggrid figure { margin: 0; } .mggrid img { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; display: block; } .mggrid figcaption { font-size: .88rem; color: #6f5d4a; margin-top: 4px; }
+.mgqa { border-inline-start: 4px solid #d4a017; padding: 4px 12px; margin-bottom: 12px; } .mgqa b { color: #234a78; display: block; margin-bottom: 2px; } .mgqa span { line-height: 1.8; }
+.mgwho { background: #f3ecda; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-weight: 700; }
+.mgquiz { background: #f3ecda; border-radius: 12px; padding: 14px; margin-bottom: 12px; font-size: 1.15rem; line-height: 1.9; }
+.mgp details { background: #234a78; color: #fff; border-radius: 10px; padding: 10px 14px; } .mgp summary { cursor: pointer; font-weight: 700; }
+.mgfoot { display: flex; align-items: center; gap: 10px; padding: 12px 22px 16px; border-top: 1px dashed #d6c9aa; font-size: .92rem; color: #6f5d4a; }
+.mgfoot img, .mgfoot .ph0 { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #d6c9aa; flex: none; }
+.mgfoot b { color: #2b1a14; display: block; }
+.mgnav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 12px; }
+.mgnav button { font: inherit; font-size: 1.3rem; width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--primary); background: none; color: var(--primary); cursor: pointer; }
+.mgissues { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.mgedit .field textarea { min-height: 150px; }
+.mgimgs { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; } .mgimgs div { position: relative; } .mgimgs img { width: 84px; height: 84px; object-fit: cover; border-radius: 8px; }
+.mgimgs button { position: absolute; top: -6px; inset-inline-start: -6px; width: 24px; height: 24px; border-radius: 50%; border: 0; background: var(--danger); color: #fff; cursor: pointer; }
+.mgst { font-size: .8rem; padding: 2px 10px; border-radius: 99px; background: var(--line); }
 .cp { font-family: inherit; font-size: .95rem; padding: 6px 14px; border: 1.5px solid var(--line); border-radius: 99px; background: none; color: var(--fg); cursor: pointer; }
 .cp.on.good { background: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
 .cp.on.bad { background: var(--danger); border-color: var(--danger); color: #fff; }
@@ -729,6 +763,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   var DEFT = { q: ["07:00", "07:15"], p1: ["07:15", "08:00"], p2: ["08:00", "08:45"], p3: ["08:45", "09:30"], b1: ["09:30", "09:50"], p4a: ["09:50", "10:35"], p4b: ["09:30", "10:15"], b2: ["10:15", "10:35"], p5: ["10:35", "11:20"], p6: ["11:20", "12:05"], p7: ["12:05", "12:50"] };
   if (!S.ptimes) { S.ptimes = {}; PERIODS.forEach(function (p) { S.ptimes[p[0]] = [0, 1, 2, 3, 4].map(function () { return DEFT[p[0]].slice(); }); }); }
   if (!S.ttable) S.ttable = {};
+  if (!S.mag) S.mag = { cfg: { no: 1, title: "مجلة الفرقة", sub: "كن مستعداً", month: "", bg: "", note: "", noteBy: "قائد الفرقة", noteImg: "" }, editors: [], issues: [] };
+  if (!S.magp) S.magp = [];
   if (!S.stories) S.stories = []; if (!S.sviews) S.sviews = {}; if (!S.sreact) S.sreact = {};
   (function () { var lim = Date.now() - 24 * 3600 * 1000; S.stories = S.stories.filter(function (x) { return x.ts > lim; }); var ids = {}; S.stories.forEach(function (x) { ids[x.id] = 1; }); [S.sviews, S.sreact].forEach(function (o) { Object.keys(o).forEach(function (k) { if (!ids[k]) delete o[k]; }); }); })();
   if (!S.quick) S.quick = [{ id: 9101, t: "g", name: "مشاركة", pts: 2 }, { id: 9102, t: "g", name: "التزام", pts: 1 }, { id: 9103, t: "g", name: "مساعدة زميل", pts: 3 }, { id: 9104, t: "g", name: "تفوق وإنجاز", pts: 3 }, { id: 9105, t: "b", name: "إخلال بالنظام", pts: 2 }, { id: 9106, t: "b", name: "نسيان الأدوات", pts: 1 }, { id: 9107, t: "b", name: "تأخر", pts: 1 }, { id: 9108, t: "b", name: "إساءة لزميل", pts: 3 }];
@@ -1094,16 +1130,16 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function vAdmin(k) {
     var sub = k && k.indexOf("admin-") === 0 ? k.slice(6) : "stats";
     var rq = S.requests.length;
-    var items = [["stats", "الإحصاءات"], ["members", "الكشافة"], ["patrols", "الطلائع"], ["tasks", "مهام الكشافة"], ["badges", "الشارات"], ["attendance", "الحضور"], ["memcards", "بطاقات العضوية"], ["reports", "التقارير والسجل"], ["periods", "الحصص والسلوك السريع"], ["behavior", "السلوك والنقاط" + (S.cases.filter(function (c) { return c.status === "pending"; }).length ? " (" + S.cases.filter(function (c) { return c.status === "pending"; }).length + ")" : "")], ["teachers", "المعلمون والمشرفون"], ["staff", "الإدارة"], ["requests", "طلبات الانضمام" + (rq ? " (" + rq + ")" : "")], ["messages", "الرسائل والاقتراحات" + (unreadMsgs() ? " (" + unreadMsgs() + ")" : "")], ["stories", "القصص"], ["content", "الأنشطة والإعلانات"], ["photos", "الصور"]];
+    var items = [["stats", "الإحصاءات"], ["members", "الكشافة"], ["patrols", "الطلائع"], ["tasks", "مهام الكشافة"], ["badges", "الشارات"], ["attendance", "الحضور"], ["memcards", "بطاقات العضوية"], ["reports", "التقارير والسجل"], ["periods", "الحصص والسلوك السريع"], ["behavior", "السلوك والنقاط" + (S.cases.filter(function (c) { return c.status === "pending"; }).length ? " (" + S.cases.filter(function (c) { return c.status === "pending"; }).length + ")" : "")], ["teachers", "المعلمون والمشرفون"], ["staff", "الإدارة"], ["requests", "طلبات الانضمام" + (rq ? " (" + rq + ")" : "")], ["messages", "الرسائل والاقتراحات" + (unreadMsgs() ? " (" + unreadMsgs() + ")" : "")], ["stories", "القصص"], ["magazine", "مجلة الفرقة"], ["content", "الأنشطة والإعلانات"], ["photos", "الصور"]];
     var ck = sub === "scoutcards" ? "members" : sub === "teachercards" ? "teachers" : sub;
     var pend = S.cases.filter(function (c) { return c.status === "pending"; }).length;
-    var GR = [["stats", "الإحصاءات", ["stats"], 0], ["scouts", "الكشافة", ["members", "patrols", "tasks", "badges", "attendance", "memcards"], 0], ["conduct", "السلوك والتقارير", ["behavior", "periods", "reports"], pend], ["accounts", "الحسابات", ["teachers", "staff"], 0], ["site", "الموقع", ["requests", "messages", "stories", "content", "photos"], rq + unreadMsgs()]];
+    var GR = [["stats", "الإحصاءات", ["stats"], 0], ["scouts", "الكشافة", ["members", "patrols", "tasks", "badges", "attendance", "memcards"], 0], ["conduct", "السلوك والتقارير", ["behavior", "periods", "reports"], pend], ["accounts", "الحسابات", ["teachers", "staff"], 0], ["site", "الموقع", ["requests", "messages", "stories", "magazine", "content", "photos"], rq + unreadMsgs()]];
     var cg = GR.filter(function (g) { return g[2].indexOf(ck) > -1; })[0] || GR[0];
     var lnk = function (k) { return "#" + (k === "stats" ? "admin" : "admin-" + k); };
     var nav = GR.map(function (g) { return '<a href="' + lnk(g[2][0]) + '" class="' + (g === cg ? "on" : "") + '">' + g[1] + (g[3] ? " (" + g[3] + ")" : "") + "</a>"; }).join("");
     var curLbl = h(cg[1]);
     var subNav = cg[2].length > 1 ? '<nav class="subnav" aria-label="أقسام ' + h(cg[1]) + '">' + cg[2].map(function (k) { var it = items.filter(function (x) { return x[0] === k; })[0]; return '<a href="' + lnk(k) + '" class="' + (ck === k ? "on" : "") + '">' + (it ? it[1] : k) + "</a>"; }).join("") + "</nav>" : "";
-    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "memcards" ? aMemCards() : sub === "periods" ? aPeriods() : sub === "stories" ? aStories() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
+    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "memcards" ? aMemCards() : sub === "periods" ? aPeriods() : sub === "stories" ? aStories() : sub === "magazine" ? aMagazine() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
     return storyStrip() + '<div class="dash-h"><div><span class="chip">صفحة الإدارة</span><h1>لوحة قيادة الفرقة</h1></div></div><div class="adm"><div class="admnav' + (ui.navOpen ? " open" : "") + '"><button type="button" class="navtoggle" data-act="navtoggle" aria-expanded="' + (!!ui.navOpen) + '"><div><span>القسم الحالي</span><br>' + curLbl + '</div><b aria-hidden="true">' + (ui.navOpen ? "▲" : "▼") + '</b></button><nav class="side" aria-label="أقسام الإدارة">' + nav + '</nav></div><div class="main">' + body + "</div></div>";
   }
 
@@ -1525,6 +1561,9 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         d.h2("الشارات"); d.table(["الشارة", "المستوى"], S.awards.filter(function (x) { return x.scoutId === mm.id; }).map(function (x) { return [bdef(x.badge)[1], arNum(x.level) + " · " + LVNAME[x.level - 1]]; }), [.6, .4]);
         d.h2("آخر السلوكيات"); d.table(["التاريخ", "السلوك", "النقاط"], recsOf(mm.id).sort(function (x, y) { return y.ts - x.ts; }).slice(0, 25).map(function (r) { return [fullDate(r.date), r.beh, sgn(r.points)]; }), [.3, .5, .2]);
         d.h2("المهام"); d.table(["المهمة", "الحالة"], S.tasks.filter(function (t) { return t.scoutId === mm.id; }).map(function (t) { return [t.text, t.done ? "منجزة" : "قيد التنفيذ"]; }), [.7, .3]);
+      } else if (kind === "mag") {
+        var mmod = mgModel(arg); if (!mmod) { toast("العدد غير موجود."); return; }
+        name = "مجلة الفرقة - العدد " + arNum(arg); job = pdfMag(d, arg);
       } else if (kind === "evrep") {
         var als = arg.map(albumById).filter(Boolean); if (!als.length) { toast("لا توجد فعاليات."); return; }
         name = als.length === 1 ? "تقرير فعالية - " + als[0].title : "تقارير الفعاليات " + TODAY;
@@ -2035,6 +2074,130 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return flashHtml("stories") + '<div class="card"><h3>إضافة قصة</h3><p class="muted" style="margin-bottom:10px">تظهر القصة للمعلمين والكشافة لمدة 24 ساعة ثم تختفي تلقائياً. يمكنك اختيار عدة صور دفعة واحدة (حتى 10).</p><div class="field"><label for="st-cap">تعليق يظهر أسفل الصورة (اختياري)</label><input id="st-cap" type="text" maxlength="120"></div><div class="row-act"><label class="btn sm" for="st-in">اختيار صور ونشرها</label><input id="st-in" class="evin" type="file" accept="image/*" multiple></div></div>' +
       '<div class="card"><h3>القصص النشطة (' + act.length + ")</h3>" + rows + "</div>";
   }
+
+  /* ---------- مجلة الفرقة ---------- */
+  var MGT = [["article", "مقال / موضوع"], ["activity", "صور نشاط"], ["interview", "حوار / لقاء"], ["quiz", "ألغاز ومسابقة"]];
+  function mgTplName(t) { var r = MGT.filter(function (x) { return x[0] === t; })[0]; return r ? r[1] : t; }
+  function mgIssueNos() { return (S.mag.issues || []).map(function (x) { return x.no; }); }
+  function mgModel(no) {
+    var c = no === "draft" ? Object.assign({}, S.mag.cfg) : (S.mag.issues || []).filter(function (x) { return x.no === Number(no); })[0];
+    if (!c) return null;
+    var n = no === "draft" ? S.mag.cfg.no : Number(no);
+    return { cfg: c, no: n, pages: S.magp.filter(function (p) { return p.status === "approved" && p.no === n; }).sort(function (a, b) { return a.at - b.at; }) };
+  }
+  function mgAuthor(p) {
+    var m = byId(S.members, p.scout), ph = m && m.photo ? '<img src="' + h(m.photo) + '" alt="">' : '<span class="ph0"></span>';
+    return '<div class="mgfoot">' + ph + "<div><b>" + h(p.name || (m && m.name) || "") + "</b>" + h(p.grade || (m && m.grade) || "") + "</div></div>";
+  }
+  function mgPageHtml(p) {
+    var b = "", t = p.tpl, im = p.imgs || [];
+    if (t === "article") b = (im[0] ? '<img class="big" src="' + im[0] + '" alt="">' : "") + "<p>" + h(p.body) + "</p>";
+    else if (t === "activity") b = '<div class="mggrid">' + im.map(function (x, i) { return '<figure><img src="' + x + '" alt=""><figcaption>' + h((p.caps || [])[i] || "") + "</figcaption></figure>"; }).join("") + "</div>" + (p.body ? "<p>" + h(p.body) + "</p>" : "");
+    else if (t === "interview") b = (p.who ? '<div class="mgwho">' + h(p.who) + "</div>" : "") + (im[0] ? '<img class="big" src="' + im[0] + '" alt="">' : "") + (p.qa || []).map(function (x) { return '<div class="mgqa"><b>' + h(x[0]) + "</b><span>" + h(x[1]) + "</span></div>"; }).join("");
+    else b = '<div class="mgquiz">' + h(p.body) + "</div>" + (im[0] ? '<img class="big" src="' + im[0] + '" alt="">' : "") + (p.ans ? "<details><summary>اضغط لمعرفة الإجابة</summary><p style=\"margin:8px 0 0\">" + h(p.ans) + "</p></details>" : "");
+    return '<article class="mgp"><div class="mgbar"></div><div class="mgbody"><h3>' + h(p.title) + "</h3>" + b + "</div>" + mgAuthor(p) + "</article>";
+  }
+  function mgCoverHtml(c, no) {
+    return '<article class="mgp mgcover">' + (c.bg ? '<div class="cbg" style="background-image:url(' + c.bg + ')"></div>' : "") + emblem("em") + "<h2>" + h(c.title) + '</h2><div class="sub">' + h(c.sub) + '</div><span class="mo">' + h(c.month) + '</span><div class="no">العدد ' + arNum(no) + "</div></article>";
+  }
+  function mgNoteHtml(c) {
+    if (!c.note) return "";
+    return '<article class="mgp"><div class="mgbar"></div><div class="mgbody"><h3>كلمة رئيس التحرير</h3><p>' + h(c.note) + '</p></div><div class="mgfoot">' + (c.noteImg ? '<img src="' + c.noteImg + '" alt="">' : '<span class="ph0"></span>') + "<div><b>" + h(c.noteBy || "") + "</b>رئيس التحرير</div></div></article>";
+  }
+  function mgEmpty(t) { return '<article class="mgp"><div class="mgbar"></div><div class="mgbody"><h3>' + t + "</h3></div></article>"; }
+  function mgEditorOf() { return session === "scout" && (S.mag.editors || []).indexOf(uid) > -1; }
+  function mgForm() {
+    var f = ui.mgf; if (!f) return "";
+    var t = f.tpl, tabs = MGT.map(function (x) { return '<button type="button" class="cp' + (t === x[0] ? " on good" : "") + '" data-act="mgtpl" data-v="' + x[0] + '">' + x[1] + "</button>"; }).join("");
+    var imgs = '<div class="mgimgs">' + f.imgs.map(function (x, i) { return '<div><img src="' + x + '" alt=""><button type="button" data-act="mgimgdel" data-id="' + i + '" aria-label="حذف">✕</button></div>'; }).join("") + "</div>";
+    var maxI = t === "activity" ? 4 : (t === "article" || t === "interview" || t === "quiz") ? 1 : 0;
+    var addI = f.imgs.length < maxI ? '<label class="btn ghost sm" for="mg-img">' + (t === "activity" ? "إضافة صور (حتى 4)" : "إضافة صورة") + '</label><input id="mg-img" class="evin" type="file" accept="image/*"' + (t === "activity" ? " multiple" : "") + ">" : "";
+    var body = "";
+    if (t === "article") body = '<div class="field"><label for="mg-body">النص (حتى 1200 حرف)</label><textarea id="mg-body" maxlength="1200">' + h(f.body) + "</textarea></div>" + imgs + addI;
+    else if (t === "activity") body = imgs + addI + f.imgs.map(function (x, i) { return '<div class="field"><label for="mg-cap-' + i + '">تعليق الصورة ' + (i + 1) + '</label><input id="mg-cap-' + i + '" type="text" maxlength="80" value="' + h(f.caps[i] || "") + '"></div>'; }).join("") + '<div class="field"><label for="mg-body">نبذة قصيرة (اختياري، حتى 300 حرف)</label><textarea id="mg-body" maxlength="300" style="min-height:90px">' + h(f.body) + "</textarea></div>";
+    else if (t === "interview") { body = '<div class="field"><label for="mg-who">الضيف / الشخصية (الاسم والصفة)</label><input id="mg-who" type="text" maxlength="80" value="' + h(f.who) + '"></div>'; for (var i = 0; i < 4; i++) body += '<div class="field"><label for="mg-q-' + i + '">السؤال ' + (i + 1) + '</label><input id="mg-q-' + i + '" type="text" maxlength="120" value="' + h((f.qa[i] || [])[0] || "") + '"></div><div class="field"><label for="mg-a-' + i + '">الإجابة ' + (i + 1) + '</label><textarea id="mg-a-' + i + '" maxlength="350" style="min-height:70px">' + h((f.qa[i] || [])[1] || "") + "</textarea></div>"; body += imgs + addI; }
+    else body = '<div class="field"><label for="mg-body">اللغز أو السؤال (حتى 500 حرف)</label><textarea id="mg-body" maxlength="500" style="min-height:110px">' + h(f.body) + '</textarea></div><div class="field"><label for="mg-ans">الإجابة (تظهر عند الضغط)</label><input id="mg-ans" type="text" maxlength="150" value="' + h(f.ans) + '"></div>' + imgs + addI;
+    return '<div class="card mgedit"><h3>' + (f.id ? "تعديل الصفحة" : "صفحة جديدة") + '</h3><span class="lbl2">نوع الصفحة</span><div class="cps" style="margin-bottom:12px">' + tabs + '</div><div class="field"><label for="mg-title">عنوان الصفحة</label><input id="mg-title" type="text" maxlength="70" value="' + h(f.title) + '"></div>' + body +
+      '<p class="muted" style="margin-top:8px">سيُكتب أسفل الصفحة اسمك وصفّك وصورتك تلقائياً.</p><div class="row-act" style="margin-top:12px;flex-wrap:wrap"><button type="button" class="btn" data-act="mgsave" data-v="send">إرسال للإدارة</button><button type="button" class="btn ghost" data-act="mgsave" data-v="draft">حفظ كمسودة</button><button type="button" class="btn ghost" data-act="mgcancel">إلغاء</button></div></div>';
+  }
+  function mgStLbl(s) { return s === "draft" ? "مسودة" : s === "pending" ? "بانتظار الإدارة" : s === "approved" ? "مقبولة" : "مرفوضة"; }
+  function mgEditorPanel() {
+    var mine = S.magp.filter(function (p) { return p.scout === uid; }).sort(function (a, b) { return b.ts - a.ts; });
+    var rows = mine.map(function (p) {
+      var can = p.status === "draft" || p.status === "rejected";
+      return '<div class="rec"><div style="flex:1"><b>' + h(p.title || "بلا عنوان") + '</b> <span class="mgst">' + mgStLbl(p.status) + '</span><div class="muted" style="font-size:.88rem">' + mgTplName(p.tpl) + (p.status === "approved" ? " · العدد " + arNum(p.no) : "") + "</div>" + (p.adminNote ? '<div style="margin-top:4px"><b>ملاحظة الإدارة:</b> ' + h(p.adminNote) + "</div>" : "") +
+        '<div class="row-act" style="margin-top:6px">' + (can ? '<button class="btn sm" data-act="mgedit" data-id="' + p.id + '">تعديل</button>' : "") + (p.status !== "approved" ? '<button class="btn danger sm" data-act="mgdel" data-id="' + p.id + '">حذف</button>' : "") + "</div></div></div>";
+    }).join("") || '<p class="empty">لم تكتب أي صفحة بعد.</p>';
+    var used = mine.filter(function (p) { return p.status !== "rejected" && (p.status !== "approved" || p.no === S.mag.cfg.no); }).length;
+    return '<div class="card"><h3>مساحة المحرر</h3><p class="muted" style="margin-bottom:10px">منحتك الإدارة صلاحية المشاركة بصفحة أو صفحتين في العدد القادم (استخدمت ' + used + " من 2).</p>" + (ui.mgf ? "" : used < 2 ? '<button class="btn" data-act="mgnew">+ صفحة جديدة</button>' : '<p class="muted">وصلت إلى الحد الأقصى لهذا العدد.</p>') + "</div>" + mgForm() + (ui.mgf ? "" : '<div class="card"><h3>صفحاتي</h3>' + rows + "</div>");
+  }
+  function vMagazine(k) {
+    var sel = k === "magazine" ? null : k.slice(9), nos = mgIssueNos();
+    var cur = sel || (nos.length ? String(nos[nos.length - 1]) : (session === "admin" ? "draft" : null));
+    if (sel) cur = sel;
+    var m = cur ? mgModel(cur) : null;
+    var tabs = '<div class="mgissues">' + nos.slice().reverse().map(function (n) { return '<a class="cp' + (String(n) === String(cur) ? " on good" : "") + '" href="#magazine-' + n + '" style="text-decoration:none">العدد ' + arNum(n) + "</a>"; }).join("") + (session === "admin" ? '<a class="cp' + (cur === "draft" ? " on good" : "") + '" href="#magazine-draft" style="text-decoration:none">معاينة العدد الحالي</a>' : "") + "</div>";
+    var out = '<section class="sec"><div class="mgwrap"><div class="sec-h"><div><h2>مجلة الفرقة</h2></div></div>' + tabs;
+    if (!m) out += '<div class="card"><p class="empty">العدد الأول قيد التجهيز. ترقّبوه قريباً.</p></div>';
+    else {
+      var pgs = [mgCoverHtml(m.cfg, m.no), mgNoteHtml(m.cfg)].concat(m.pages.map(mgPageHtml)).filter(Boolean);
+      if (!m.pages.length) pgs.push(mgEmpty("لا توجد صفحات في هذا العدد بعد."));
+      out += '<div class="mgtop"><span class="chip">' + (cur === "draft" ? "معاينة · غير منشور" : "العدد " + arNum(m.no)) + '</span><span class="row-act"><span class="muted" id="mgcnt">١ / ' + arNum(pgs.length) + "</span>" + (cur !== "draft" ? '<button class="btn ghost sm" data-act="mgshare" data-v="' + m.no + '">نسخ الرابط</button><button class="btn ghost sm" data-act="mgpdf" data-v="' + m.no + '">PDF</button>' : "") + '</span></div><div class="mgpager" id="mgpager" tabindex="0" aria-label="صفحات المجلة">' + pgs.join("") + '</div><div class="mgnav"><button type="button" data-act="mgprev" aria-label="السابق">›</button><button type="button" data-act="mgnext" aria-label="التالي">‹</button></div>';
+    }
+    out += "</div>" + (mgEditorOf() ? '<div class="mgwrap" style="margin-top:20px">' + mgEditorPanel() + "</div>" : "") + "</section>";
+    return out;
+  }
+  function mgCapture() {
+    var f = ui.mgf; if (!f) return;
+    var g = function (id) { var e = document.getElementById(id); return e ? e.value : null; };
+    var x;
+    if ((x = g("mg-title")) !== null) f.title = x; if ((x = g("mg-body")) !== null) f.body = x; if ((x = g("mg-ans")) !== null) f.ans = x; if ((x = g("mg-who")) !== null) f.who = x;
+    f.caps = f.imgs.map(function (_, i) { var c = g("mg-cap-" + i); return c === null ? (f.caps[i] || "") : c; });
+    if (f.tpl === "interview") { f.qa = []; for (var i = 0; i < 4; i++) { var q = g("mg-q-" + i), a = g("mg-a-" + i); if (q !== null) f.qa.push([q, a || ""]); } }
+  }
+  function aMagazine() {
+    var c = S.mag.cfg, ed = S.mag.editors || [];
+    var pend = S.magp.filter(function (p) { return p.status === "pending"; }), appr = S.magp.filter(function (p) { return p.status === "approved" && p.no === c.no; }).sort(function (a, b) { return a.at - b.at; });
+    var pc = pend.map(function (p) { return '<div class="card">' + mgPageHtml(p).replace('class="mgp"', 'class="mgp" style="min-height:0;box-shadow:0 0 0 1px var(--line)"') + '<div class="field" style="margin-top:10px"><label for="mg-rn-' + p.id + '">ملاحظة للكاتب (عند الرفض أو طلب التعديل)</label><input id="mg-rn-' + p.id + '" type="text"></div><div class="row-act" style="margin-top:8px"><button class="btn sm" data-act="mgapprove" data-id="' + p.id + '">قبول وإضافة للعدد</button><button class="btn danger sm" data-act="mgreject" data-id="' + p.id + '">إرجاع للكاتب</button></div></div>'; }).join("") || '<div class="card"><p class="empty">لا توجد صفحات بانتظار الموافقة.</p></div>';
+    var ar = appr.map(function (p) { return '<div class="rec"><div style="flex:1"><b>' + h(p.title) + "</b> · " + mgTplName(p.tpl) + '<div class="muted" style="font-size:.88rem">' + h(p.name) + " · " + h(p.grade) + '</div></div><button class="btn danger sm" data-act="mgunapp" data-id="' + p.id + '">إزالة من العدد</button></div>'; }).join("") || '<p class="empty">لا توجد صفحات مقبولة في العدد الحالي.</p>';
+    var used = ed, opts = '<option value="">إضافة محرر…</option>' + S.members.filter(function (m) { return ed.indexOf(m.id) < 0; }).sort(function (a, b) { return a.name < b.name ? -1 : 1; }).map(function (m) { return '<option value="' + m.id + '">' + h(m.name) + " · " + h(m.grade) + "</option>"; }).join("");
+    var edl = ed.map(function (id) { var m = byId(S.members, id); return m ? '<span class="chip" style="margin:3px">' + h(m.name) + ' <button type="button" data-act="mgedrm" data-id="' + id + '" style="border:0;background:none;cursor:pointer;color:var(--danger)" aria-label="إزالة">✕</button></span>' : ""; }).join("") || '<p class="muted">لم تمنح الصلاحية لأحد بعد.</p>';
+    var iss = (S.mag.issues || []).slice().reverse().map(function (x) { return '<div class="rec"><div style="flex:1"><b>العدد ' + arNum(x.no) + "</b> · " + h(x.month) + '</div><a class="btn ghost sm" href="#magazine-' + x.no + '">فتح</a> <button class="btn ghost sm" data-act="mgpdf" data-v="' + x.no + '">PDF</button></div>'; }).join("") || '<p class="empty">لم يُنشر أي عدد بعد.</p>';
+    var pub = ui.mgpub ? '<div class="flash bad" role="alert">سيُنشر العدد ' + arNum(c.no) + " (" + appr.length + ' صفحة) ويصبح مرئياً للجميع، ثم يبدأ عدد جديد فارغ.<div class="row-act" style="margin-top:8px"><button class="btn sm" data-act="mgpubyes">نعم، انشر</button><button class="btn ghost sm" data-act="mgpubno">إلغاء</button></div></div>' : '<button class="btn" data-act="mgpubask"' + (appr.length ? "" : " disabled") + ">نشر العدد " + arNum(c.no) + "</button>";
+    return flashHtml("mag") + '<div class="card"><h3>غلاف العدد ' + arNum(c.no) + '</h3><form data-form="magcfg" class="stack"><div class="form-grid"><div class="field"><label for="mc-title">عنوان المجلة</label><input id="mc-title" type="text" value="' + h(c.title) + '"></div><div class="field"><label for="mc-sub">شعار فرعي / عبارة</label><input id="mc-sub" type="text" value="' + h(c.sub) + '"></div><div class="field"><label for="mc-month">الشهر والسنة</label><input id="mc-month" type="text" value="' + h(c.month) + '"></div><div class="field"><label for="mc-no">رقم العدد</label><input id="mc-no" type="number" min="1" value="' + c.no + '"></div></div>' +
+      '<div class="field"><label for="mc-note">كلمة رئيس التحرير</label><textarea id="mc-note" style="min-height:110px">' + h(c.note) + '</textarea></div><div class="field"><label for="mc-noteby">اسم الكاتب</label><input id="mc-noteby" type="text" value="' + h(c.noteBy) + '"></div><button class="btn" type="submit">حفظ الغلاف</button></form>' +
+      '<div class="row-act" style="margin-top:12px;flex-wrap:wrap"><label class="btn ghost sm" for="mg-bg">' + (c.bg ? "تغيير صورة الخلفية" : "صورة الخلفية الشفافة") + '</label><input id="mg-bg" class="evin" type="file" accept="image/*">' + (c.bg ? '<button class="btn danger sm" data-act="mgbgdel">إزالة</button>' : "") + '<label class="btn ghost sm" for="mg-nimg">' + (c.noteImg ? "تغيير صورة الكاتب" : "صورة الكاتب") + '</label><input id="mg-nimg" class="evin" type="file" accept="image/*"></div></div>' +
+      '<div class="card"><h3>المحررون من الكشافة (' + ed.length + ")</h3><p class=\"muted\" style=\"margin-bottom:8px\">من تمنحهم الصلاحية يكتبون صفحة أو صفحتين في كل عدد ويرسلونها لك.</p>" + edl + '<div class="field" style="margin-top:8px"><label for="mg-edsel" class="muted">اختر كشافاً</label><select id="mg-edsel">' + opts + "</select></div></div>" +
+      "<h3 style=\"margin:16px 0 8px\">صفحات بانتظار الموافقة (" + pend.length + ")</h3>" + pc + '<div class="card"><h3>صفحات العدد الحالي (' + appr.length + ")</h3>" + ar + '<div style="margin-top:12px">' + pub + '</div><p style="margin-top:10px"><a href="#magazine-draft">معاينة العدد الحالي ←</a></p></div><div class="card"><h3>الأعداد المنشورة</h3>' + iss + "</div>";
+  }
+  function pdfMag(d, no) {
+    var m = mgModel(no); if (!m) return Promise.resolve();
+    var loadI = function (src) { return new Promise(function (res) { if (!src) { res(null); return; } var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = src; }); };
+    var drawCover = function (bg) {
+      d.page(); var c = d.c; c.fillStyle = PGREEN; c.fillRect(0, 0, PGW, PGH);
+      if (bg) { c.globalAlpha = .25; var k = Math.max(PGW / bg.naturalWidth, PGH / bg.naturalHeight), w = bg.naturalWidth * k, hh = bg.naturalHeight * k; c.drawImage(bg, (PGW - w) / 2, (PGH - hh) / 2, w, hh); c.globalAlpha = 1; }
+      c.drawImage(LOGO_IMG, PGW - PMG - 150, 120, 150, 150);
+      c.fillStyle = "#fbf3e1"; c.textAlign = "right"; c.font = d.f(120, true); c.fillText(m.cfg.title, PGW - PMG, 1000);
+      c.font = d.f(44, false); c.fillText(m.cfg.sub || "", PGW - PMG, 1180); c.fillStyle = "#e8d3a2"; c.font = d.f(46, true); c.fillText(m.cfg.month || "", PGW - PMG, 1290);
+      c.fillStyle = "#fbf3e1"; c.font = d.f(34, false); c.fillText("العدد " + arNum(m.no), PGW - PMG, 1370);
+    };
+    var pageHead = function (title) { d.page(); var c = d.c; c.fillStyle = "#d4a017"; c.fillRect(0, 0, PGW, 16); d.y = 70; d.text(title, 56, { bold: true, color: PGREEN }); d.space(10); };
+    var imgDraw = function (im, h0) { if (!im) return; var w = PGW - 2 * PMG, k = Math.min(w / im.naturalWidth, h0 / im.naturalHeight), ww = im.naturalWidth * k, hh = im.naturalHeight * k; d.ensure(hh + 20); d.c.drawImage(im, PGW - PMG - ww, d.y, ww, hh); d.y += hh + 20; };
+    var foot = function (p) { d.space(20); d.ensure(60); d.c.strokeStyle = "#d6c9aa"; d.c.beginPath(); d.c.moveTo(PMG, d.y); d.c.lineTo(PGW - PMG, d.y); d.c.stroke(); d.space(14); d.text((p.name || "") + " — " + (p.grade || ""), 26, { color: "#555" }); };
+    var job = loadI(m.cfg.bg).then(drawCover);
+    if (m.cfg.note) job = job.then(function () { pageHead("كلمة رئيس التحرير"); d.text(m.cfg.note, 32, {}); d.space(20); d.text(m.cfg.noteBy || "", 28, { bold: true, color: PGREEN }); });
+    m.pages.forEach(function (p) {
+      job = job.then(function () { return Promise.all((p.imgs || []).map(loadI)); }).then(function (ims) {
+        pageHead(p.title);
+        if (p.tpl === "article") { imgDraw(ims[0], 560); d.text(p.body, 32, {}); }
+        else if (p.tpl === "activity") { ims.forEach(function (im, i) { imgDraw(im, 480); d.text((p.caps || [])[i] || "", 26, { color: "#555" }); d.space(10); }); if (p.body) d.text(p.body, 32, {}); }
+        else if (p.tpl === "interview") { if (p.who) d.text(p.who, 32, { bold: true, color: PGREEN }); d.space(8); imgDraw(ims[0], 460); (p.qa || []).forEach(function (x) { if (x[0]) { d.text(x[0], 32, { bold: true, color: PGREEN }); d.text(x[1], 30, {}); d.space(14); } }); }
+        else { d.text(p.body, 36, {}); d.space(10); imgDraw(ims[0], 480); if (p.ans) d.text("الإجابة: " + p.ans, 30, { bold: true, color: PGREEN }); }
+        foot(p);
+      });
+    });
+    return job;
+  }
   function caseLabel(st) { return st === "pending" ? "بانتظار الاعتماد" : st === "approved" ? "معتمد" : st === "returned" ? "أُعيد للمراجعة" : "مسحوب"; }
 
   function aBehavior() {
@@ -2392,16 +2555,16 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     document.getElementById("brand").innerHTML = emblem("", "#234a78", "#fdf6e6", "#e8d3a2") + "<span>فرقة أحمد الفاتح</span>";
     var n;
     if (session) {
-      n = '<span class="chip" style="align-self:center">' + (session === "admin" ? "الإدارة" : session === "teacher" ? "معلم" : "كشاف") + '</span><a href="#' + session + '">لوحتي</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#about">من نحن</a><button data-act="logout">خروج</button>';
+      n = '<span class="chip" style="align-self:center">' + (session === "admin" ? "الإدارة" : session === "teacher" ? "معلم" : "كشاف") + '</span><a href="#' + session + '">لوحتي</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#magazine">المجلة</a><a href="#about">من نحن</a><button data-act="logout">خروج</button>';
     } else {
-      n = '<a href="#home">الرئيسية</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#about">من نحن</a><a class="go" href="#join">انضم إلينا</a>';
+      n = '<a href="#home">الرئيسية</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#magazine">المجلة</a><a href="#about">من نحن</a><a class="go" href="#join">انضم إلينا</a>';
     }
     document.getElementById("nav").innerHTML = n;
   }
   function render(k) {
     shown = k;
-    var view = /^album-/.test(k) ? "album" : /^admin/.test(k) ? "admin" : k;
-    var out = view === "scout" ? vScout() : view === "admin" ? vAdmin(k) : view === "teacher" ? vTeacher() : view === "home" ? vHome() : view === "gallery" ? vGallery() : view === "activities" ? vActivities() : view === "album" ? vAlbum(k) : vParts()[view];
+    var view = /^album-/.test(k) ? "album" : /^admin/.test(k) ? "admin" : /^magazine/.test(k) ? "magazine" : k;
+    var out = view === "scout" ? vScout() : view === "admin" ? vAdmin(k) : view === "teacher" ? vTeacher() : view === "home" ? vHome() : view === "gallery" ? vGallery() : view === "activities" ? vActivities() : view === "album" ? vAlbum(k) : view === "magazine" ? vMagazine(k) : vParts()[view];
     ui.flash = null;
     document.getElementById("app").innerHTML = out +
       '<footer class="ft"><div><b style="font-family:var(--font-display);font-size:1.2rem;color:var(--fg)">فرقة أحمد الفاتح الكشفية</b><br>كن مستعداً</div><div>جميع الحقوق محفوظة © فرقة أحمد الفاتح الكشفية</div></footer>';
@@ -2411,18 +2574,19 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function refresh(scrollId) { render(shown); if (scrollId) { var el = document.getElementById(scrollId); if (el) el.scrollIntoView(); } }
 
   /* ---------- routing ---------- */
-  var PAGES = { about: 1, activities: 1, gallery: 1, join: 1 };
+  var PAGES = { about: 1, activities: 1, gallery: 1, join: 1, magazine: 1 };
   function go() {
     if (ui.lb) lbClose();
     var n = location.hash.slice(1) || "home", view;
-    if (PAGES[n] || n === "scout" || n === "teacher") view = n; else if (/^admin(-[a-z]+)?$/.test(n)) view = "admin"; else if (/^album-\d+$/.test(n)) view = "album"; else view = "home";
+    if (PAGES[n] || n === "scout" || n === "teacher") view = n; else if (/^admin(-[a-z]+)?$/.test(n)) view = "admin"; else if (/^album-\d+$/.test(n)) view = "album"; else if (/^magazine-(\d+|draft)$/.test(n)) view = "magazine"; else view = "home";
     if ((view === "scout" && session !== "scout") || (view === "teacher" && session !== "teacher") || (view === "admin" && session !== "admin")) { location.hash = "home"; return; }
     if (view === "home" && session) { location.hash = session; return; }
-    var key = view === "album" || view === "admin" ? n : view;
+    var key = view === "album" || view === "admin" || view === "magazine" ? n : view;
     if (key !== shown) render(key);
     window.scrollTo(0, 0);
   }
   window.addEventListener("hashchange", go);
+  document.addEventListener("scroll", function (e) { var p = e.target; if (p && p.id === "mgpager") { var n = p.children.length, i = Math.round(Math.abs(p.scrollLeft) / p.clientWidth), c = document.getElementById("mgcnt"); if (c) c.textContent = arNum(Math.min(n, i + 1)) + " / " + arNum(n); } }, true);
 
   /* ---------- actions ---------- */
   function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ""; }
@@ -2507,6 +2671,35 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     }
     else if (a === "ltab") { ui.ltab = val; refresh(); }
     else if (a === "ttab") { ui.ttab = val; refresh(); }
+    else if (a === "mgnext" || a === "mgprev") { var pg = document.getElementById("mgpager"); if (pg) pg.scrollBy({ left: (a === "mgnext" ? -1 : 1) * pg.clientWidth, behavior: "smooth" }); }
+    else if (a === "mgshare") { var lk = location.href.split("#")[0] + "#magazine-" + val; try { navigator.clipboard.writeText(lk).then(function () { toast("نُسخ رابط العدد."); }, function () { toast(lk, 6000); }); } catch (er) { toast(lk, 6000); } }
+    else if (a === "mgpdf") exportPdf("mag", Number(val));
+    else if (a === "mgnew") { ui.mgf = { id: 0, tpl: "article", title: "", body: "", ans: "", who: "", imgs: [], caps: [], qa: [] }; refresh(); }
+    else if (a === "mgcancel") { ui.mgf = null; refresh(); }
+    else if (a === "mgtpl") { mgCapture(); ui.mgf.tpl = val; ui.mgf.imgs = ui.mgf.imgs.slice(0, val === "activity" ? 4 : 1); refresh(); }
+    else if (a === "mgimgdel") { mgCapture(); ui.mgf.imgs.splice(id, 1); ui.mgf.caps.splice(id, 1); refresh(); }
+    else if (a === "mgedit") { var pe = byId(S.magp, id); if (pe) { ui.mgf = JSON.parse(JSON.stringify(pe)); ui.mgf.caps = ui.mgf.caps || []; ui.mgf.qa = ui.mgf.qa || []; ui.mgf.who = ui.mgf.who || ""; ui.mgf.ans = ui.mgf.ans || ""; ui.mgf.body = ui.mgf.body || ""; refresh(); } }
+    else if (a === "mgdel") { S.magp = S.magp.filter(function (p) { return !(p.id === id && p.scout === uid && p.status !== "approved") && true; }); if (session === "admin") S.magp = S.magp.filter(function (p) { return p.id !== id; }); save(); refresh(); }
+    else if (a === "mgsave") {
+      mgCapture(); var f2 = ui.mgf, me2 = byId(S.members, uid), send = val === "send";
+      if (!f2.title.trim()) { toast("اكتب عنوان الصفحة."); return; }
+      if (send) {
+        var okc = f2.tpl === "article" ? f2.body.trim() : f2.tpl === "activity" ? f2.imgs.length : f2.tpl === "interview" ? f2.qa.filter(function (x) { return x[0].trim() && x[1].trim(); }).length : f2.body.trim();
+        if (!okc) { toast("أكمل محتوى الصفحة قبل الإرسال."); return; }
+      }
+      if (!f2.id) { var usedN = S.magp.filter(function (p) { return p.scout === uid && p.status !== "rejected" && (p.status !== "approved" || p.no === S.mag.cfg.no); }).length; if (usedN >= 2) { toast("وصلت إلى الحد الأقصى (صفحتان)."); return; } }
+      var rec = { id: f2.id || nid(), scout: uid, tpl: f2.tpl, title: f2.title.trim(), body: f2.body, ans: f2.ans, who: f2.who, imgs: f2.imgs, caps: f2.caps, qa: f2.qa.filter(function (x) { return x[0].trim() || x[1].trim(); }), name: me2 ? me2.name : "", grade: me2 ? me2.grade : "", status: send ? "pending" : "draft", adminNote: "", ts: Date.now(), no: 0, at: 0 };
+      if (f2.id) S.magp = S.magp.map(function (p) { return p.id === f2.id ? rec : p; }); else S.magp.push(rec);
+      ui.mgf = null; save(); toast(send ? "أُرسلت الصفحة للإدارة ✓" : "حُفظت المسودة."); refresh();
+    }
+    else if (a === "mgapprove") { var pa = byId(S.magp, id); if (pa) { pa.status = "approved"; pa.no = S.mag.cfg.no; pa.at = Date.now(); pa.adminNote = ""; save(); ui.flash = { where: "mag", text: "أُضيفت الصفحة إلى العدد." }; refresh(); } }
+    else if (a === "mgreject") { var pr = byId(S.magp, id); if (pr) { pr.status = "rejected"; pr.adminNote = v("mg-rn-" + id) || "يرجى مراجعة الصفحة وإعادة إرسالها."; save(); ui.flash = { where: "mag", text: "أُعيدت الصفحة للكاتب." }; refresh(); } }
+    else if (a === "mgunapp") { var pu = byId(S.magp, id); if (pu) { pu.status = "pending"; pu.no = 0; save(); refresh(); } }
+    else if (a === "mgedrm") { S.mag.editors = S.mag.editors.filter(function (x) { return x !== id; }); save(); refresh(); }
+    else if (a === "mgbgdel") { S.mag.cfg.bg = ""; save(); refresh(); }
+    else if (a === "mgpubask") { ui.mgpub = true; refresh(); }
+    else if (a === "mgpubno") { ui.mgpub = false; refresh(); }
+    else if (a === "mgpubyes") { var c9 = S.mag.cfg; S.mag.issues.push(Object.assign({}, c9, { pub: Date.now() })); S.mag.cfg = Object.assign({}, c9, { no: c9.no + 1, month: "", note: "", noteImg: "" }); ui.mgpub = false; save(); ui.flash = { where: "mag", text: "نُشر العدد " + arNum(c9.no) + ". بدأ عدد جديد." }; refresh(); }
     else if (a === "stopen") stOpen();
     else if (a === "stclose") stClose();
     else if (a === "stsheet") { stv.sheet = !stv.sheet; stShow(stv.i); }
@@ -2685,7 +2878,14 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 
   document.addEventListener("change", function (e) {
     var t = e.target;
-    if (t.id === "st-in" || t.id === "st-cam") {
+    if (t.id === "mg-img") {
+      mgCapture(); var mf = Array.prototype.slice.call(t.files || []), room = (ui.mgf.tpl === "activity" ? 4 : 1) - ui.mgf.imgs.length; mf = mf.slice(0, Math.max(0, room));
+      (function nx(k) { if (k >= mf.length) { refresh(); return; } readImage(mf[k]).then(function (r) { ui.mgf.imgs.push(scaleTo(r.img, 1000, 0.72)); URL.revokeObjectURL(r.url); nx(k + 1); }, function () { nx(k + 1); }); })(0);
+    } else if (t.id === "mg-bg" || t.id === "mg-nimg") {
+      var bf = t.files && t.files[0]; if (bf) readImage(bf).then(function (r) { if (t.id === "mg-bg") S.mag.cfg.bg = scaleTo(r.img, 1200, 0.7); else S.mag.cfg.noteImg = scaleTo(r.img, 300, 0.8); URL.revokeObjectURL(r.url); save(); refresh(); }, function () {});
+    } else if (t.id === "mg-edsel") {
+      if (t.value) { S.mag.editors.push(Number(t.value)); save(); refresh(); }
+    } else if (t.id === "st-in" || t.id === "st-cam") {
       var sfs = Array.prototype.slice.call(t.files || [], 0, 10), scap = t.id === "st-in" ? ((document.getElementById("st-cap") || {}).value || "") : "", sn = 0, cam = t.id === "st-cam";
       (function nx(k) {
         if (k >= sfs.length) { save(); if (cam) { toast(sn ? "نُشرت القصة ✓" : "تعذّر نشر الصورة.", 2500); } else ui.flash = { where: "stories", text: "نُشرت " + sn + " قصة." }; refresh(); return; }
@@ -2896,6 +3096,9 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       save();
       ui.flash = { where: "teach", text: "سُجّل " + sgn(good ? tf.pts : -tf.pts) + " نقطة للكشاف " + (sc2 ? sc2.name : "") + (sent ? ". أُرسل الإجراء «" + tf.action + "» إلى الإدارة للاعتماد." : ".") };
       ui.tf = { scout: 0, kind: tf.kind, beh: "", other: "", pts: 5, action: "", note: "" }; refresh();
+    } else if (f === "magcfg") {
+      var cc = S.mag.cfg; cc.title = v("mc-title") || cc.title; cc.sub = v("mc-sub"); cc.month = v("mc-month"); cc.no = Math.max(1, Number(v("mc-no")) || cc.no); cc.note = document.getElementById("mc-note").value.trim(); cc.noteBy = v("mc-noteby");
+      save(); ui.flash = { where: "mag", text: "حُفظ غلاف العدد." }; refresh();
     } else if (f === "addQB") {
       var qn = v("qb-n").trim(); if (!qn) return;
       S.quick.push({ id: nid(), t: v("qb-t") === "b" ? "b" : "g", name: qn, pts: Math.min(10, Math.max(1, Number(v("qb-p")) || 1)) }); save(); ui.flash = { where: "periods", text: "أُضيف الزر." }; refresh();
