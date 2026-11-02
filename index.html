@@ -383,6 +383,33 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .ttrow.brk { color: var(--muted); }
 .ttrow select { width: 130px; }
 .ptt input { width: 92px; padding: 6px; }
+.stbar { display: flex; justify-content: center; margin: 4px 0 14px; }
+.stwrap { font: inherit; background: none; border: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--fg); }
+.string { width: 76px; height: 76px; border-radius: 50%; padding: 3px; background: conic-gradient(#d4a017, #c1272d, #d4a017); display: block; }
+.string.seen { background: var(--line); }
+.string img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--bg); display: block; box-sizing: border-box; }
+.stwrap b { font-size: .9rem; }
+#stv { position: fixed; inset: 0; z-index: 120; background: #000; color: #fff; display: flex; flex-direction: column; }
+#stv[hidden] { display: none; }
+#stv .stbars { display: flex; gap: 4px; padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 6px; }
+#stv .stbars i { flex: 1; height: 3px; background: rgba(255,255,255,.3); border-radius: 2px; overflow: hidden; }
+#stv .stbars i u { display: block; height: 100%; width: 0; background: #fff; }
+#stv .stbars i.done u { width: 100%; }
+#stv .stbars i.cur u { animation: stfill 6s linear forwards; }
+@keyframes stfill { to { width: 100%; } }
+#stv .sthead { display: flex; justify-content: space-between; align-items: center; padding: 4px 12px; }
+#stv .sthead button { font: inherit; background: rgba(255,255,255,.18); color: #fff; border: 0; border-radius: 99px; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; }
+#stv .stimg { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+#stv .stimg img { max-width: 100%; max-height: 100%; object-fit: contain; }
+#stv .sttap { position: absolute; top: 0; bottom: 0; width: 50%; background: none; border: 0; cursor: pointer; }
+#stv .sttap.nx { left: 0; } #stv .sttap.pv { right: 0; }
+#stv .stcap { padding: 10px 16px; text-align: center; font-size: 1.1rem; min-height: 24px; }
+#stv .strx { display: flex; justify-content: center; gap: 8px; padding: 8px 10px calc(14px + env(safe-area-inset-bottom, 0px)); flex-wrap: wrap; }
+#stv .strx button { font: inherit; background: rgba(255,255,255,.14); border: 2px solid transparent; color: #fff; border-radius: 99px; padding: 8px 14px; font-size: 1.3rem; cursor: pointer; }
+#stv .strx button.on { border-color: #fff; background: rgba(255,255,255,.3); }
+#stv .strx small { font-size: .8rem; margin-inline-start: 4px; }
+.stadm { display: grid; grid-template-columns: 90px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.stadm img { width: 90px; height: 120px; object-fit: cover; border-radius: 8px; }
 .cp { font-family: inherit; font-size: .95rem; padding: 6px 14px; border: 1.5px solid var(--line); border-radius: 99px; background: none; color: var(--fg); cursor: pointer; }
 .cp.on.good { background: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
 .cp.on.bad { background: var(--danger); border-color: var(--danger); color: #fff; }
@@ -695,6 +722,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   var DEFT = { q: ["07:00", "07:15"], p1: ["07:15", "08:00"], p2: ["08:00", "08:45"], p3: ["08:45", "09:30"], b1: ["09:30", "09:50"], p4a: ["09:50", "10:35"], p4b: ["09:30", "10:15"], b2: ["10:15", "10:35"], p5: ["10:35", "11:20"], p6: ["11:20", "12:05"], p7: ["12:05", "12:50"] };
   if (!S.ptimes) { S.ptimes = {}; PERIODS.forEach(function (p) { S.ptimes[p[0]] = [0, 1, 2, 3, 4].map(function () { return DEFT[p[0]].slice(); }); }); }
   if (!S.ttable) S.ttable = {};
+  if (!S.stories) S.stories = []; if (!S.sviews) S.sviews = {}; if (!S.sreact) S.sreact = {};
+  (function () { var lim = Date.now() - 24 * 3600 * 1000; S.stories = S.stories.filter(function (x) { return x.ts > lim; }); var ids = {}; S.stories.forEach(function (x) { ids[x.id] = 1; }); [S.sviews, S.sreact].forEach(function (o) { Object.keys(o).forEach(function (k) { if (!ids[k]) delete o[k]; }); }); })();
   if (!S.quick) S.quick = [{ id: 9101, t: "g", name: "مشاركة", pts: 2 }, { id: 9102, t: "g", name: "التزام", pts: 1 }, { id: 9103, t: "g", name: "مساعدة زميل", pts: 3 }, { id: 9104, t: "g", name: "تفوق وإنجاز", pts: 3 }, { id: 9105, t: "b", name: "إخلال بالنظام", pts: 2 }, { id: 9106, t: "b", name: "نسيان الأدوات", pts: 1 }, { id: 9107, t: "b", name: "تأخر", pts: 1 }, { id: 9108, t: "b", name: "إساءة لزميل", pts: 3 }];
   if (!S.holidays) S.holidays = [
     { id: 9001, name: "رأس السنة الميلادية", from: "01-01", to: "01-01", yearly: true },
@@ -983,7 +1012,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
   function heroImg() { return S.hero === "none" ? "" : (S.hero || DEFHERO); }
   function vHome() {
-    return '<section class="hero"' + (heroImg() ? ' style="--hb:url(' + heroImg() + ')"' : "") + '><div class="hero-in"><div>' + emblem("emb", "#234a78", "#fbf3e1", "#e8d3a2") + '<div class="motto">كن مستعداً</div><h1>فرقة أحمد الفاتح الكشفية</h1><p class="lead">نصنع من الاولاد رجالاً يعتمدون على أنفسهم، ويقومون بواجبهم تجاه الله وتجاه وطنهم ومجتمعهم.</p></div>' + loginForm() + '</div></section>' + homeExtra();
+    return (session ? storyStrip() : "") + '<section class="hero"' + (heroImg() ? ' style="--hb:url(' + heroImg() + ')"' : "") + '><div class="hero-in"><div>' + emblem("emb", "#234a78", "#fbf3e1", "#e8d3a2") + '<div class="motto">كن مستعداً</div><h1>فرقة أحمد الفاتح الكشفية</h1><p class="lead">نصنع من الاولاد رجالاً يعتمدون على أنفسهم، ويقومون بواجبهم تجاه الله وتجاه وطنهم ومجتمعهم.</p></div>' + loginForm() + '</div></section>' + homeExtra();
   }
   function homeExtra() {
     var mo = TODAY.slice(0, 7), anns = S.announcements.slice(0, 3).map(function (a) { return '<div class="ann"><h4>' + h(a.title) + "</h4><p>" + h(a.text) + "</p><small>" + longDate(a.date) + "</small></div>"; }).join("");
@@ -1052,23 +1081,23 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var sb = ui.stab || "profile";
     var fixed = ptaskHtml(m) + (mt.length ? tasksC : "");
     var sbody = sb === "points" ? '<div class="pdfbar"><button type="button" class="btn ghost sm" data-act="myreport" data-id="' + m.id + '">تحميل تقريري PDF</button></div>' + pointsHtml(m) + '<div class="card"><h3>تحدي الطلائع هذا الشهر</h3>' + patrolBoard(TODAY.slice(0, 7)) + "</div>" : sb === "badges" ? badgesC : sb === "acts" ? actsC + annsC : sb === "cred" ? credCard(m) : sb === "msg" ? msgPage() : sb === "lead" && m.rank ? leadPage(m) : profileC + memCardCard(m);
-    return pre + '<div class="dash-h"><div><span class="chip">صفحة الكشاف' + (m.rank ? " · " + h(m.rank) : "") + '</span><h1>أهلاً، ' + h(m.name) + '</h1></div></div><div class="tbody" style="margin-bottom:20px">' + fixed + '</div><nav class="ttabs" aria-label="أقسام صفحة الكشاف">' + stabs.map(function (x) { return '<button type="button" data-act="stab" data-v="' + x[0] + '" class="' + (sb === x[0] ? "on" : "") + '" aria-pressed="' + (sb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + sbody + "</div>";
+    return pre + storyStrip() + '<div class="dash-h"><div><span class="chip">صفحة الكشاف' + (m.rank ? " · " + h(m.rank) : "") + '</span><h1>أهلاً، ' + h(m.name) + '</h1></div></div><div class="tbody" style="margin-bottom:20px">' + fixed + '</div><nav class="ttabs" aria-label="أقسام صفحة الكشاف">' + stabs.map(function (x) { return '<button type="button" data-act="stab" data-v="' + x[0] + '" class="' + (sb === x[0] ? "on" : "") + '" aria-pressed="' + (sb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + sbody + "</div>";
   }
 
   function vAdmin(k) {
     var sub = k && k.indexOf("admin-") === 0 ? k.slice(6) : "stats";
     var rq = S.requests.length;
-    var items = [["stats", "الإحصاءات"], ["members", "الكشافة"], ["patrols", "الطلائع"], ["tasks", "مهام الكشافة"], ["badges", "الشارات"], ["attendance", "الحضور"], ["memcards", "بطاقات العضوية"], ["reports", "التقارير والسجل"], ["periods", "الحصص والسلوك السريع"], ["behavior", "السلوك والنقاط" + (S.cases.filter(function (c) { return c.status === "pending"; }).length ? " (" + S.cases.filter(function (c) { return c.status === "pending"; }).length + ")" : "")], ["teachers", "المعلمون والمشرفون"], ["staff", "الإدارة"], ["requests", "طلبات الانضمام" + (rq ? " (" + rq + ")" : "")], ["messages", "الرسائل والاقتراحات" + (unreadMsgs() ? " (" + unreadMsgs() + ")" : "")], ["content", "الأنشطة والإعلانات"], ["photos", "الصور"]];
+    var items = [["stats", "الإحصاءات"], ["members", "الكشافة"], ["patrols", "الطلائع"], ["tasks", "مهام الكشافة"], ["badges", "الشارات"], ["attendance", "الحضور"], ["memcards", "بطاقات العضوية"], ["reports", "التقارير والسجل"], ["periods", "الحصص والسلوك السريع"], ["behavior", "السلوك والنقاط" + (S.cases.filter(function (c) { return c.status === "pending"; }).length ? " (" + S.cases.filter(function (c) { return c.status === "pending"; }).length + ")" : "")], ["teachers", "المعلمون والمشرفون"], ["staff", "الإدارة"], ["requests", "طلبات الانضمام" + (rq ? " (" + rq + ")" : "")], ["messages", "الرسائل والاقتراحات" + (unreadMsgs() ? " (" + unreadMsgs() + ")" : "")], ["stories", "القصص"], ["content", "الأنشطة والإعلانات"], ["photos", "الصور"]];
     var ck = sub === "scoutcards" ? "members" : sub === "teachercards" ? "teachers" : sub;
     var pend = S.cases.filter(function (c) { return c.status === "pending"; }).length;
-    var GR = [["stats", "الإحصاءات", ["stats"], 0], ["scouts", "الكشافة", ["members", "patrols", "tasks", "badges", "attendance", "memcards"], 0], ["conduct", "السلوك والتقارير", ["behavior", "periods", "reports"], pend], ["accounts", "الحسابات", ["teachers", "staff"], 0], ["site", "الموقع", ["requests", "messages", "content", "photos"], rq + unreadMsgs()]];
+    var GR = [["stats", "الإحصاءات", ["stats"], 0], ["scouts", "الكشافة", ["members", "patrols", "tasks", "badges", "attendance", "memcards"], 0], ["conduct", "السلوك والتقارير", ["behavior", "periods", "reports"], pend], ["accounts", "الحسابات", ["teachers", "staff"], 0], ["site", "الموقع", ["requests", "messages", "stories", "content", "photos"], rq + unreadMsgs()]];
     var cg = GR.filter(function (g) { return g[2].indexOf(ck) > -1; })[0] || GR[0];
     var lnk = function (k) { return "#" + (k === "stats" ? "admin" : "admin-" + k); };
     var nav = GR.map(function (g) { return '<a href="' + lnk(g[2][0]) + '" class="' + (g === cg ? "on" : "") + '">' + g[1] + (g[3] ? " (" + g[3] + ")" : "") + "</a>"; }).join("");
     var curLbl = h(cg[1]);
     var subNav = cg[2].length > 1 ? '<nav class="subnav" aria-label="أقسام ' + h(cg[1]) + '">' + cg[2].map(function (k) { var it = items.filter(function (x) { return x[0] === k; })[0]; return '<a href="' + lnk(k) + '" class="' + (ck === k ? "on" : "") + '">' + (it ? it[1] : k) + "</a>"; }).join("") + "</nav>" : "";
-    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "memcards" ? aMemCards() : sub === "periods" ? aPeriods() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
-    return '<div class="dash-h"><div><span class="chip">صفحة الإدارة</span><h1>لوحة قيادة الفرقة</h1></div></div><div class="adm"><div class="admnav' + (ui.navOpen ? " open" : "") + '"><button type="button" class="navtoggle" data-act="navtoggle" aria-expanded="' + (!!ui.navOpen) + '"><div><span>القسم الحالي</span><br>' + curLbl + '</div><b aria-hidden="true">' + (ui.navOpen ? "▲" : "▼") + '</b></button><nav class="side" aria-label="أقسام الإدارة">' + nav + '</nav></div><div class="main">' + body + "</div></div>";
+    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "memcards" ? aMemCards() : sub === "periods" ? aPeriods() : sub === "stories" ? aStories() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
+    return storyStrip() + '<div class="dash-h"><div><span class="chip">صفحة الإدارة</span><h1>لوحة قيادة الفرقة</h1></div></div><div class="adm"><div class="admnav' + (ui.navOpen ? " open" : "") + '"><button type="button" class="navtoggle" data-act="navtoggle" aria-expanded="' + (!!ui.navOpen) + '"><div><span>القسم الحالي</span><br>' + curLbl + '</div><b aria-hidden="true">' + (ui.navOpen ? "▲" : "▼") + '</b></button><nav class="side" aria-label="أقسام الإدارة">' + nav + '</nav></div><div class="main">' + body + "</div></div>";
   }
 
   function aStats() {
@@ -1865,7 +1894,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var tabs = [["now", "حصتي الآن"], ["tt", "جدولي"], ["record", "تسجيل مفصّل"], ["review", "مراجعات الإدارة" + (nRev ? " (" + nRev + ")" : "")], ["log", "آخر ما سجّلته"], ["msg", "مراسلة الإدارة"], ["cred", "بيانات الدخول"]];
     var tb = ui.ttab || "now";
     var body = tb === "now" ? vQuick() : tb === "tt" ? vTT() : tb === "review" ? (mine || '<div class="card"><p class="empty">لا توجد مراجعات مطلوبة من الإدارة.</p></div>') : tb === "log" ? '<div class="card"><h3>آخر ما سجّلته</h3>' + log + "</div>" : tb === "cred" ? credCard(t) : tb === "msg" ? msgPage() : form;
-    return '<div class="dash-h"><div><span class="chip">صفحة المعلم</span><h1>أهلاً، ' + h(t.name) + '</h1></div></div><nav class="ttabs" aria-label="أقسام صفحة المعلم">' + tabs.map(function (x) { return '<button type="button" data-act="ttab" data-v="' + x[0] + '" class="' + (tb === x[0] ? "on" : "") + '" aria-pressed="' + (tb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + body + "</div>";
+    return storyStrip() + '<div class="dash-h"><div><span class="chip">صفحة المعلم</span><h1>أهلاً، ' + h(t.name) + '</h1></div></div><nav class="ttabs" aria-label="أقسام صفحة المعلم">' + tabs.map(function (x) { return '<button type="button" data-act="ttab" data-v="' + x[0] + '" class="' + (tb === x[0] ? "on" : "") + '" aria-pressed="' + (tb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + body + "</div>";
   }
 
   function lsGet(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
@@ -1931,6 +1960,50 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var qb = S.quick.map(function (x) { return '<div class="row-act" style="gap:8px;margin-bottom:8px;flex-wrap:wrap"><span class="chip" style="' + (x.t === "b" ? "background:var(--danger);color:#fff" : "") + '">' + (x.t === "g" ? "حسن" : "سيئ") + '</span><input type="text" data-qb="' + x.id + '|n" value="' + h(x.name) + '" style="flex:1;min-width:140px"><input type="number" min="1" max="10" data-qb="' + x.id + '|p" value="' + x.pts + '" style="width:80px"><button class="btn danger sm" data-act="qbdel" data-id="' + x.id + '">حذف</button></div>'; }).join("");
     return flashHtml("periods") + '<div class="card"><h3>أوقات الحصص</h3><p class="muted" style="margin-bottom:10px">الأوقات ثابتة طوال الأسبوع (الأحد – الخميس). أوقات مبدئية، عدّلها حسب جدولكم.</p><div class="tbl"><table><tr><th>الحصة</th><th>من</th><th>إلى</th></tr>' + rows + '</table></div></div>' +
       '<div class="card"><h3>أزرار السلوك السريع</h3><p class="muted" style="margin-bottom:10px">هذه الأزرار تظهر للمعلم في «حصتي الآن». تُخصم/تُضاف النقاط مباشرة.</p>' + qb + '<form data-form="addQB" class="row-act" style="gap:8px;flex-wrap:wrap;margin-top:12px"><select id="qb-t" style="width:auto"><option value="g">سلوك حسن</option><option value="b">سلوك سيئ</option></select><input id="qb-n" type="text" placeholder="اسم الزر" required style="flex:1;min-width:140px"><input id="qb-p" type="number" min="1" max="10" value="1" style="width:80px"><button class="btn sm" type="submit">إضافة زر</button></form></div>';
+  }
+
+  var STX = ["👍", "❤️", "👏", "🔥", "😍"];
+  function myKey() { return session + ":" + uid; }
+  function activeStories() { var lim = Date.now() - 24 * 3600 * 1000; return (S.stories || []).filter(function (x) { return x.ts > lim; }).sort(function (a, b) { return a.ts - b.ts; }); }
+  function storyStrip() {
+    if (!session) return "";
+    var act = activeStories(); if (!act.length) return "";
+    var seen = act.every(function (x) { return (S.sviews[x.id] || []).indexOf(myKey()) > -1; });
+    return '<div class="stbar"><button type="button" class="stwrap" data-act="stopen"><span class="string' + (seen ? " seen" : "") + '"><img src="' + act[act.length - 1].img + '" alt=""></span><b>قصة الفرقة · ' + act.length + "</b></button></div>";
+  }
+  var stv = { i: 0, list: [], t: null };
+  function stShow(i) {
+    var el = document.getElementById("stv"); if (!el) return;
+    if (i < 0) i = 0; if (i >= stv.list.length) { stClose(); return; }
+    stv.i = i; var x = stv.list[i], mk = myKey();
+    if (session) { var vw = S.sviews[x.id] || (S.sviews[x.id] = []); if (vw.indexOf(mk) < 0) { vw.push(mk); save(); } }
+    var rx = S.sreact[x.id] || {}, mine = rx[mk];
+    var bars = stv.list.map(function (_, k) { return '<i class="' + (k < i ? "done" : k === i ? "cur" : "") + '"><u></u></i>'; }).join("");
+    var cnt = function (e) { return Object.keys(rx).filter(function (k) { return rx[k] === e; }).length; };
+    var rb = STX.map(function (e) { var n = cnt(e); return '<button type="button" data-act="strx" data-v="' + e + '" class="' + (mine === e ? "on" : "") + '">' + e + (n ? "<small>" + n + "</small>" : "") + "</button>"; }).join("");
+    el.innerHTML = '<div class="stbars">' + bars + '</div><div class="sthead"><button type="button" data-act="stclose" aria-label="إغلاق">✕</button><span></span></div><div class="stimg"><img alt="" src="' + x.img + '"><button type="button" class="sttap nx" data-act="stnext" aria-label="التالي"></button><button type="button" class="sttap pv" data-act="stprev" aria-label="السابق"></button></div><div class="stcap"></div><div class="strx">' + rb + "</div>";
+    el.querySelector(".stcap").textContent = x.cap || "";
+    clearTimeout(stv.t); stv.t = setTimeout(function () { stShow(stv.i + 1); }, 6000);
+  }
+  function stClose() { clearTimeout(stv.t); var el = document.getElementById("stv"); if (el) { el.hidden = true; el.innerHTML = ""; } refresh(); }
+  function stOpen() {
+    var act = activeStories(); if (!act.length) return;
+    var el = document.getElementById("stv"); if (!el) { el = document.createElement("div"); el.id = "stv"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "قصة الفرقة"); document.body.appendChild(el); }
+    el.hidden = false; stv.list = act; var mk = myKey(), first = 0;
+    for (var k = 0; k < act.length; k++) if ((S.sviews[act[k].id] || []).indexOf(mk) < 0) { first = k; break; }
+    stShow(first);
+  }
+  function who(k) { var p = k.split(":"), id = Number(p[1]); var o = p[0] === "scout" ? byId(S.members, id) : p[0] === "teacher" ? byId(S.teachers, id) : byId(S.staff, id); return (o ? o.name : "—") + (p[0] === "scout" ? "" : p[0] === "teacher" ? " (معلم)" : " (إدارة)"); }
+  function aStories() {
+    var act = activeStories().reverse();
+    var rows = act.map(function (x) {
+      var vw = S.sviews[x.id] || [], rx = S.sreact[x.id] || {}, tally = STX.map(function (e) { var n = Object.keys(rx).filter(function (k) { return rx[k] === e; }).length; return n ? e + " " + n : ""; }).filter(Boolean).join("  ");
+      var left = Math.max(0, Math.ceil((x.ts + 24 * 3600 * 1000 - Date.now()) / 3600000));
+      return '<div class="stadm"><img src="' + x.img + '" alt=""><div><b>' + h(x.cap || "بدون تعليق") + '</b><div class="muted" style="font-size:.9rem;margin:4px 0">تنتهي بعد ' + left + " ساعة · المشاهدات: <b>" + vw.length + "</b>" + (tally ? " · " + tally : "") + "</div>" +
+        (vw.length ? "<details><summary>من شاهدها</summary><p class=\"muted\" style=\"margin-top:6px\">" + vw.map(function (k) { return h(who(k)) + (rx[k] ? " " + rx[k] : ""); }).join("، ") + "</p></details>" : "") + '<div class="row-act" style="margin-top:8px"><button class="btn danger sm" data-act="stdel" data-id="' + x.id + '">حذف</button></div></div></div>';
+    }).join("") || '<p class="empty">لا توجد قصص نشطة.</p>';
+    return flashHtml("stories") + '<div class="card"><h3>إضافة قصة</h3><p class="muted" style="margin-bottom:10px">تظهر القصة للمعلمين والكشافة لمدة 24 ساعة ثم تختفي تلقائياً. يمكنك اختيار عدة صور دفعة واحدة (حتى 10).</p><div class="field"><label for="st-cap">تعليق يظهر أسفل الصورة (اختياري)</label><input id="st-cap" type="text" maxlength="120"></div><div class="row-act"><label class="btn sm" for="st-in">اختيار صور ونشرها</label><input id="st-in" class="evin" type="file" accept="image/*" multiple></div></div>' +
+      '<div class="card"><h3>القصص النشطة (' + act.length + ")</h3>" + rows + "</div>";
   }
   function caseLabel(st) { return st === "pending" ? "بانتظار الاعتماد" : st === "approved" ? "معتمد" : st === "returned" ? "أُعيد للمراجعة" : "مسحوب"; }
 
@@ -2404,6 +2477,12 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     }
     else if (a === "ltab") { ui.ltab = val; refresh(); }
     else if (a === "ttab") { ui.ttab = val; refresh(); }
+    else if (a === "stopen") stOpen();
+    else if (a === "stclose") stClose();
+    else if (a === "stnext") stShow(stv.i + 1);
+    else if (a === "stprev") stShow(stv.i - 1);
+    else if (a === "strx") { var sx = stv.list[stv.i], mk2 = myKey(), r2 = S.sreact[sx.id] || (S.sreact[sx.id] = {}); if (r2[mk2] === val) delete r2[mk2]; else r2[mk2] = val; save(); stShow(stv.i); }
+    else if (a === "stdel") { S.stories = drop(S.stories, id); delete S.sviews[id]; delete S.sreact[id]; save(); refresh(); }
     else if (a === "qsel") {
       var q1 = ui.q || (ui.q = { sel: [] }), ix = q1.sel.indexOf(id);
       if (ix > -1) q1.sel.splice(ix, 1); else q1.sel.push(id);
@@ -2575,7 +2654,13 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 
   document.addEventListener("change", function (e) {
     var t = e.target;
-    if (t.id === "hero-in") {
+    if (t.id === "st-in") {
+      var sfs = Array.prototype.slice.call(t.files || [], 0, 10), scap = (document.getElementById("st-cap") || {}).value || "", sn = 0;
+      (function nx(k) {
+        if (k >= sfs.length) { save(); ui.flash = { where: "stories", text: "نُشرت " + sn + " قصة." }; refresh(); return; }
+        readImage(sfs[k]).then(function (r) { S.stories.push({ id: nid(), img: scaleTo(r.img, 1080, 0.78), cap: scap.trim(), ts: Date.now() + k }); URL.revokeObjectURL(r.url); sn++; nx(k + 1); }, function () { nx(k + 1); });
+      })(0);
+    } else if (t.id === "hero-in") {
       var hf = t.files && t.files[0];
       if (hf) readImage(hf).then(function (r) { S.hero = scaleTo(r.img, 1400, 0.8); URL.revokeObjectURL(r.url); logEv && logEv("تغيير صورة الواجهة الرئيسية"); save(); refresh(); }, function () {});
     } else if (t.matches && t.matches("[data-task]")) {
