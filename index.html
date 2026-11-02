@@ -422,7 +422,7 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .mgpager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 0; border-radius: 14px; box-shadow: 0 6px 28px rgba(0,0,0,.18); background: #fff; }
 .mgpager::-webkit-scrollbar { display: none; }
 .mgp { flex: 0 0 100%; scroll-snap-align: center; box-sizing: border-box; min-height: 560px; background: #fffdf7; color: #2b1a14; display: flex; flex-direction: column; position: relative; overflow: hidden; }
-.mgcover { background: linear-gradient(160deg, #1b3a63, #234a78 55%, #163052); color: #fbf3e1; justify-content: flex-end; padding: 34px 26px; min-height: 620px; }
+.mgcover { --pc: #234a78; background: var(--pc); background: linear-gradient(160deg, color-mix(in srgb, var(--pc) 70%, #000), var(--pc) 60%, color-mix(in srgb, var(--pc) 82%, #000)); color: #fbf3e1; justify-content: flex-end; padding: 34px 26px; min-height: 620px; }
 .mgcover .cbg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: .26; }
 .mgcover > * { position: relative; }
 .mgcover .em { width: 74px; height: 74px; margin-bottom: auto; }
@@ -430,17 +430,27 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .mgcover .sub { font-size: 1.15rem; opacity: .9; margin-bottom: 18px; }
 .mgcover .mo { display: inline-block; align-self: flex-start; border: 1.5px solid #e8d3a2; color: #e8d3a2; padding: 6px 16px; border-radius: 99px; font-weight: 700; }
 .mgcover .no { font-size: .95rem; opacity: .8; margin-top: 14px; }
-.mgbar { height: 10px; background: linear-gradient(90deg, #d4a017, #c1272d); }
+.mgp { --pc: #234a78; }
+.mgbar { height: 10px; background: var(--pc); border-bottom: 4px solid #d4a017; box-sizing: content-box; }
 .mgbody { padding: 22px 22px 12px; flex: 1; }
-.mgbody h3 { font-size: 1.7rem; color: #234a78; margin-bottom: 12px; line-height: 1.35; }
+.mgbody h3 { font-size: 1.7rem; color: var(--pc); margin-bottom: 12px; line-height: 1.35; }
 .mgbody p { line-height: 1.95; font-size: 1.05rem; white-space: pre-wrap; margin: 0 0 12px; }
-.mgbody img.big { width: 100%; max-height: 280px; object-fit: cover; border-radius: 10px; margin-bottom: 12px; }
+.mgqa b { color: var(--pc) !important; } .mgqa { border-color: var(--pc) !important; }
+.sh { display: block; width: 100%; object-fit: cover; margin: 0 auto; }
+.sh-rect { aspect-ratio: 4/3; border-radius: 12px; } .sh-square { aspect-ratio: 1; border-radius: 12px; } .sh-circle { aspect-ratio: 1; border-radius: 50%; }
+.sh-triangle { aspect-ratio: 1/.9; clip-path: polygon(50% 0, 100% 100%, 0 100%); } .sh-hex { aspect-ratio: 1/.9; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+.sh-tilt { aspect-ratio: 4/3; clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%); } .sh-arch { aspect-ratio: 3/4; border-radius: 999px 999px 12px 12px; }
+.mgimgw { margin-bottom: 12px; } .mgcenter { width: 62%; margin: 0 auto 12px; } .mgside { display: grid; grid-template-columns: 42% 1fr; gap: 12px; margin-bottom: 12px; align-items: start; }
+.mggrid.col { grid-template-columns: 1fr; } .mggrid.mosaic figure:first-child { grid-column: 1 / -1; }
+.mgcover .cimg { width: 66%; margin: 6px auto 18px; }
+.sw { width: 34px; height: 34px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; box-shadow: 0 0 0 1px var(--line); } .sw.on { border-color: var(--fg); }
+.mgstyc .cps { margin-bottom: 8px; } .mgprev { margin-top: 12px; } .mgprev .mgp { min-height: 0; border: 1px solid var(--line); border-radius: 12px; }
 .mggrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.mggrid figure { margin: 0; } .mggrid img { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; display: block; } .mggrid figcaption { font-size: .88rem; color: #6f5d4a; margin-top: 4px; }
+.mggrid figure { margin: 0; } .mggrid figcaption { font-size: .88rem; color: #6f5d4a; margin-top: 4px; }
 .mgqa { border-inline-start: 4px solid #d4a017; padding: 4px 12px; margin-bottom: 12px; } .mgqa b { color: #234a78; display: block; margin-bottom: 2px; } .mgqa span { line-height: 1.8; }
 .mgwho { background: #f3ecda; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-weight: 700; }
 .mgquiz { background: #f3ecda; border-radius: 12px; padding: 14px; margin-bottom: 12px; font-size: 1.15rem; line-height: 1.9; }
-.mgp details { background: #234a78; color: #fff; border-radius: 10px; padding: 10px 14px; } .mgp summary { cursor: pointer; font-weight: 700; }
+.mgp details { background: var(--pc); color: #fff; border-radius: 10px; padding: 10px 14px; } .mgp summary { cursor: pointer; font-weight: 700; }
 .mgfoot { display: flex; align-items: center; gap: 10px; padding: 12px 22px 16px; border-top: 1px dashed #d6c9aa; font-size: .92rem; color: #6f5d4a; }
 .mgfoot img, .mgfoot .ph0 { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #d6c9aa; flex: none; }
 .mgfoot b { color: #2b1a14; display: block; }
@@ -2089,16 +2099,29 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var m = byId(S.members, p.scout), ph = m && m.photo ? '<img src="' + h(m.photo) + '" alt="">' : '<span class="ph0"></span>';
     return '<div class="mgfoot">' + ph + "<div><b>" + h(p.name || (m && m.name) || "") + "</b>" + h(p.grade || (m && m.grade) || "") + "</div></div>";
   }
+  var MGC = ["#234a78", "#2f6b3a", "#8c2432", "#b8860b", "#1f7a7a", "#5b3a8c", "#c4621a", "#2b2b33"];
+  var MGS = [["rect", "مستطيل"], ["square", "مربع"], ["circle", "دائرة"], ["triangle", "مثلث"], ["hex", "مضلع"], ["tilt", "مائل"], ["arch", "قوس"]];
+  function mgLayouts(tpl) { return tpl === "activity" ? [["grid", "شبكة"], ["col", "عمود"], ["mosaic", "كبيرة + صغيرة"]] : [["full", "كاملة العرض"], ["center", "في الوسط"], ["side", "بجانب النص"]]; }
+  function mgSty(p) { var s0 = p.sty || {}; return { shape: s0.shape || "rect", layout: s0.layout || (p.tpl === "activity" ? "grid" : "full"), color: s0.color || MGC[0] }; }
+  function mgImgTag(src, sh) { return '<img class="sh sh-' + sh + '" src="' + src + '" alt="">'; }
+  function mgWrap(im, ly, text) { return ly === "side" ? '<div class="mgside"><div>' + im + "</div><div>" + text + "</div></div>" : ly === "center" ? '<div class="mgcenter">' + im + "</div>" + text : '<div class="mgimgw">' + im + "</div>" + text; }
   function mgPageHtml(p) {
-    var b = "", t = p.tpl, im = p.imgs || [];
-    if (t === "article") b = (im[0] ? '<img class="big" src="' + im[0] + '" alt="">' : "") + "<p>" + h(p.body) + "</p>";
-    else if (t === "activity") b = '<div class="mggrid">' + im.map(function (x, i) { return '<figure><img src="' + x + '" alt=""><figcaption>' + h((p.caps || [])[i] || "") + "</figcaption></figure>"; }).join("") + "</div>" + (p.body ? "<p>" + h(p.body) + "</p>" : "");
-    else if (t === "interview") b = (p.who ? '<div class="mgwho">' + h(p.who) + "</div>" : "") + (im[0] ? '<img class="big" src="' + im[0] + '" alt="">' : "") + (p.qa || []).map(function (x) { return '<div class="mgqa"><b>' + h(x[0]) + "</b><span>" + h(x[1]) + "</span></div>"; }).join("");
-    else b = '<div class="mgquiz">' + h(p.body) + "</div>" + (im[0] ? '<img class="big" src="' + im[0] + '" alt="">' : "") + (p.ans ? "<details><summary>اضغط لمعرفة الإجابة</summary><p style=\"margin:8px 0 0\">" + h(p.ans) + "</p></details>" : "");
-    return '<article class="mgp"><div class="mgbar"></div><div class="mgbody"><h3>' + h(p.title) + "</h3>" + b + "</div>" + mgAuthor(p) + "</article>";
+    var b = "", t = p.tpl, im = p.imgs || [], st = mgSty(p), sh = st.shape, ly = st.layout;
+    var one = im[0] ? mgImgTag(im[0], sh) : "";
+    if (t === "article") b = one ? mgWrap(one, ly, "<p>" + h(p.body) + "</p>") : "<p>" + h(p.body) + "</p>";
+    else if (t === "activity") b = '<div class="mggrid ' + ly + '">' + im.map(function (x, i) { return "<figure>" + mgImgTag(x, sh) + "<figcaption>" + h((p.caps || [])[i] || "") + "</figcaption></figure>"; }).join("") + "</div>" + (p.body ? "<p>" + h(p.body) + "</p>" : "");
+    else if (t === "interview") { var wh = p.who ? '<div class="mgwho">' + h(p.who) + "</div>" : ""; b = (one ? mgWrap(one, ly, wh) : wh) + (p.qa || []).map(function (x) { return '<div class="mgqa"><b>' + h(x[0]) + "</b><span>" + h(x[1]) + "</span></div>"; }).join(""); }
+    else { var qz = '<div class="mgquiz">' + h(p.body) + "</div>"; b = (one ? mgWrap(one, ly, qz) : qz) + (p.ans ? "<details><summary>اضغط لمعرفة الإجابة</summary><p style=\"margin:8px 0 0\">" + h(p.ans) + "</p></details>" : ""); }
+    return '<article class="mgp" style="--pc:' + st.color + '"><div class="mgbar"></div><div class="mgbody"><h3>' + h(p.title) + "</h3>" + b + "</div>" + mgAuthor(p) + "</article>";
   }
   function mgCoverHtml(c, no) {
-    return '<article class="mgp mgcover">' + (c.bg ? '<div class="cbg" style="background-image:url(' + c.bg + ')"></div>' : "") + emblem("em") + "<h2>" + h(c.title) + '</h2><div class="sub">' + h(c.sub) + '</div><span class="mo">' + h(c.month) + '</span><div class="no">العدد ' + arNum(no) + "</div></article>";
+    var shaped = c.bg && c.cshape && c.cshape !== "full";
+    return '<article class="mgp mgcover" style="--pc:' + (c.color || MGC[0]) + '">' + (c.bg && !shaped ? '<div class="cbg" style="background-image:url(' + c.bg + ')"></div>' : "") + emblem("em") + (shaped ? '<div class="cimg">' + mgImgTag(c.bg, c.cshape) + "</div>" : "") + "<h2>" + h(c.title) + '</h2><div class="sub">' + h(c.sub) + '</div><span class="mo">' + h(c.month) + '</span><div class="no">العدد ' + arNum(no) + "</div></article>";
+  }
+  function mgStyCtl(sty, tpl, act, id) {
+    var bt = function (k, items, cur) { return items.map(function (x) { return '<button type="button" class="cp' + (cur === x[0] ? " on good" : "") + '" data-act="' + act + '" data-k="' + k + '" data-v="' + x[0] + '" data-id="' + id + '">' + x[1] + "</button>"; }).join(""); };
+    var sw = MGC.map(function (c) { return '<button type="button" class="sw' + (sty.color === c ? " on" : "") + '" style="background:' + c + '" data-act="' + act + '" data-k="color" data-v="' + c + '" data-id="' + id + '" aria-label="لون"></button>'; }).join("");
+    return '<div class="mgstyc"><span class="lbl2">اللون</span><div class="cps" style="margin-bottom:10px">' + sw + '</div><span class="lbl2">شكل إطار الصورة</span><div class="cps">' + bt("shape", MGS, sty.shape) + "</div>" + (tpl ? '<span class="lbl2">تخطيط الصور</span><div class="cps">' + bt("layout", mgLayouts(tpl), sty.layout) + "</div>" : "") + "</div>";
   }
   function mgNoteHtml(c) {
     if (!c.note) return "";
@@ -2118,7 +2141,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (t === "interview") { body = '<div class="field"><label for="mg-who">الضيف / الشخصية (الاسم والصفة)</label><input id="mg-who" type="text" maxlength="80" value="' + h(f.who) + '"></div>'; for (var i = 0; i < 4; i++) body += '<div class="field"><label for="mg-q-' + i + '">السؤال ' + (i + 1) + '</label><input id="mg-q-' + i + '" type="text" maxlength="120" value="' + h((f.qa[i] || [])[0] || "") + '"></div><div class="field"><label for="mg-a-' + i + '">الإجابة ' + (i + 1) + '</label><textarea id="mg-a-' + i + '" maxlength="350" style="min-height:70px">' + h((f.qa[i] || [])[1] || "") + "</textarea></div>"; body += imgs + addI; }
     else body = '<div class="field"><label for="mg-body">اللغز أو السؤال (حتى 500 حرف)</label><textarea id="mg-body" maxlength="500" style="min-height:110px">' + h(f.body) + '</textarea></div><div class="field"><label for="mg-ans">الإجابة (تظهر عند الضغط)</label><input id="mg-ans" type="text" maxlength="150" value="' + h(f.ans) + '"></div>' + imgs + addI;
     return '<div class="card mgedit"><h3>' + (f.id ? "تعديل الصفحة" : "صفحة جديدة") + '</h3><span class="lbl2">نوع الصفحة</span><div class="cps" style="margin-bottom:12px">' + tabs + '</div><div class="field"><label for="mg-title">عنوان الصفحة</label><input id="mg-title" type="text" maxlength="70" value="' + h(f.title) + '"></div>' + body +
-      '<p class="muted" style="margin-top:8px">سيُكتب أسفل الصفحة اسمك وصفّك وصورتك تلقائياً.</p><div class="row-act" style="margin-top:12px;flex-wrap:wrap"><button type="button" class="btn" data-act="mgsave" data-v="send">إرسال للإدارة</button><button type="button" class="btn ghost" data-act="mgsave" data-v="draft">حفظ كمسودة</button><button type="button" class="btn ghost" data-act="mgcancel">إلغاء</button></div></div>';
+      '<h4 style="margin:16px 0 6px">تصميم الصفحة</h4>' + mgStyCtl(mgSty({ tpl: f.tpl, sty: f.sty }), f.tpl, "mgsty", 0) + '<div class="mgprev"><span class="lbl2">معاينة</span>' + mgPageHtml(Object.assign({}, f, { name: (byId(S.members, uid) || {}).name, grade: (byId(S.members, uid) || {}).grade, scout: uid })) + '</div><p class="muted" style="margin-top:8px">سيُكتب أسفل الصفحة اسمك وصفّك وصورتك تلقائياً.</p><div class="row-act" style="margin-top:12px;flex-wrap:wrap"><button type="button" class="btn" data-act="mgsave" data-v="send">إرسال للإدارة</button><button type="button" class="btn ghost" data-act="mgsave" data-v="draft">حفظ كمسودة</button><button type="button" class="btn ghost" data-act="mgcancel">إلغاء</button></div></div>';
   }
   function mgStLbl(s) { return s === "draft" ? "مسودة" : s === "pending" ? "بانتظار الإدارة" : s === "approved" ? "مقبولة" : "مرفوضة"; }
   function mgEditorPanel() {
@@ -2155,11 +2178,16 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     f.caps = f.imgs.map(function (_, i) { var c = g("mg-cap-" + i); return c === null ? (f.caps[i] || "") : c; });
     if (f.tpl === "interview") { f.qa = []; for (var i = 0; i < 4; i++) { var q = g("mg-q-" + i), a = g("mg-a-" + i); if (q !== null) f.qa.push([q, a || ""]); } }
   }
+  function coverCtl(c, id) {
+    var sw = MGC.map(function (x) { return '<button type="button" class="sw' + ((c.color || MGC[0]) === x ? " on" : "") + '" style="background:' + x + '" data-act="mgcsty" data-k="color" data-v="' + x + '" data-id="' + id + '" aria-label="لون"></button>'; }).join("");
+    var sh = [["full", "كاملة"]].concat(MGS).map(function (x) { return '<button type="button" class="cp' + ((c.cshape || "full") === x[0] ? " on good" : "") + '" data-act="mgcsty" data-k="shape" data-v="' + x[0] + '" data-id="' + id + '">' + x[1] + "</button>"; }).join("");
+    return '<div class="mgstyc"><span class="lbl2">اللون</span><div class="cps" style="margin-bottom:10px">' + sw + '</div><span class="lbl2">إطار صورة الغلاف</span><div class="cps">' + sh + "</div></div>";
+  }
   function aMagazine() {
     var c = S.mag.cfg, ed = S.mag.editors || [];
     var pend = S.magp.filter(function (p) { return p.status === "pending"; }), appr = S.magp.filter(function (p) { return p.status === "approved" && p.no === c.no; }).sort(function (a, b) { return a.at - b.at; });
-    var pc = pend.map(function (p) { return '<div class="card">' + mgPageHtml(p).replace('class="mgp"', 'class="mgp" style="min-height:0;box-shadow:0 0 0 1px var(--line)"') + '<div class="field" style="margin-top:10px"><label for="mg-rn-' + p.id + '">ملاحظة للكاتب (عند الرفض أو طلب التعديل)</label><input id="mg-rn-' + p.id + '" type="text"></div><div class="row-act" style="margin-top:8px"><button class="btn sm" data-act="mgapprove" data-id="' + p.id + '">قبول وإضافة للعدد</button><button class="btn danger sm" data-act="mgreject" data-id="' + p.id + '">إرجاع للكاتب</button></div></div>'; }).join("") || '<div class="card"><p class="empty">لا توجد صفحات بانتظار الموافقة.</p></div>';
-    var ar = appr.map(function (p) { return '<div class="rec"><div style="flex:1"><b>' + h(p.title) + "</b> · " + mgTplName(p.tpl) + '<div class="muted" style="font-size:.88rem">' + h(p.name) + " · " + h(p.grade) + '</div></div><button class="btn danger sm" data-act="mgunapp" data-id="' + p.id + '">إزالة من العدد</button></div>'; }).join("") || '<p class="empty">لا توجد صفحات مقبولة في العدد الحالي.</p>';
+    var pc = pend.map(function (p) { return '<div class="card">' + mgPageHtml(p).replace('class="mgp"', 'class="mgp" style="min-height:0;box-shadow:0 0 0 1px var(--line)"') + '<details style="margin-top:10px;background:none;color:inherit;padding:0"><summary>تصميم الصفحة</summary>' + mgStyCtl(mgSty(p), p.tpl, "mgasty", p.id) + '</details><div class="field" style="margin-top:10px"><label for="mg-rn-' + p.id + '">ملاحظة للكاتب (عند الرفض أو طلب التعديل)</label><input id="mg-rn-' + p.id + '" type="text"></div><div class="row-act" style="margin-top:8px"><button class="btn sm" data-act="mgapprove" data-id="' + p.id + '">قبول وإضافة للعدد</button><button class="btn danger sm" data-act="mgreject" data-id="' + p.id + '">إرجاع للكاتب</button></div></div>'; }).join("") || '<div class="card"><p class="empty">لا توجد صفحات بانتظار الموافقة.</p></div>';
+    var ar = appr.map(function (p) { return '<div class="rec"><div style="flex:1"><b>' + h(p.title) + "</b> · " + mgTplName(p.tpl) + '<div class="muted" style="font-size:.88rem">' + h(p.name) + " · " + h(p.grade) + '</div><details style="margin-top:6px;background:none;color:inherit;padding:0"><summary>تصميم الصفحة</summary>' + mgStyCtl(mgSty(p), p.tpl, "mgasty", p.id) + '</details></div><button class="btn danger sm" data-act="mgunapp" data-id="' + p.id + '">إزالة من العدد</button></div>'; }).join("") || '<p class="empty">لا توجد صفحات مقبولة في العدد الحالي.</p>';
     var pk = ui.mged || (ui.mged = {}), chipf = function (key, lbl, items, sel) { return '<span class="lbl2">' + lbl + '</span><div class="lgc" style="grid-template-columns:repeat(4,minmax(0,1fr));max-height:none">' + items.map(function (x) { return '<button type="button" data-act="mgpick" data-k="' + key + '" data-v="' + h(x[0]) + '" class="' + (String(sel) === String(x[0]) ? "on" : "") + '">' + h(x[1]) + "</button>"; }).join("") + "</div>"; };
     var opts = chipf("grade", "1) اختر الصف", GRADES.map(function (g) { return [g[0], g[0]]; }), pk.grade), gr0 = GRADES.filter(function (g) { return g[0] === pk.grade; })[0];
     if (gr0) { var cl0 = []; for (var kk = 1; kk <= gr0[1]; kk++) { var cn = gr0[2] + " " + kk; if (S.members.some(function (m) { return m.grade === cn; })) cl0.push([cn, cn]); } opts += chipf("cls", "2) اختر الفصل", cl0, pk.cls); }
@@ -2170,37 +2198,52 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var ie = ui.mgie ? (S.mag.issues || []).filter(function (x) { return x.no === ui.mgie; })[0] : null, issEdit = "";
     if (ie) {
       var ips = S.magp.filter(function (p) { return p.status === "approved" && p.no === ie.no; }).sort(function (a, b) { return a.at - b.at; }).map(function (p) { return '<div class="rec"><div style="flex:1"><b>' + h(p.title) + "</b> · " + mgTplName(p.tpl) + " · " + h(p.name) + '</div><button class="btn danger sm" data-act="mgunapp" data-id="' + p.id + '">إزالة من العدد</button></div>'; }).join("") || '<p class="empty">لا توجد صفحات.</p>';
-      issEdit = '<div class="card" id="iss-edit"><h3>تعديل العدد ' + arNum(ie.no) + '</h3><form data-form="magiss" class="stack"><div class="form-grid"><div class="field"><label for="mi-title">عنوان المجلة</label><input id="mi-title" type="text" value="' + h(ie.title) + '"></div><div class="field"><label for="mi-sub">شعار فرعي</label><input id="mi-sub" type="text" value="' + h(ie.sub) + '"></div><div class="field"><label for="mi-month">الشهر والسنة</label><input id="mi-month" type="text" value="' + h(ie.month) + '"></div></div><div class="field"><label for="mi-note">كلمة رئيس التحرير</label><textarea id="mi-note" style="min-height:100px">' + h(ie.note) + '</textarea></div><div class="field"><label for="mi-noteby">اسم الكاتب</label><input id="mi-noteby" type="text" value="' + h(ie.noteBy) + '"></div><div class="row-act"><button class="btn" type="submit">حفظ التعديلات</button><button type="button" class="btn ghost" data-act="mgiclose">إغلاق</button></div></form><div class="row-act" style="margin-top:12px;flex-wrap:wrap"><label class="btn ghost sm" for="mgi-bg">تغيير صورة الخلفية</label><input id="mgi-bg" class="evin" type="file" accept="image/*">' + (ie.bg ? '<button class="btn danger sm" data-act="mgibgdel">إزالة الخلفية</button>' : "") + "</div><h3 style=\"margin:14px 0 6px\">صفحات العدد</h3>" + ips + "</div>";
+      issEdit = '<div class="card" id="iss-edit"><h3>تعديل العدد ' + arNum(ie.no) + '</h3><form data-form="magiss" class="stack"><div class="form-grid"><div class="field"><label for="mi-title">عنوان المجلة</label><input id="mi-title" type="text" value="' + h(ie.title) + '"></div><div class="field"><label for="mi-sub">شعار فرعي</label><input id="mi-sub" type="text" value="' + h(ie.sub) + '"></div><div class="field"><label for="mi-month">الشهر والسنة</label><input id="mi-month" type="text" value="' + h(ie.month) + '"></div></div><div class="field"><label for="mi-note">كلمة رئيس التحرير</label><textarea id="mi-note" style="min-height:100px">' + h(ie.note) + '</textarea></div><div class="field"><label for="mi-noteby">اسم الكاتب</label><input id="mi-noteby" type="text" value="' + h(ie.noteBy) + '"></div><div class="row-act"><button class="btn" type="submit">حفظ التعديلات</button><button type="button" class="btn ghost" data-act="mgiclose">إغلاق</button></div></form><div style="margin-top:12px">' + coverCtl(ie, ie.no) + '</div><div class="row-act" style="margin-top:12px;flex-wrap:wrap"><label class="btn ghost sm" for="mgi-bg">تغيير صورة الخلفية</label><input id="mgi-bg" class="evin" type="file" accept="image/*">' + (ie.bg ? '<button class="btn danger sm" data-act="mgibgdel">إزالة الخلفية</button>' : "") + "</div><h3 style=\"margin:14px 0 6px\">صفحات العدد</h3>" + ips + "</div>";
     }
     return flashHtml("mag") + '<div class="card"><h3>غلاف العدد ' + arNum(c.no) + '</h3><form data-form="magcfg" class="stack"><div class="form-grid"><div class="field"><label for="mc-title">عنوان المجلة</label><input id="mc-title" type="text" value="' + h(c.title) + '"></div><div class="field"><label for="mc-sub">شعار فرعي / عبارة</label><input id="mc-sub" type="text" value="' + h(c.sub) + '"></div><div class="field"><label for="mc-month">الشهر والسنة</label><input id="mc-month" type="text" value="' + h(c.month) + '"></div><div class="field"><label for="mc-no">رقم العدد</label><input id="mc-no" type="number" min="1" value="' + c.no + '"></div></div>' +
       '<div class="field"><label for="mc-note">كلمة رئيس التحرير</label><textarea id="mc-note" style="min-height:110px">' + h(c.note) + '</textarea></div><div class="field"><label for="mc-noteby">اسم الكاتب</label><input id="mc-noteby" type="text" value="' + h(c.noteBy) + '"></div><button class="btn" type="submit">حفظ الغلاف</button></form>' +
       '<div class="row-act" style="margin-top:12px;flex-wrap:wrap"><label class="btn ghost sm" for="mg-bg">' + (c.bg ? "تغيير صورة الخلفية" : "صورة الخلفية الشفافة") + '</label><input id="mg-bg" class="evin" type="file" accept="image/*">' + (c.bg ? '<button class="btn danger sm" data-act="mgbgdel">إزالة</button>' : "") + '<label class="btn ghost sm" for="mg-nimg">' + (c.noteImg ? "تغيير صورة الكاتب" : "صورة الكاتب") + '</label><input id="mg-nimg" class="evin" type="file" accept="image/*"></div></div>' +
+      '<div class="card"><h3>تصميم الغلاف</h3><p class="muted" style="margin-bottom:8px">لون الغلاف، وشكل إطار صورة الخلفية (اختر «كاملة» لتكون خلفية الغلاف كله).</p>' + coverCtl(c, 0) + '</div>' +
       '<div class="card"><h3>المحررون من الكشافة (' + ed.length + ")</h3><p class=\"muted\" style=\"margin-bottom:8px\">من تمنحهم الصلاحية يكتبون صفحة أو صفحتين في كل عدد ويرسلونها لك.</p>" + edl + '<div style="margin-top:10px">' + opts + "</div></div>" +
       "<h3 style=\"margin:16px 0 8px\">صفحات بانتظار الموافقة (" + pend.length + ")</h3>" + pc + '<div class="card"><h3>صفحات العدد الحالي (' + appr.length + ")</h3>" + ar + '<div style="margin-top:12px">' + pub + '</div><p style="margin-top:10px"><a href="#magazine-draft">معاينة العدد الحالي ←</a></p></div><div class="card"><h3>الأعداد المنشورة</h3>' + (ui.mgidel ? '<p class="muted" style="margin-bottom:8px">عند حذف العدد تعود صفحاته المقبولة إلى قائمة الانتظار لتُضاف إلى عدد آخر.</p>' : "") + iss + "</div>" + issEdit;
+  }
+  function shapeH(sh, w) { return sh === "square" || sh === "circle" ? w : sh === "triangle" || sh === "hex" ? w * .9 : sh === "arch" ? w * 4 / 3 : w * .75; }
+  function shapeDraw(c, im, x, y, w, hh, sh) {
+    c.save(); c.beginPath();
+    if (sh === "circle") c.ellipse(x + w / 2, y + hh / 2, w / 2, hh / 2, 0, 0, 7);
+    else if (sh === "triangle") { c.moveTo(x + w / 2, y); c.lineTo(x + w, y + hh); c.lineTo(x, y + hh); c.closePath(); }
+    else if (sh === "hex") { c.moveTo(x + w * .25, y); c.lineTo(x + w * .75, y); c.lineTo(x + w, y + hh / 2); c.lineTo(x + w * .75, y + hh); c.lineTo(x + w * .25, y + hh); c.lineTo(x, y + hh / 2); c.closePath(); }
+    else if (sh === "tilt") { c.moveTo(x + w * .12, y); c.lineTo(x + w, y); c.lineTo(x + w * .88, y + hh); c.lineTo(x, y + hh); c.closePath(); }
+    else if (sh === "arch") { var r = w / 2; c.moveTo(x, y + r); c.arc(x + r, y + r, r, Math.PI, 0); c.lineTo(x + w, y + hh); c.lineTo(x, y + hh); c.closePath(); }
+    else c.rect(x, y, w, hh);
+    c.clip(); var k = Math.max(w / im.naturalWidth, hh / im.naturalHeight), iw = im.naturalWidth * k, ih = im.naturalHeight * k; c.drawImage(im, x + (w - iw) / 2, y + (hh - ih) / 2, iw, ih); c.restore();
   }
   function pdfMag(d, no) {
     var m = mgModel(no); if (!m) return Promise.resolve();
     var loadI = function (src) { return new Promise(function (res) { if (!src) { res(null); return; } var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = src; }); };
     var drawCover = function (bg) {
-      d.page(); var c = d.c; c.fillStyle = PGREEN; c.fillRect(0, 0, PGW, PGH);
+      d.page(); var c = d.c; c.fillStyle = m.cfg.color || PGREEN; c.fillRect(0, 0, PGW, PGH);
+      if (bg && m.cfg.cshape && m.cfg.cshape !== "full") { shapeDraw(c, bg, (PGW - 700) / 2, 330, 700, shapeH(m.cfg.cshape, 700), m.cfg.cshape); bg = null; }
       if (bg) { c.globalAlpha = .25; var k = Math.max(PGW / bg.naturalWidth, PGH / bg.naturalHeight), w = bg.naturalWidth * k, hh = bg.naturalHeight * k; c.drawImage(bg, (PGW - w) / 2, (PGH - hh) / 2, w, hh); c.globalAlpha = 1; }
       c.drawImage(LOGO_IMG, PGW - PMG - 150, 120, 150, 150);
       c.fillStyle = "#fbf3e1"; c.textAlign = "right"; c.font = d.f(120, true); c.fillText(m.cfg.title, PGW - PMG, 1000);
       c.font = d.f(44, false); c.fillText(m.cfg.sub || "", PGW - PMG, 1180); c.fillStyle = "#e8d3a2"; c.font = d.f(46, true); c.fillText(m.cfg.month || "", PGW - PMG, 1290);
       c.fillStyle = "#fbf3e1"; c.font = d.f(34, false); c.fillText("العدد " + arNum(m.no), PGW - PMG, 1370);
     };
-    var pageHead = function (title) { d.page(); var c = d.c; c.fillStyle = "#d4a017"; c.fillRect(0, 0, PGW, 16); d.y = 70; d.text(title, 56, { bold: true, color: PGREEN }); d.space(10); };
-    var imgDraw = function (im, h0) { if (!im) return; var w = PGW - 2 * PMG, k = Math.min(w / im.naturalWidth, h0 / im.naturalHeight), ww = im.naturalWidth * k, hh = im.naturalHeight * k; d.ensure(hh + 20); d.c.drawImage(im, PGW - PMG - ww, d.y, ww, hh); d.y += hh + 20; };
+    var pcol = PGREEN, shp = "rect";
+    var pageHead = function (title) { d.page(); var c = d.c; c.fillStyle = pcol; c.fillRect(0, 0, PGW, 16); d.y = 70; d.text(title, 56, { bold: true, color: pcol }); d.space(10); };
+    var imgDraw = function (im, h0) { if (!im) return; var W = PGW - 2 * PMG, bw = Math.min(W, shp === "circle" || shp === "square" ? Math.min(W, 560) : shp === "arch" ? 440 : W), bh = shapeH(shp, bw); if (bh > h0 + 80) { bh = h0 + 80; bw = shp === "arch" ? bh * .75 : bw; } d.ensure(bh + 20); shapeDraw(d.c, im, (PGW - bw) / 2, d.y, bw, bh, shp); d.y += bh + 20; };
     var foot = function (p) { d.space(20); d.ensure(60); d.c.strokeStyle = "#d6c9aa"; d.c.beginPath(); d.c.moveTo(PMG, d.y); d.c.lineTo(PGW - PMG, d.y); d.c.stroke(); d.space(14); d.text((p.name || "") + " — " + (p.grade || ""), 26, { color: "#555" }); };
     var job = loadI(m.cfg.bg).then(drawCover);
     if (m.cfg.note) job = job.then(function () { pageHead("كلمة رئيس التحرير"); d.text(m.cfg.note, 32, {}); d.space(20); d.text(m.cfg.noteBy || "", 28, { bold: true, color: PGREEN }); });
     m.pages.forEach(function (p) {
       job = job.then(function () { return Promise.all((p.imgs || []).map(loadI)); }).then(function (ims) {
+        var sp = mgSty(p); pcol = sp.color; shp = sp.shape;
         pageHead(p.title);
         if (p.tpl === "article") { imgDraw(ims[0], 560); d.text(p.body, 32, {}); }
         else if (p.tpl === "activity") { ims.forEach(function (im, i) { imgDraw(im, 480); d.text((p.caps || [])[i] || "", 26, { color: "#555" }); d.space(10); }); if (p.body) d.text(p.body, 32, {}); }
-        else if (p.tpl === "interview") { if (p.who) d.text(p.who, 32, { bold: true, color: PGREEN }); d.space(8); imgDraw(ims[0], 460); (p.qa || []).forEach(function (x) { if (x[0]) { d.text(x[0], 32, { bold: true, color: PGREEN }); d.text(x[1], 30, {}); d.space(14); } }); }
-        else { d.text(p.body, 36, {}); d.space(10); imgDraw(ims[0], 480); if (p.ans) d.text("الإجابة: " + p.ans, 30, { bold: true, color: PGREEN }); }
+        else if (p.tpl === "interview") { if (p.who) d.text(p.who, 32, { bold: true, color: pcol }); d.space(8); imgDraw(ims[0], 460); (p.qa || []).forEach(function (x) { if (x[0]) { d.text(x[0], 32, { bold: true, color: pcol }); d.text(x[1], 30, {}); d.space(14); } }); }
+        else { d.text(p.body, 36, {}); d.space(10); imgDraw(ims[0], 480); if (p.ans) d.text("الإجابة: " + p.ans, 30, { bold: true, color: pcol }); }
         foot(p);
       });
     });
@@ -2682,9 +2725,12 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "mgnext" || a === "mgprev") { var pg = document.getElementById("mgpager"); if (pg) pg.scrollBy({ left: (a === "mgnext" ? -1 : 1) * pg.clientWidth, behavior: "smooth" }); }
     else if (a === "mgshare") { var lk = location.href.split("#")[0] + "#magazine-" + val; try { navigator.clipboard.writeText(lk).then(function () { toast("نُسخ رابط العدد."); }, function () { toast(lk, 6000); }); } catch (er) { toast(lk, 6000); } }
     else if (a === "mgpdf") exportPdf("mag", Number(val));
-    else if (a === "mgnew") { ui.mgf = { id: 0, tpl: "article", title: "", body: "", ans: "", who: "", imgs: [], caps: [], qa: [] }; refresh(); }
+    else if (a === "mgnew") { ui.mgf = { id: 0, tpl: "article", title: "", body: "", ans: "", who: "", imgs: [], caps: [], qa: [], sty: { shape: "rect", layout: "", color: MGC[0] } }; refresh(); }
     else if (a === "mgcancel") { ui.mgf = null; refresh(); }
-    else if (a === "mgtpl") { mgCapture(); ui.mgf.tpl = val; ui.mgf.imgs = ui.mgf.imgs.slice(0, val === "activity" ? 4 : 1); refresh(); }
+    else if (a === "mgtpl") { mgCapture(); ui.mgf.tpl = val; ui.mgf.sty = Object.assign({}, ui.mgf.sty || {}, { layout: "" }); ui.mgf.imgs = ui.mgf.imgs.slice(0, val === "activity" ? 4 : 1); refresh(); }
+    else if (a === "mgsty") { mgCapture(); ui.mgf.sty = ui.mgf.sty || {}; ui.mgf.sty[t.getAttribute("data-k")] = val; refresh(); }
+    else if (a === "mgasty") { var ps = byId(S.magp, id); if (ps) { ps.sty = ps.sty || {}; ps.sty[t.getAttribute("data-k")] = val; save(); refresh(); } }
+    else if (a === "mgcsty") { var tg = id ? S.mag.issues.filter(function (x) { return x.no === id; })[0] : S.mag.cfg; if (tg) { tg[t.getAttribute("data-k") === "shape" ? "cshape" : "color"] = val; save(); refresh(); } }
     else if (a === "mgimgdel") { mgCapture(); ui.mgf.imgs.splice(id, 1); ui.mgf.caps.splice(id, 1); refresh(); }
     else if (a === "mgedit") { var pe = byId(S.magp, id); if (pe) { ui.mgf = JSON.parse(JSON.stringify(pe)); ui.mgf.caps = ui.mgf.caps || []; ui.mgf.qa = ui.mgf.qa || []; ui.mgf.who = ui.mgf.who || ""; ui.mgf.ans = ui.mgf.ans || ""; ui.mgf.body = ui.mgf.body || ""; refresh(); } }
     else if (a === "mgdel") { S.magp = S.magp.filter(function (p) { return !(p.id === id && p.scout === uid && p.status !== "approved") && true; }); if (session === "admin") S.magp = S.magp.filter(function (p) { return p.id !== id; }); save(); refresh(); }
@@ -2696,7 +2742,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         if (!okc) { toast("أكمل محتوى الصفحة قبل الإرسال."); return; }
       }
       if (!f2.id) { var usedN = S.magp.filter(function (p) { return p.scout === uid && p.status !== "rejected" && (p.status !== "approved" || p.no === S.mag.cfg.no); }).length; if (usedN >= 2) { toast("وصلت إلى الحد الأقصى (صفحتان)."); return; } }
-      var rec = { id: f2.id || nid(), scout: uid, tpl: f2.tpl, title: f2.title.trim(), body: f2.body, ans: f2.ans, who: f2.who, imgs: f2.imgs, caps: f2.caps, qa: f2.qa.filter(function (x) { return x[0].trim() || x[1].trim(); }), name: me2 ? me2.name : "", grade: me2 ? me2.grade : "", status: send ? "pending" : "draft", adminNote: "", ts: Date.now(), no: 0, at: 0 };
+      var rec = { id: f2.id || nid(), scout: uid, tpl: f2.tpl, title: f2.title.trim(), body: f2.body, ans: f2.ans, who: f2.who, imgs: f2.imgs, caps: f2.caps, qa: f2.qa.filter(function (x) { return x[0].trim() || x[1].trim(); }), name: me2 ? me2.name : "", grade: me2 ? me2.grade : "", status: send ? "pending" : "draft", sty: f2.sty || {}, adminNote: "", ts: Date.now(), no: 0, at: 0 };
       if (f2.id) S.magp = S.magp.map(function (p) { return p.id === f2.id ? rec : p; }); else S.magp.push(rec);
       ui.mgf = null; save(); toast(send ? "أُرسلت الصفحة للإدارة ✓" : "حُفظت المسودة."); refresh();
     }
