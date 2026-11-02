@@ -2335,7 +2335,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       '<div class="row-act" style="margin-top:12px;flex-wrap:wrap"><label class="btn ghost sm" for="mg-bg">' + (c.bg ? "تغيير صورة الخلفية" : "صورة الخلفية الشفافة") + '</label><input id="mg-bg" class="evin" type="file" accept="image/*">' + (c.bg ? '<button class="btn danger sm" data-act="mgbgdel">إزالة</button>' : "") + '<label class="btn ghost sm" for="mg-cimg">صور الغلاف (حتى 3)</label><input id="mg-cimg" class="evin" type="file" accept="image/*" multiple><label class="btn ghost sm" for="mg-nimg">' + (c.noteImg ? "تغيير صورة الكاتب" : "صورة الكاتب") + '</label><input id="mg-nimg" class="evin" type="file" accept="image/*"></div></div>' +
       '<div class="card"><h3>تصميم الغلاف</h3>' + ((c.imgs || []).length ? '<div class="mgimgs" style="display:flex;gap:8px;flex-wrap:wrap">' + c.imgs.map(function (x, i) { return '<div><img src="' + x + '" alt=""><button type="button" data-act="mgcimgdel" data-id="' + i + '" aria-label="حذف">✕</button></div>'; }).join("") + "</div>" : "") + '<p class="muted" style="margin-bottom:8px">لون الغلاف، وشكل إطار صورة الخلفية (اختر «كاملة» لتكون خلفية الغلاف كله).</p>' + coverCtl(c, 0) + '</div>' +
       '<div class="card"><h3>المحررون من الكشافة (' + ed.length + ")</h3><p class=\"muted\" style=\"margin-bottom:8px\">من تمنحهم الصلاحية يكتبون صفحة أو صفحتين في كل عدد ويرسلونها لك.</p>" + edl + '<div style="margin-top:10px">' + opts + "</div></div>" +
-      "<h3 style=\"margin:16px 0 8px\">صفحات بانتظار الموافقة (" + pend.length + ")</h3>" + pc + '<div class="card"><h3>صفحات العدد الحالي (' + appr.length + ")</h3>" + ar + '<div style="margin-top:12px">' + pub + '</div><p style="margin-top:10px"><a href="#magazine-draft">معاينة العدد الحالي ←</a></p></div><div class="card"><h3>الأعداد المنشورة</h3>' + (ui.mgidel ? '<p class="muted" style="margin-bottom:8px">عند حذف العدد تعود صفحاته المقبولة إلى قائمة الانتظار لتُضاف إلى عدد آخر.</p>' : "") + iss + "</div>" + issEdit;
+      "<h3 style=\"margin:16px 0 8px\">صفحات بانتظار الموافقة (" + pend.length + ")</h3>" + pc + '<div class="card"><h3>صفحات العدد الحالي (' + appr.length + ")</h3>" + ar + '<div style="margin-top:12px">' + pub + '</div><p style="margin-top:10px"><a href="#magazine-draft">معاينة العدد الحالي ←</a></p></div><div class="card"><h3>تخفيف حجم الصور</h3><p class="muted" style="margin-bottom:8px">يعيد ضغط صور المجلة الموجودة (الصفحات والأغلفة والأعداد المنشورة) إلى حجم أخف، فيوفّر مساحة. المظهر يبقى مناسباً للجوال.</p><button class="btn ghost" data-act="mgshrink">تخفيف حجم صور المجلة الآن</button></div><div class="card"><h3>الأعداد المنشورة</h3>' + (ui.mgidel ? '<p class="muted" style="margin-bottom:8px">عند حذف العدد تعود صفحاته المقبولة إلى قائمة الانتظار لتُضاف إلى عدد آخر.</p>' : "") + iss + "</div>" + issEdit;
   }
   function shapeH(sh, w) { return sh === "square" || sh === "circle" ? w : sh === "triangle" || sh === "hex" ? w * .9 : sh === "arch" ? w * 4 / 3 : w * .75; }
   function shapeDraw(c, im, x, y, w, hh, sh) {
@@ -2892,11 +2892,18 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "mgissno") { ui.mgidel = null; refresh(); }
     else if (a === "mgissyes") { var dn = Number(val); S.mag.issues = S.mag.issues.filter(function (x) { return x.no !== dn; }); S.magp.forEach(function (p) { if (p.status === "approved" && p.no === dn) { p.status = "pending"; p.no = 0; } }); if (ui.mgie === dn) ui.mgie = null; ui.mgidel = null; save(); ui.flash = { where: "mag", text: "حُذف العدد " + arNum(dn) + "." }; refresh(); }
     else if (a === "mgedrm") { S.mag.editors = S.mag.editors.filter(function (x) { return x !== id; }); save(); refresh(); }
+    else if (a === "mgshrink") {
+      var before = dataUse().total, jobs = [], shrink = function (src) { return new Promise(function (res) { if (!src || src.length < 60000) { res(src); return; } var im = new Image(); im.onload = function () { try { var out = scaleTo(im, 800, 0.6); res(out.length < src.length ? out : src); } catch (e) { res(src); } }; im.onerror = function () { res(src); }; im.src = src; }); };
+      var arr = function (o, k) { if (o[k] && o[k].length) o[k].forEach(function (x, i) { jobs.push(shrink(x).then(function (n) { o[k][i] = n; })); }); }, one = function (o, k) { if (o[k]) jobs.push(shrink(o[k]).then(function (n) { o[k] = n; })); };
+      toast("جارٍ تخفيف الصور…", 0);
+      S.magp.forEach(function (p) { arr(p, "imgs"); }); [S.mag.cfg].concat(S.mag.issues).forEach(function (c) { one(c, "bg"); arr(c, "imgs"); });
+      Promise.all(jobs).then(function () { save(); var after = dataUse().total; ui.flash = { where: "mag", text: "تم التخفيف: وُفّر " + fmtSize(Math.max(0, before - after)) + "." }; toast("تم.", 1200); refresh(); });
+    }
     else if (a === "mgcimgdel") { S.mag.cfg.imgs.splice(id, 1); save(); refresh(); }
     else if (a === "mgbgdel") { S.mag.cfg.bg = ""; save(); refresh(); }
     else if (a === "mgpubask") { ui.mgpub = true; refresh(); }
     else if (a === "mgpubno") { ui.mgpub = false; refresh(); }
-    else if (a === "mgpubyes") { var c9 = S.mag.cfg; S.mag.issues.push(Object.assign({}, c9, { pub: Date.now() })); S.mag.cfg = Object.assign({}, c9, { no: c9.no + 1, month: "", note: "", noteImg: "" }); ui.mgpub = false; save(); ui.flash = { where: "mag", text: "نُشر العدد " + arNum(c9.no) + ". بدأ عدد جديد." }; refresh(); }
+    else if (a === "mgpubyes") { var c9 = S.mag.cfg; S.mag.issues.push(Object.assign({}, c9, { pub: Date.now() })); S.mag.cfg = Object.assign({}, c9, { no: c9.no + 1, month: "", note: "", noteImg: "", bg: "", imgs: [] }); ui.mgpub = false; save(); ui.flash = { where: "mag", text: "نُشر العدد " + arNum(c9.no) + ". بدأ عدد جديد." }; refresh(); }
     else if (a === "stopen") stOpen();
     else if (a === "stclose") stClose();
     else if (a === "stsheet") { stv.sheet = !stv.sheet; stShow(stv.i); }
@@ -3077,14 +3084,14 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var t = e.target;
     if (t.id === "mg-img") {
       mgCapture(); var mf = Array.prototype.slice.call(t.files || []), room = mgPr(mgSty({ tpl: ui.mgf.tpl, sty: ui.mgf.sty }).preset)[2] - ui.mgf.imgs.length; mf = mf.slice(0, Math.max(0, room));
-      (function nx(k) { if (k >= mf.length) { refresh(); return; } readImage(mf[k]).then(function (r) { ui.mgf.imgs.push(scaleTo(r.img, 900, 0.7)); URL.revokeObjectURL(r.url); nx(k + 1); }, function () { nx(k + 1); }); })(0);
+      (function nx(k) { if (k >= mf.length) { refresh(); return; } readImage(mf[k]).then(function (r) { ui.mgf.imgs.push(scaleTo(r.img, 800, 0.62)); URL.revokeObjectURL(r.url); nx(k + 1); }, function () { nx(k + 1); }); })(0);
     } else if (t.id === "mg-cimg") {
       var cfs = Array.prototype.slice.call(t.files || [], 0, 3); S.mag.cfg.imgs = S.mag.cfg.imgs || [];
-      (function nx(k) { if (k >= cfs.length || S.mag.cfg.imgs.length >= 3) { save(); refresh(); return; } readImage(cfs[k]).then(function (r) { S.mag.cfg.imgs.push(scaleTo(r.img, 1000, 0.72)); URL.revokeObjectURL(r.url); nx(k + 1); }, function () { nx(k + 1); }); })(0);
+      (function nx(k) { if (k >= cfs.length || S.mag.cfg.imgs.length >= 3) { save(); refresh(); return; } readImage(cfs[k]).then(function (r) { S.mag.cfg.imgs.push(scaleTo(r.img, 900, 0.65)); URL.revokeObjectURL(r.url); nx(k + 1); }, function () { nx(k + 1); }); })(0);
     } else if (t.id === "mg-bg" || t.id === "mg-nimg") {
-      var bf = t.files && t.files[0]; if (bf) readImage(bf).then(function (r) { if (t.id === "mg-bg") S.mag.cfg.bg = scaleTo(r.img, 1200, 0.7); else S.mag.cfg.noteImg = scaleTo(r.img, 300, 0.8); URL.revokeObjectURL(r.url); save(); refresh(); }, function () {});
+      var bf = t.files && t.files[0]; if (bf) readImage(bf).then(function (r) { if (t.id === "mg-bg") S.mag.cfg.bg = scaleTo(r.img, 1000, 0.6); else S.mag.cfg.noteImg = scaleTo(r.img, 300, 0.8); URL.revokeObjectURL(r.url); save(); refresh(); }, function () {});
     } else if (t.id === "mgi-bg") {
-      var ibf = t.files && t.files[0], iis = S.mag.issues.filter(function (x) { return x.no === ui.mgie; })[0]; if (ibf && iis) readImage(ibf).then(function (r) { iis.bg = scaleTo(r.img, 1200, 0.7); URL.revokeObjectURL(r.url); save(); refresh(); }, function () {});
+      var ibf = t.files && t.files[0], iis = S.mag.issues.filter(function (x) { return x.no === ui.mgie; })[0]; if (ibf && iis) readImage(ibf).then(function (r) { iis.bg = scaleTo(r.img, 1000, 0.6); URL.revokeObjectURL(r.url); save(); refresh(); }, function () {});
     } else if (t.id === "mg-edsel") {
       if (t.value) { S.mag.editors.push(Number(t.value)); save(); refresh(); }
     } else if (t.id === "st-in" || t.id === "st-cam") {
