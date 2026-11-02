@@ -1208,7 +1208,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function dataCard() {
     var d = dataUse(), pc = Math.min(100, Math.round(d.ratio * 100)), col = d.ratio >= .9 ? "var(--danger)" : d.ratio >= .7 ? "#c4821a" : "var(--primary)";
     var rows = d.rows.map(function (r) { return '<div class="b"><span>' + h(r[0]) + '</span><div class="t"><i style="width:' + Math.max(2, Math.round(r[1] / d.total * 100)) + '%"></i></div><span class="v">' + fmtSize(r[1]) + "</span></div>"; }).join("");
-    return '<div class="card"><h3>حجم البيانات</h3><div class="b"><span>المستخدم</span><div class="t"><i style="width:' + pc + "%;background:" + col + '"></i></div><span class="v">' + pc + "%</span></div><p style=\"margin:8px 0\"><b>" + fmtSize(d.total) + '</b> من نحو 5 ميغابايت (حد التخزين في المتصفح).' + (d.ratio >= .7 ? ' <b style="color:' + col + '">' + (d.ratio >= .9 ? "اقتربت من الامتلاء، احذف ما لا تحتاجه الآن." : "اقتربت من الحد، راجع الصور الكبيرة.") + "</b>" : " الوضع جيد.") + '</p><details><summary>التفصيل حسب القسم</summary><div style="margin-top:8px">' + rows + '</div></details><p class="muted" style="margin-top:8px;font-size:.88rem">صور المعرض محفوظة بشكل منفصل ولا تدخل في هذا الحساب. التنبيه يظهر لك تلقائياً عند 70% ثم 90%.</p></div>';
+    return '<div class="card"><h3>حجم البيانات</h3><div class="b"><span>المستخدم</span><div class="t"><i style="width:' + pc + "%;background:" + col + '"></i></div><span class="v">' + pc + "%</span></div><p style=\"margin:8px 0\"><b>" + fmtSize(d.total) + '</b> من نحو 5 ميغابايت (حد التخزين في المتصفح).' + (d.ratio >= .7 ? ' <b style="color:' + col + '">' + (d.ratio >= .9 ? "اقتربت من الامتلاء، احذف ما لا تحتاجه الآن." : "اقتربت من الحد، راجع الصور الكبيرة.") + "</b>" : " الوضع جيد.") + '</p><details><summary>التفصيل حسب القسم</summary><div style="margin-top:8px">' + rows + '</div></details><p class="muted" style="margin-top:8px;font-size:.88rem">صور المعرض محفوظة بشكل منفصل ولا تدخل في هذا الحساب. التنبيه يظهر لك تلقائياً عند 70% ثم 90%.</p>' + (ui.clrAsk ? '<div class="flash bad" role="alert" style="margin-top:10px"><b>سيُحذف نهائياً:</b> كل القصص (وتفاعلاتها)، وكل أعداد المجلة وصفحاتها ومحرريها وغلافها. <b>لن يُمَس:</b> الكشافة والمعلمون والنقاط والحضور والأنشطة والصور والإعلانات.<div class="row-act" style="margin-top:8px"><button class="btn danger sm" data-act="clryes">نعم، امسح</button><button class="btn ghost sm" data-act="clrno">إلغاء</button></div></div>' : '<button class="btn danger sm" style="margin-top:10px" data-act="clrask">مسح البيانات التجريبية (القصص والمجلة)</button>') + "</div>";
   }
   function vAdmin(k) {
     var sub = k && k.indexOf("admin-") === 0 ? k.slice(6) : "stats";
@@ -2892,6 +2892,13 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "mgissno") { ui.mgidel = null; refresh(); }
     else if (a === "mgissyes") { var dn = Number(val); S.mag.issues = S.mag.issues.filter(function (x) { return x.no !== dn; }); S.magp.forEach(function (p) { if (p.status === "approved" && p.no === dn) { p.status = "pending"; p.no = 0; } }); if (ui.mgie === dn) ui.mgie = null; ui.mgidel = null; save(); ui.flash = { where: "mag", text: "حُذف العدد " + arNum(dn) + "." }; refresh(); }
     else if (a === "mgedrm") { S.mag.editors = S.mag.editors.filter(function (x) { return x !== id; }); save(); refresh(); }
+    else if (a === "clrask") { ui.clrAsk = true; refresh(); }
+    else if (a === "clrno") { ui.clrAsk = false; refresh(); }
+    else if (a === "clryes") {
+      S.stories = []; S.sviews = {}; S.sreact = {}; S.magp = [];
+      S.mag = { cfg: { no: 1, title: "مجلة الفرقة", sub: "كن مستعداً", month: "", bg: "", note: "", noteBy: "قائد الفرقة", noteImg: "" }, editors: [], issues: [] };
+      ui.clrAsk = false; ui.mgf = null; save(); toast("تم مسح البيانات التجريبية.", 2500); refresh();
+    }
     else if (a === "mgshrink") {
       var before = dataUse().total, jobs = [], shrink = function (src) { return new Promise(function (res) { if (!src || src.length < 60000) { res(src); return; } var im = new Image(); im.onload = function () { try { var out = scaleTo(im, 800, 0.6); res(out.length < src.length ? out : src); } catch (e) { res(src); } }; im.onerror = function () { res(src); }; im.src = src; }); };
       var arr = function (o, k) { if (o[k] && o[k].length) o[k].forEach(function (x, i) { jobs.push(shrink(x).then(function (n) { o[k][i] = n; })); }); }, one = function (o, k) { if (o[k]) jobs.push(shrink(o[k]).then(function (n) { o[k] = n; })); };
