@@ -383,7 +383,8 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .ttrow.brk { color: var(--muted); }
 .ttrow select { width: 130px; }
 .ptt input { width: 92px; padding: 6px; }
-.stbar { display: flex; justify-content: center; margin: 4px 0 14px; }
+.stbar { display: flex; justify-content: center; align-items: flex-start; gap: 22px; margin: 4px 0 14px; }
+.stcam { width: 76px; height: 76px; border-radius: 50%; border: 3px dashed var(--primary); display: grid; place-items: center; font-size: 2rem; background: var(--surface); cursor: pointer; }
 .stwrap { font: inherit; background: none; border: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--fg); }
 .string { width: 76px; height: 76px; border-radius: 50%; padding: 3px; background: conic-gradient(#d4a017, #c1272d, #d4a017); display: block; }
 .string.seen { background: var(--line); }
@@ -1972,11 +1973,17 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   function myKey() { return session + ":" + uid; }
   function activeStories() { var lim = Date.now() - 24 * 3600 * 1000; return (S.stories || []).filter(function (x) { return x.ts > lim; }).sort(function (a, b) { return a.ts - b.ts; }); }
   function leftTxt(ts) { var m = Math.max(0, Math.floor((ts + 24 * 3600 * 1000 - Date.now()) / 60000)), hh = Math.floor(m / 60); return hh ? hh + " س " + (m % 60) + " د" : m + " د"; }
+  function agoTxt(ts) { var m = Math.max(0, Math.floor((Date.now() - ts) / 60000)), hh = Math.floor(m / 60); return hh ? hh + " س " + (m % 60) + " د" : (m < 1 ? "الآن" : m + " د"); }
   function storyStrip() {
     if (!session) return "";
-    var act = activeStories(); if (!act.length) return "";
-    var seen = act.every(function (x) { return (S.sviews[x.id] || []).indexOf(myKey()) > -1; });
-    return '<div class="stbar"><button type="button" class="stwrap" data-act="stopen"><span class="string' + (seen ? " seen" : "") + '"><img src="' + act[act.length - 1].img + '" alt=""></span><b>قصة الفرقة · ' + act.length + '</b><small class="muted">تنتهي بعد ' + leftTxt(act[0].ts) + "</small></button></div>";
+    var act = activeStories(), adm = session === "admin"; if (!act.length && !adm) return "";
+    var out = "";
+    if (act.length) {
+      var seen = act.every(function (x) { return (S.sviews[x.id] || []).indexOf(myKey()) > -1; });
+      out += '<button type="button" class="stwrap" data-act="stopen"><span class="string' + (seen ? " seen" : "") + '"><img src="' + act[act.length - 1].img + '" alt=""></span><b>قصة الفرقة · ' + act.length + '</b><small class="muted">منذ ' + agoTxt(act[act.length - 1].ts) + "</small></button>";
+    }
+    if (adm) out += '<span class="stwrap"><label class="stcam" for="st-cam" title="التقاط ونشر قصة">📷</label><b>التقاط سريع</b><input id="st-cam" class="evin" type="file" accept="image/*" capture="environment"></span>';
+    return '<div class="stbar">' + out + "</div>";
   }
   var stv = { i: 0, list: [], t: null };
   function stShow(i) {
@@ -1996,8 +2003,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     el.querySelector(".stcap").textContent = x.cap || "";
     clearTimeout(stv.t); if (!stv.sheet) stv.t = setTimeout(function () { stShow(stv.i + 1); }, 6000);
   }
-  function fmtLeft(ms) { var t = Math.max(0, Math.floor(ms / 1000)), p = function (n) { return (n < 10 ? "0" : "") + n; }; return p(Math.floor(t / 3600)) + ":" + p(Math.floor(t % 3600 / 60)) + ":" + p(t % 60); }
-  function stTick() { var el = document.getElementById("stcd"); if (!el || !stv.list[stv.i]) return; el.textContent = "تختفي بعد " + fmtLeft(stv.list[stv.i].ts + 24 * 3600 * 1000 - Date.now()); }
+  function fmtAgo(ms) { var t = Math.max(0, Math.floor(ms / 1000)), p = function (n) { return (n < 10 ? "0" : "") + n; }; return (t >= 3600 ? p(Math.floor(t / 3600)) + ":" : "") + p(Math.floor(t % 3600 / 60)) + ":" + p(t % 60); }
+  function stTick() { var el = document.getElementById("stcd"); if (!el || !stv.list[stv.i]) return; el.textContent = "منذ " + fmtAgo(Date.now() - stv.list[stv.i].ts); }
   setInterval(function () { var v = document.getElementById("stv"); if (v && !v.hidden) stTick(); }, 1000);
   (function () {
     var y0 = null;
@@ -2678,10 +2685,10 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 
   document.addEventListener("change", function (e) {
     var t = e.target;
-    if (t.id === "st-in") {
-      var sfs = Array.prototype.slice.call(t.files || [], 0, 10), scap = (document.getElementById("st-cap") || {}).value || "", sn = 0;
+    if (t.id === "st-in" || t.id === "st-cam") {
+      var sfs = Array.prototype.slice.call(t.files || [], 0, 10), scap = t.id === "st-in" ? ((document.getElementById("st-cap") || {}).value || "") : "", sn = 0, cam = t.id === "st-cam";
       (function nx(k) {
-        if (k >= sfs.length) { save(); ui.flash = { where: "stories", text: "نُشرت " + sn + " قصة." }; refresh(); return; }
+        if (k >= sfs.length) { save(); if (cam) { toast(sn ? "نُشرت القصة ✓" : "تعذّر نشر الصورة.", 2500); } else ui.flash = { where: "stories", text: "نُشرت " + sn + " قصة." }; refresh(); return; }
         readImage(sfs[k]).then(function (r) { S.stories.push({ id: nid(), img: scaleTo(r.img, 1080, 0.78), cap: scap.trim(), ts: Date.now() + k }); URL.revokeObjectURL(r.url); sn++; nx(k + 1); }, function () { nx(k + 1); });
       })(0);
     } else if (t.id === "hero-in") {
