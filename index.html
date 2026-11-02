@@ -720,7 +720,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return { user: u, pass: pw || ranStr(6) };
   }
   function flashHtml(where) { return ui.flash && ui.flash.where === where ? '<div class="flash' + (ui.flash.err ? " bad" : "") + '" role="status">' + h(ui.flash.text).replace(/ · كلمة المرور/g, "<br>كلمة المرور").replace(/([A-Za-z0-9._-]{3,})/g, '<bdi dir="ltr">$1</bdi>') + "</div>" : ""; }
-  function save() { try { if (S.members) ensureCodes(); localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} cloudPush(); }
+  var saveFail = false;
+  function save() { try { if (S.members) ensureCodes(); localStorage.setItem(KEY, JSON.stringify(S)); saveFail = false; } catch (e) { if (!saveFail) { saveFail = true; try { toast("تنبيه: امتلأت مساحة الحفظ في هذا الجهاز، قد لا تُحفظ التعديلات.", 6000); } catch (e2) {} } } cloudPush(); }
   var PTASKS = ["رفع العلم في الطابور", "استقبال الطلاب صباحاً", "تنظيم الطابور الصباحي", "تنظيم فسحة الابتدائي", "تنظيم فسحة الإعدادي", "تسجيل مخالفات الفسحة", "تنظيم دخول الطلاب إلى الفصول", "تنظيم الانصراف", "المناوبة في المصلى", "حراسة بوابة المدرسة", "تنظيم المقصف", "الإسعافات الأولية", "نظافة الساحة والممرات", "تنظيم الحفلات والفعاليات المدرسية", "استقبال الضيوف والزوار", "المرور على الفصول وتنظيمها"];
   var BCATS = [["hob", "شارات الهوايات والمهارات"], ["srv", "شارات الخدمة العامة والمواطنة"], ["lead", "الشارات القيادية الكشفية والأنشطة"]];
   var BADGES = [
@@ -1190,6 +1191,25 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return pre + storyStrip() + '<div class="dash-h"><div><span class="chip">صفحة الكشاف' + (m.rank ? " · " + h(m.rank) : "") + '</span><h1>أهلاً، ' + h(m.name) + '</h1></div></div><div class="tbody" style="margin-bottom:20px">' + fixed + '</div><nav class="ttabs" aria-label="أقسام صفحة الكشاف">' + stabs.map(function (x) { return '<button type="button" data-act="stab" data-v="' + x[0] + '" class="' + (sb === x[0] ? "on" : "") + '" aria-pressed="' + (sb === x[0]) + '">' + x[1] + "</button>"; }).join("") + '</nav><div class="tbody">' + sbody + "</div>";
   }
 
+
+  var LOCAL_LIM = 5000000;
+  function dataUse() {
+    var G = { stories: ["القصص", ["stories", "sviews", "sreact"]], mag: ["المجلة", ["mag", "magp"]], hero: ["صورة الواجهة والبنر", ["hero"]], members: ["الكشافة وصورهم", ["members"]], recs: ["السلوك والنقاط", ["records", "cases"]] }, tot = 0, parts = {}, used = {};
+    Object.keys(S).forEach(function (k) { var n = 0; try { n = JSON.stringify(S[k]).length + k.length; } catch (e) {} tot += n; var g = "other"; Object.keys(G).forEach(function (gk) { if (G[gk][1].indexOf(k) > -1) g = gk; }); parts[g] = (parts[g] || 0) + n; });
+    var rows = Object.keys(parts).map(function (g) { return [g === "other" ? "بيانات أخرى" : G[g][0], parts[g]]; }).sort(function (a, b) { return b[1] - a[1]; });
+    return { total: tot, rows: rows, ratio: tot / LOCAL_LIM };
+  }
+  function fmtSize(n) { return n >= 1000000 ? (n / 1000000).toFixed(2) + " ميغابايت" : Math.max(1, Math.round(n / 1000)) + " كيلوبايت"; }
+  function dataBanner() {
+    var d = dataUse(); if (d.ratio < .7 && !saveFail) return "";
+    var pc = Math.round(d.ratio * 100), red = d.ratio >= .9 || saveFail;
+    return '<div class="flash' + (red ? " bad" : "") + '" role="alert"><b>' + (red ? "تحذير: مساحة البيانات تكاد تمتلئ" : "تنبيه: مساحة البيانات تقترب من الحد") + "</b> — استُهلك " + pc + "% (" + fmtSize(d.total) + " من نحو 5 ميغابايت). " + (saveFail ? "فشل الحفظ على هذا الجهاز. " : "") + 'احذف قصصاً قديمة أو أعداداً/صفحات مجلة غير لازمة، أو صوراً كبيرة. <a href="#admin">تفاصيل ←</a></div>';
+  }
+  function dataCard() {
+    var d = dataUse(), pc = Math.min(100, Math.round(d.ratio * 100)), col = d.ratio >= .9 ? "var(--danger)" : d.ratio >= .7 ? "#c4821a" : "var(--primary)";
+    var rows = d.rows.map(function (r) { return '<div class="b"><span>' + h(r[0]) + '</span><div class="t"><i style="width:' + Math.max(2, Math.round(r[1] / d.total * 100)) + '%"></i></div><span class="v">' + fmtSize(r[1]) + "</span></div>"; }).join("");
+    return '<div class="card"><h3>حجم البيانات</h3><div class="b"><span>المستخدم</span><div class="t"><i style="width:' + pc + "%;background:" + col + '"></i></div><span class="v">' + pc + "%</span></div><p style=\"margin:8px 0\"><b>" + fmtSize(d.total) + '</b> من نحو 5 ميغابايت (حد التخزين في المتصفح).' + (d.ratio >= .7 ? ' <b style="color:' + col + '">' + (d.ratio >= .9 ? "اقتربت من الامتلاء، احذف ما لا تحتاجه الآن." : "اقتربت من الحد، راجع الصور الكبيرة.") + "</b>" : " الوضع جيد.") + '</p><details><summary>التفصيل حسب القسم</summary><div style="margin-top:8px">' + rows + '</div></details><p class="muted" style="margin-top:8px;font-size:.88rem">صور المعرض محفوظة بشكل منفصل ولا تدخل في هذا الحساب. التنبيه يظهر لك تلقائياً عند 70% ثم 90%.</p></div>';
+  }
   function vAdmin(k) {
     var sub = k && k.indexOf("admin-") === 0 ? k.slice(6) : "stats";
     var rq = S.requests.length;
@@ -1202,7 +1222,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var nav = GR.map(function (g) { return '<a href="' + lnk(g[2][0]) + '" class="' + (g === cg ? "on" : "") + '">' + g[1] + (g[3] ? " (" + g[3] + ")" : "") + "</a>"; }).join("");
     var curLbl = h(cg[1]);
     var subNav = cg[2].length > 1 ? '<nav class="subnav" aria-label="أقسام ' + h(cg[1]) + '">' + cg[2].map(function (k) { var it = items.filter(function (x) { return x[0] === k; })[0]; return '<a href="' + lnk(k) + '" class="' + (ck === k ? "on" : "") + '">' + (it ? it[1] : k) + "</a>"; }).join("") + "</nav>" : "";
-    var body = subNav + pdfBarHtml(sub) + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "memcards" ? aMemCards() : sub === "periods" ? aPeriods() : sub === "stories" ? aStories() : sub === "magazine" ? aMagazine() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
+    var body = subNav + dataBanner() + pdfBarHtml(sub) + (sub === "stats" ? dataCard() : "") + (sub === "members" ? aMembers() : sub === "scoutcards" ? aCards("m") : sub === "teachercards" ? aCards("t") : sub === "patrols" ? aPatrols() : sub === "tasks" ? aTasks() : sub === "badges" ? aBadges() : sub === "attendance" ? aAttendance() : sub === "memcards" ? aMemCards() : sub === "periods" ? aPeriods() : sub === "stories" ? aStories() : sub === "magazine" ? aMagazine() : sub === "reports" ? aReports() : sub === "staff" ? aStaff() : sub === "teachers" ? aTeachers() : sub === "behavior" ? aBehavior() : sub === "requests" ? aRequests() : sub === "messages" ? aMessages() : sub === "content" ? aContent() : sub === "photos" ? aPhotos() : aStats());
     return storyStrip() + '<div class="dash-h"><div><span class="chip">صفحة الإدارة</span><h1>لوحة قيادة الفرقة</h1></div></div><div class="adm"><div class="admnav' + (ui.navOpen ? " open" : "") + '"><button type="button" class="navtoggle" data-act="navtoggle" aria-expanded="' + (!!ui.navOpen) + '"><div><span>القسم الحالي</span><br>' + curLbl + '</div><b aria-hidden="true">' + (ui.navOpen ? "▲" : "▼") + '</b></button><nav class="side" aria-label="أقسام الإدارة">' + nav + '</nav></div><div class="main">' + body + "</div></div>";
   }
 
@@ -3071,7 +3091,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var sfs = Array.prototype.slice.call(t.files || [], 0, 10), scap = t.id === "st-in" ? ((document.getElementById("st-cap") || {}).value || "") : "", sn = 0, cam = t.id === "st-cam";
       (function nx(k) {
         if (k >= sfs.length) { save(); if (cam) { toast(sn ? "نُشرت القصة ✓" : "تعذّر نشر الصورة.", 2500); } else ui.flash = { where: "stories", text: "نُشرت " + sn + " قصة." }; refresh(); return; }
-        readImage(sfs[k]).then(function (r) { S.stories.push({ id: nid(), img: scaleTo(r.img, 1080, 0.78), cap: scap.trim(), ts: Date.now() + k }); URL.revokeObjectURL(r.url); sn++; nx(k + 1); }, function () { nx(k + 1); });
+        readImage(sfs[k]).then(function (r) { S.stories.push({ id: nid(), img: scaleTo(r.img, 900, 0.68), cap: scap.trim(), ts: Date.now() + k }); URL.revokeObjectURL(r.url); sn++; nx(k + 1); }, function () { nx(k + 1); });
       })(0);
     } else if (t.id === "hero-in") {
       var hf = t.files && t.files[0];
