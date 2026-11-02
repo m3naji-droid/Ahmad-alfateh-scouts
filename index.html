@@ -461,6 +461,59 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .mgimgs { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; } .mgimgs div { position: relative; } .mgimgs img { width: 84px; height: 84px; object-fit: cover; border-radius: 8px; }
 .mgimgs button { position: absolute; top: -6px; inset-inline-start: -6px; width: 24px; height: 24px; border-radius: 50%; border: 0; background: var(--danger); color: #fff; cursor: pointer; }
 .mgst { font-size: .8rem; padding: 2px 10px; border-radius: 99px; background: var(--line); }
+
+.mgp { background: var(--pat, linear-gradient(transparent, transparent)), #fffdf7; }
+.pat-dots { --pat: radial-gradient(color-mix(in srgb, var(--pc) 24%, transparent) 1.6px, transparent 1.8px) 0 0/16px 16px; }
+.pat-stripes { --pat: repeating-linear-gradient(45deg, color-mix(in srgb, var(--pc) 9%, transparent) 0 8px, transparent 8px 18px); }
+.pat-grid { --pat: linear-gradient(color-mix(in srgb, var(--pc) 12%, transparent) 1px, transparent 1px) 0 0/22px 22px, linear-gradient(90deg, color-mix(in srgb, var(--pc) 12%, transparent) 1px, transparent 1px) 0 0/22px 22px; }
+.pat-waves { --pat: radial-gradient(circle at 50% 120%, transparent 55%, color-mix(in srgb, var(--pc) 14%, transparent) 56% 58%, transparent 59%) 0 0/36px 20px; }
+.mgcover.pat-dots { --pat: radial-gradient(rgba(255,255,255,.18) 1.6px, transparent 1.8px) 0 0/16px 16px; }
+.mgcover.pat-stripes { --pat: repeating-linear-gradient(45deg, rgba(255,255,255,.07) 0 8px, transparent 8px 18px); }
+.mgcover.pat-grid { --pat: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px) 0 0/22px 22px, linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px) 0 0/22px 22px; }
+.mgcover.pat-waves { --pat: radial-gradient(circle at 50% 120%, transparent 55%, rgba(255,255,255,.12) 56% 58%, transparent 59%) 0 0/36px 20px; }
+.mgcover { background: var(--pat, linear-gradient(transparent, transparent)), linear-gradient(160deg, color-mix(in srgb, var(--pc) 70%, #000), var(--pc) 60%, color-mix(in srgb, var(--pc) 82%, #000)); }
+.mgfig { margin: 0; } .mgfig figcaption { font-size: .85rem; color: #6f5d4a; margin-top: 4px; text-align: center; }
+.mgimgs { margin-bottom: 14px; } .mgbody .mgimgs { display: block; }
+.mgimgs.pr-classic .mgfig { width: 100%; }
+.mgimgs.pr-duo { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mgimgs.pr-trio { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.mgimgs.pr-mosaic { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; } .pr-mosaic .mgfig:first-child { grid-column: 1 / -1; }
+.mgimgs.pr-grid4 { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mgimgs.pr-side .mgfig { width: 100%; }
+.mgimgs.pr-collage { position: relative; height: 400px; }
+.pr-collage .mgfig { position: absolute; filter: drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
+.pr-collage .mgfig:nth-child(1) { right: 0; top: 0; width: 66%; } .pr-collage .mgfig:nth-child(2) { left: 0; top: 70px; width: 52%; } .pr-collage .mgfig:nth-child(3) { left: 30%; bottom: 0; width: 48%; }
+.pr-collage figcaption { display: none; }
+.mgimgs.pr-polaroid { display: flex !important; flex-wrap: wrap; justify-content: center; gap: 14px; padding: 8px 0; }
+.pr-polaroid .mgfig { background: #fff; padding: 8px 8px 20px; box-shadow: 0 3px 12px rgba(0,0,0,.28); width: 46%; transform: rotate(-3deg); } .pr-polaroid .mgfig:nth-child(2) { transform: rotate(2.5deg) translateY(10px); } .pr-polaroid .mgfig:nth-child(3) { transform: rotate(-1.5deg); width: 52%; }
+.pr-polaroid .sh { clip-path: none; border-radius: 2px; aspect-ratio: 1; }
+.mghero { position: relative; margin: -22px -22px 14px; } .mghero img { width: 100%; height: 240px; object-fit: cover; display: block; }
+.mghero h3 { position: absolute; inset-inline: 0; bottom: 0; margin: 0; padding: 50px 22px 16px; color: #fff !important; background: linear-gradient(transparent, rgba(0,0,0,.72)); }
+.mgbody h3.ts-band { background: var(--pc); color: #fff; padding: 10px 14px; border-radius: 8px; }
+.mgbody h3.ts-big { font-size: 2.3rem; border-bottom: 4px solid #d4a017; padding-bottom: 6px; line-height: 1.25; }
+.mgside .mgfig { width: 100%; }
+.wfb { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 2px solid var(--line); border-radius: 10px; padding: 5px 4px 4px; cursor: pointer; font: inherit; font-size: .72rem; color: var(--muted); width: 74px; }
+.wfb.on { border-color: var(--primary); color: var(--primary); font-weight: 700; background: var(--surface); }
+.wfs { width: 54px; height: 70px; display: block; border-radius: 4px; background: #fff; }
+.wfgrid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.mgcover.cvx { display: block; position: relative; padding: 0; min-height: 620px; }
+.cvx .cvt { position: absolute; inset-inline: 0; bottom: 0; padding: 0 26px 34px; z-index: 3; }
+.cvx h2 { font-size: 3rem; color: #fbf3e1; line-height: 1.2; margin-bottom: 6px; } .cvx .sub { opacity: .92; margin-bottom: 12px; font-size: 1.1rem; }
+.cvx .em { position: absolute; top: 24px; inset-inline-end: 24px; width: 64px; height: 64px; margin: 0; z-index: 4; }
+.cvx .mo { position: absolute; top: 28px; inset-inline-start: 24px; z-index: 4; } .cvx .no { margin-top: 10px; }
+.cvx .cvi img { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; display: block; }
+.cv-giant .cvi { position: absolute; top: 0; inset-inline: 0; height: 60%; } .cv-giant .cvi::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 40%, color-mix(in srgb, var(--pc) 90%, #000)); }
+.cv-giant h2 { font-size: 3.6rem; margin-top: -10px; }
+.cv-arch .cvi { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); width: 64%; height: 54%; border-radius: 999px 999px 18px 18px; overflow: hidden; border: 5px solid rgba(255,255,255,.85); }
+.cv-arch .cvt { text-align: center; } .cv-arch .mo { inset-inline-start: 50%; transform: translateX(50%); top: 14px; background: var(--pc); }
+.cv-collage .cvi { position: absolute; border: 5px solid #fff; box-shadow: 0 6px 18px rgba(0,0,0,.4); overflow: hidden; z-index: 2; }
+.cv-collage .cvi.a { top: 70px; right: 22px; width: 56%; height: 200px; transform: rotate(3deg); } .cv-collage .cvi.b { top: 190px; left: 20px; width: 42%; height: 170px; transform: rotate(-4deg); z-index: 3; } .cv-collage .cvi.c { top: 330px; right: 80px; width: 36%; height: 130px; transform: rotate(2deg); z-index: 4; }
+.cv-diag .cvi { position: absolute; top: 0; inset-inline: 0; height: 72%; clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%); }
+.cv-diag .cvt { background: none; } .cv-diag .cvi::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 60%, rgba(0,0,0,.25)); }
+.cv-circles .ring { position: absolute; left: 50%; top: 34%; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,.35); }
+.cv-circles .ring.r1 { width: 92%; aspect-ratio: 1; } .cv-circles .ring.r2 { width: 76%; aspect-ratio: 1; border-color: #e8d3a2; } .cv-circles .ring.r3 { width: 118%; aspect-ratio: 1; border-style: dashed; }
+.cv-circles .cvi { position: absolute; left: 50%; top: 34%; width: 58%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; overflow: hidden; border: 6px solid #fbf3e1; }
+.cv-circles .cvt { text-align: center; } .cv-circles .mo { inset-inline-start: 50%; transform: translateX(50%); }
 .cp { font-family: inherit; font-size: .95rem; padding: 6px 14px; border: 1.5px solid var(--line); border-radius: 99px; background: none; color: var(--fg); cursor: pointer; }
 .cp.on.good { background: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
 .cp.on.bad { background: var(--danger); border-color: var(--danger); color: #fff; }
@@ -2100,28 +2153,84 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     return '<div class="mgfoot">' + ph + "<div><b>" + h(p.name || (m && m.name) || "") + "</b>" + h(p.grade || (m && m.grade) || "") + "</div></div>";
   }
   var MGC = ["#234a78", "#2f6b3a", "#8c2432", "#b8860b", "#1f7a7a", "#5b3a8c", "#c4621a", "#2b2b33"];
-  var MGS = [["rect", "مستطيل"], ["square", "مربع"], ["circle", "دائرة"], ["triangle", "مثلث"], ["hex", "مضلع"], ["tilt", "مائل"], ["arch", "قوس"]];
-  function mgLayouts(tpl) { return tpl === "activity" ? [["grid", "شبكة"], ["col", "عمود"], ["mosaic", "كبيرة + صغيرة"]] : [["full", "كاملة العرض"], ["center", "في الوسط"], ["side", "بجانب النص"]]; }
-  function mgSty(p) { var s0 = p.sty || {}; return { shape: s0.shape || "rect", layout: s0.layout || (p.tpl === "activity" ? "grid" : "full"), color: s0.color || MGC[0] }; }
-  function mgImgTag(src, sh) { return '<img class="sh sh-' + sh + '" src="' + src + '" alt="">'; }
-  function mgWrap(im, ly, text) { return ly === "side" ? '<div class="mgside"><div>' + im + "</div><div>" + text + "</div></div>" : ly === "center" ? '<div class="mgcenter">' + im + "</div>" + text : '<div class="mgimgw">' + im + "</div>" + text; }
+  var MGS = [["rect", "مستطيل"], ["square", "مربع"], ["circle", "دائرة"], ["triangle", "مثلث"], ["hex", "مضلع"], ["tilt", "مائل"], ["arch", "قوس"], ["mixed", "مختلط"]];
+  var MIXS = ["circle", "hex", "tilt", "arch", "rect", "triangle"];
+  var MGPAT = [["none", "بلا"], ["dots", "نقاط"], ["stripes", "خطوط"], ["grid", "مربعات"], ["waves", "أمواج"]];
+  var MGTS = [["plain", "بسيط"], ["band", "شريط ملوّن"], ["big", "كبير عصري"]];
+  /* [id, الاسم, عدد الصور, مستطيلات المعاينة] — i صورة، t نص، h عنوان */
+  var MGP = [
+    ["classic", "كلاسيكي", 1, [[8, 8, 60, 7, "h"], [8, 20, 84, 44, "i"], [8, 72, 84, 4, "t"], [8, 80, 84, 4, "t"], [8, 88, 70, 4, "t"]]],
+    ["side", "جانبي", 1, [[8, 8, 60, 7, "h"], [8, 20, 34, 38, "i"], [50, 20, 42, 4, "t"], [50, 28, 42, 4, "t"], [50, 36, 42, 4, "t"], [50, 44, 42, 4, "t"], [50, 52, 42, 4, "t"], [8, 68, 84, 4, "t"], [8, 76, 84, 4, "t"]]],
+    ["duo", "صورتان", 2, [[8, 8, 60, 7, "h"], [8, 20, 40, 40, "i"], [52, 20, 40, 40, "i"], [8, 68, 84, 4, "t"], [8, 76, 84, 4, "t"], [8, 84, 60, 4, "t"]]],
+    ["trio", "ثلاث صور", 3, [[8, 8, 60, 7, "h"], [8, 20, 26, 30, "i"], [37, 20, 26, 30, "i"], [66, 20, 26, 30, "i"], [8, 58, 84, 4, "t"], [8, 66, 84, 4, "t"], [8, 74, 60, 4, "t"]]],
+    ["mosaic", "فسيفساء", 3, [[8, 8, 60, 7, "h"], [8, 20, 84, 32, "i"], [8, 56, 40, 26, "i"], [52, 56, 40, 26, "i"], [8, 90, 84, 4, "t"], [8, 98, 60, 4, "t"]]],
+    ["grid4", "شبكة 4", 4, [[8, 8, 60, 7, "h"], [8, 20, 40, 32, "i"], [52, 20, 40, 32, "i"], [8, 56, 40, 32, "i"], [52, 56, 40, 32, "i"], [8, 96, 84, 4, "t"], [8, 104, 60, 4, "t"]]],
+    ["collage", "كولاج", 3, [[8, 8, 60, 7, "h"], [44, 20, 48, 44, "i"], [8, 34, 36, 36, "i"], [26, 72, 38, 32, "i"], [8, 112, 84, 4, "t"]]],
+    ["polaroid", "بولارويد", 3, [[8, 8, 60, 7, "h"], [10, 22, 38, 40, "i"], [52, 28, 38, 40, "i"], [8, 80, 84, 4, "t"], [8, 88, 84, 4, "t"], [8, 96, 60, 4, "t"]]],
+    ["hero", "غلاف علوي", 1, [[0, 0, 100, 52, "i"], [8, 40, 60, 8, "w"], [8, 62, 84, 4, "t"], [8, 70, 84, 4, "t"], [8, 78, 84, 4, "t"], [8, 86, 60, 4, "t"]]],
+    ["bgimg", "خلفية صورة", 1, [[0, 0, 100, 130, "g"], [8, 10, 60, 7, "h"], [8, 30, 84, 4, "t"], [8, 38, 84, 4, "t"], [8, 46, 84, 4, "t"], [8, 54, 60, 4, "t"]]]
+  ];
+  var MGCP = [
+    ["classic", "كلاسيكي", [[0, 0, 100, 130, "g"], [10, 76, 70, 12, "h"], [10, 94, 40, 4, "t"], [10, 104, 26, 8, "t"]]],
+    ["giant", "عنوان عملاق", [[0, 0, 100, 70, "i"], [8, 62, 84, 16, "w"], [8, 88, 50, 4, "t"], [8, 100, 24, 8, "t"]]],
+    ["arch", "قوس", [[24, 10, 52, 62, "a"], [14, 82, 72, 12, "h"], [30, 100, 40, 4, "t"]]],
+    ["collage", "كولاج", [[50, 8, 42, 40, "i"], [8, 26, 38, 38, "i"], [40, 56, 34, 32, "i"], [10, 98, 80, 12, "h"]]],
+    ["diag", "قطري", [[0, 0, 100, 78, "d"], [8, 92, 84, 12, "h"], [8, 110, 40, 4, "t"]]],
+    ["circles", "دوائر", [[18, 8, 64, 64, "c"], [10, 84, 80, 12, "h"], [30, 102, 40, 4, "t"]]]
+  ];
+  function mgWf(rects) {
+    var o = '<svg class="wfs" viewBox="0 0 100 130" aria-hidden="true"><rect width="100" height="130" fill="#fff"/>';
+    rects.forEach(function (r) {
+      var x = r[0], y = r[1], w = r[2], hh = r[3], k = r[4];
+      if (k === "i") o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + hh + '" rx="3" fill="#9fb3cf"/>';
+      else if (k === "g") o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + hh + '" fill="#e3e9f2"/>';
+      else if (k === "h") o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + hh + '" rx="2" fill="#234a78"/>';
+      else if (k === "w") o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + hh + '" rx="2" fill="#fff" opacity=".9"/>';
+      else if (k === "a") o += '<path d="M' + x + " " + (y + hh) + "V" + (y + w / 2) + "A" + w / 2 + " " + w / 2 + " 0 0 1 " + (x + w) + " " + (y + w / 2) + "V" + (y + hh) + 'Z" fill="#9fb3cf"/>';
+      else if (k === "c") o += '<ellipse cx="' + (x + w / 2) + '" cy="' + (y + hh / 2) + '" rx="' + w / 2 + '" ry="' + hh / 2 + '" fill="#9fb3cf"/>';
+      else if (k === "d") o += '<polygon points="' + x + "," + y + " " + (x + w) + "," + y + " " + (x + w) + "," + (y + hh * .8) + " " + x + "," + (y + hh) + '" fill="#9fb3cf"/>';
+      else o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + hh + '" rx="1.5" fill="#cfc6b0"/>';
+    });
+    return o + "</svg>";
+  }
+  function mgPr(id) { return MGP.filter(function (x) { return x[0] === id; })[0] || MGP[0]; }
+  var MGLEG = { full: "classic", center: "classic", side: "side", grid: "grid4", col: "classic", mosaic: "mosaic" };
+  function mgSty(p) {
+    var s0 = p.sty || {}, pr = s0.preset || MGLEG[s0.layout] || (p.tpl === "activity" ? "grid4" : "classic");
+    return { shape: s0.shape || "rect", preset: pr, color: s0.color || MGC[0], pattern: s0.pattern || "none", ts: s0.ts || "plain" };
+  }
+  function mgImgTag(src, sh, i) { var q = sh === "mixed" ? MIXS[(i || 0) % MIXS.length] : sh; return '<img class="sh sh-' + q + '" src="' + src + '" alt="">'; }
   function mgPageHtml(p) {
-    var b = "", t = p.tpl, im = p.imgs || [], st = mgSty(p), sh = st.shape, ly = st.layout;
-    var one = im[0] ? mgImgTag(im[0], sh) : "";
-    if (t === "article") b = one ? mgWrap(one, ly, "<p>" + h(p.body) + "</p>") : "<p>" + h(p.body) + "</p>";
-    else if (t === "activity") b = '<div class="mggrid ' + ly + '">' + im.map(function (x, i) { return "<figure>" + mgImgTag(x, sh) + "<figcaption>" + h((p.caps || [])[i] || "") + "</figcaption></figure>"; }).join("") + "</div>" + (p.body ? "<p>" + h(p.body) + "</p>" : "");
-    else if (t === "interview") { var wh = p.who ? '<div class="mgwho">' + h(p.who) + "</div>" : ""; b = (one ? mgWrap(one, ly, wh) : wh) + (p.qa || []).map(function (x) { return '<div class="mgqa"><b>' + h(x[0]) + "</b><span>" + h(x[1]) + "</span></div>"; }).join(""); }
-    else { var qz = '<div class="mgquiz">' + h(p.body) + "</div>"; b = (one ? mgWrap(one, ly, qz) : qz) + (p.ans ? "<details><summary>اضغط لمعرفة الإجابة</summary><p style=\"margin:8px 0 0\">" + h(p.ans) + "</p></details>" : ""); }
-    return '<article class="mgp" style="--pc:' + st.color + '"><div class="mgbar"></div><div class="mgbody"><h3>' + h(p.title) + "</h3>" + b + "</div>" + mgAuthor(p) + "</article>";
+    var t = p.tpl, st = mgSty(p), pr = mgPr(st.preset), n = pr[2], im = (p.imgs || []).slice(0, n), lead = "", rest = "";
+    if (t === "article") lead = "<p>" + h(p.body) + "</p>";
+    else if (t === "activity") lead = p.body ? "<p>" + h(p.body) + "</p>" : "";
+    else if (t === "interview") { lead = p.who ? '<div class="mgwho">' + h(p.who) + "</div>" : ""; rest = (p.qa || []).map(function (x) { return '<div class="mgqa"><b>' + h(x[0]) + "</b><span>" + h(x[1]) + "</span></div>"; }).join(""); }
+    else { lead = '<div class="mgquiz">' + h(p.body) + "</div>"; rest = p.ans ? "<details><summary>اضغط لمعرفة الإجابة</summary><p style=\"margin:8px 0 0\">" + h(p.ans) + "</p></details>" : ""; }
+    var figs = im.map(function (x, i) { var cp = t === "activity" || st.preset === "polaroid" ? h((p.caps || [])[i] || "") : ""; return '<figure class="mgfig">' + mgImgTag(x, st.shape, i) + (cp ? "<figcaption>" + cp + "</figcaption>" : "") + "</figure>"; }).join("");
+    var title = '<h3 class="ts-' + st.ts + '">' + h(p.title) + "</h3>", body, bgs = "";
+    if (st.preset === "hero" && im[0]) body = '<div class="mghero"><img src="' + im[0] + '" alt="">' + title + "</div>" + lead + rest;
+    else if (st.preset === "bgimg" && im[0]) { bgs = ";background-image:linear-gradient(rgba(255,253,247,.9),rgba(255,253,247,.9)),url(" + im[0] + ");background-size:cover"; body = title + lead + rest; }
+    else if (st.preset === "side" && im.length) body = title + '<div class="mgside"><div class="mgimgs pr-side">' + figs + "</div><div>" + lead + "</div></div>" + rest;
+    else body = title + (figs ? '<div class="mgimgs pr-' + st.preset + '">' + figs + "</div>" : "") + lead + rest;
+    return '<article class="mgp pat-' + st.pattern + '" style="--pc:' + st.color + bgs + '"><div class="mgbar"></div><div class="mgbody">' + body + "</div>" + mgAuthor(p) + "</article>";
   }
   function mgCoverHtml(c, no) {
-    var shaped = c.bg && c.cshape && c.cshape !== "full";
-    return '<article class="mgp mgcover" style="--pc:' + (c.color || MGC[0]) + '">' + (c.bg && !shaped ? '<div class="cbg" style="background-image:url(' + c.bg + ')"></div>' : "") + emblem("em") + (shaped ? '<div class="cimg">' + mgImgTag(c.bg, c.cshape) + "</div>" : "") + "<h2>" + h(c.title) + '</h2><div class="sub">' + h(c.sub) + '</div><span class="mo">' + h(c.month) + '</span><div class="no">العدد ' + arNum(no) + "</div></article>";
+    var pr = c.cpreset || "classic", sh = c.cshape && c.cshape !== "full" ? c.cshape : "full", im = (c.imgs && c.imgs.length) ? c.imgs : (c.bg ? [c.bg] : []);
+    var base = '<article class="mgp mgcover cpat pat-' + (c.pattern || "none") + (pr === "classic" ? "" : " cvx cv-" + pr) + '" style="--pc:' + (c.color || MGC[0]) + '">';
+    var meta = '<h2>' + h(c.title) + '</h2><div class="sub">' + h(c.sub) + '</div><div class="no">العدد ' + arNum(no) + "</div>", mo = '<span class="mo">' + h(c.month) + "</span>";
+    if (pr === "classic") {
+      var shaped = c.bg && sh !== "full";
+      return base + (c.bg && !shaped ? '<div class="cbg" style="background-image:url(' + c.bg + ')"></div>' : "") + emblem("em") + (shaped ? '<div class="cimg">' + mgImgTag(c.bg, sh) + "</div>" : "") + "<h2>" + h(c.title) + '</h2><div class="sub">' + h(c.sub) + "</div>" + mo + '<div class="no">العدد ' + arNum(no) + "</div></article>";
+    }
+    var fr = function (src, cls, i) { return src ? '<div class="cvi ' + (cls || "") + '">' + mgImgTag(src, sh === "full" || sh === "mixed" ? "rect" : sh, i) + "</div>" : ""; };
+    var imgsH = pr === "collage" ? fr(im[0], "a", 0) + fr(im[1] || im[0], "b", 1) + fr(im[2] || im[0], "c", 2) : pr === "circles" ? '<div class="ring r3"></div><div class="ring r1"></div><div class="ring r2"></div>' + fr(im[0], "", 0) : (pr === "giant" || pr === "diag" || pr === "arch") ? fr(im[0], "", 0) : "";
+    return base + imgsH + emblem("em") + mo + '<div class="cvt">' + meta + "</div></article>";
   }
   function mgStyCtl(sty, tpl, act, id) {
     var bt = function (k, items, cur) { return items.map(function (x) { return '<button type="button" class="cp' + (cur === x[0] ? " on good" : "") + '" data-act="' + act + '" data-k="' + k + '" data-v="' + x[0] + '" data-id="' + id + '">' + x[1] + "</button>"; }).join(""); };
     var sw = MGC.map(function (c) { return '<button type="button" class="sw' + (sty.color === c ? " on" : "") + '" style="background:' + c + '" data-act="' + act + '" data-k="color" data-v="' + c + '" data-id="' + id + '" aria-label="لون"></button>'; }).join("");
-    return '<div class="mgstyc"><span class="lbl2">اللون</span><div class="cps" style="margin-bottom:10px">' + sw + '</div><span class="lbl2">شكل إطار الصورة</span><div class="cps">' + bt("shape", MGS, sty.shape) + "</div>" + (tpl ? '<span class="lbl2">تخطيط الصور</span><div class="cps">' + bt("layout", mgLayouts(tpl), sty.layout) + "</div>" : "") + "</div>";
+    var th = MGP.map(function (x) { return '<button type="button" class="wfb' + (sty.preset === x[0] ? " on" : "") + '" data-act="' + act + '" data-k="preset" data-v="' + x[0] + '" data-id="' + id + '" aria-pressed="' + (sty.preset === x[0]) + '">' + mgWf(x[3]) + "<span>" + x[1] + " · " + arNum(x[2]) + "</span></button>"; }).join("");
+    return '<div class="mgstyc"><span class="lbl2">اختر تصميم الصفحة (الرقم = أقصى عدد صور)</span><div class="wfgrid">' + th + '</div><span class="lbl2">اللون</span><div class="cps" style="margin-bottom:10px">' + sw + '</div><span class="lbl2">شكل إطار الصور</span><div class="cps">' + bt("shape", MGS, sty.shape) + '</div><span class="lbl2">نقش الخلفية</span><div class="cps">' + bt("pattern", MGPAT, sty.pattern) + '</div><span class="lbl2">شكل العنوان</span><div class="cps">' + bt("ts", MGTS, sty.ts) + "</div></div>";
   }
   function mgNoteHtml(c) {
     if (!c.note) return "";
@@ -2133,11 +2242,11 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var f = ui.mgf; if (!f) return "";
     var t = f.tpl, tabs = MGT.map(function (x) { return '<button type="button" class="cp' + (t === x[0] ? " on good" : "") + '" data-act="mgtpl" data-v="' + x[0] + '">' + x[1] + "</button>"; }).join("");
     var imgs = '<div class="mgimgs">' + f.imgs.map(function (x, i) { return '<div><img src="' + x + '" alt=""><button type="button" data-act="mgimgdel" data-id="' + i + '" aria-label="حذف">✕</button></div>'; }).join("") + "</div>";
-    var maxI = t === "activity" ? 4 : (t === "article" || t === "interview" || t === "quiz") ? 1 : 0;
-    var addI = f.imgs.length < maxI ? '<label class="btn ghost sm" for="mg-img">' + (t === "activity" ? "إضافة صور (حتى 4)" : "إضافة صورة") + '</label><input id="mg-img" class="evin" type="file" accept="image/*"' + (t === "activity" ? " multiple" : "") + ">" : "";
+    var maxI = mgPr(mgSty({ tpl: t, sty: f.sty }).preset)[2];
+    var addI = f.imgs.length < maxI ? '<label class="btn ghost sm" for="mg-img">' + (maxI > 1 ? "إضافة صور (حتى " + maxI + ")" : "إضافة صورة") + '</label><input id="mg-img" class="evin" type="file" accept="image/*"' + (maxI > 1 ? " multiple" : "") + ">" : "";
     var body = "";
     if (t === "article") body = '<div class="field"><label for="mg-body">النص (حتى 1200 حرف)</label><textarea id="mg-body" maxlength="1200">' + h(f.body) + "</textarea></div>" + imgs + addI;
-    else if (t === "activity") body = imgs + addI + f.imgs.map(function (x, i) { return '<div class="field"><label for="mg-cap-' + i + '">تعليق الصورة ' + (i + 1) + '</label><input id="mg-cap-' + i + '" type="text" maxlength="80" value="' + h(f.caps[i] || "") + '"></div>'; }).join("") + '<div class="field"><label for="mg-body">نبذة قصيرة (اختياري، حتى 300 حرف)</label><textarea id="mg-body" maxlength="300" style="min-height:90px">' + h(f.body) + "</textarea></div>";
+    else if (t === "activity") body = imgs + addI + f.imgs.slice(0, maxI).map(function (x, i) { return '<div class="field"><label for="mg-cap-' + i + '">تعليق الصورة ' + (i + 1) + '</label><input id="mg-cap-' + i + '" type="text" maxlength="80" value="' + h(f.caps[i] || "") + '"></div>'; }).join("") + '<div class="field"><label for="mg-body">نبذة قصيرة (اختياري، حتى 300 حرف)</label><textarea id="mg-body" maxlength="300" style="min-height:90px">' + h(f.body) + "</textarea></div>";
     else if (t === "interview") { body = '<div class="field"><label for="mg-who">الضيف / الشخصية (الاسم والصفة)</label><input id="mg-who" type="text" maxlength="80" value="' + h(f.who) + '"></div>'; for (var i = 0; i < 4; i++) body += '<div class="field"><label for="mg-q-' + i + '">السؤال ' + (i + 1) + '</label><input id="mg-q-' + i + '" type="text" maxlength="120" value="' + h((f.qa[i] || [])[0] || "") + '"></div><div class="field"><label for="mg-a-' + i + '">الإجابة ' + (i + 1) + '</label><textarea id="mg-a-' + i + '" maxlength="350" style="min-height:70px">' + h((f.qa[i] || [])[1] || "") + "</textarea></div>"; body += imgs + addI; }
     else body = '<div class="field"><label for="mg-body">اللغز أو السؤال (حتى 500 حرف)</label><textarea id="mg-body" maxlength="500" style="min-height:110px">' + h(f.body) + '</textarea></div><div class="field"><label for="mg-ans">الإجابة (تظهر عند الضغط)</label><input id="mg-ans" type="text" maxlength="150" value="' + h(f.ans) + '"></div>' + imgs + addI;
     return '<div class="card mgedit"><h3>' + (f.id ? "تعديل الصفحة" : "صفحة جديدة") + '</h3><span class="lbl2">نوع الصفحة</span><div class="cps" style="margin-bottom:12px">' + tabs + '</div><div class="field"><label for="mg-title">عنوان الصفحة</label><input id="mg-title" type="text" maxlength="70" value="' + h(f.title) + '"></div>' + body +
@@ -2180,8 +2289,9 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   }
   function coverCtl(c, id) {
     var sw = MGC.map(function (x) { return '<button type="button" class="sw' + ((c.color || MGC[0]) === x ? " on" : "") + '" style="background:' + x + '" data-act="mgcsty" data-k="color" data-v="' + x + '" data-id="' + id + '" aria-label="لون"></button>'; }).join("");
-    var sh = [["full", "كاملة"]].concat(MGS).map(function (x) { return '<button type="button" class="cp' + ((c.cshape || "full") === x[0] ? " on good" : "") + '" data-act="mgcsty" data-k="shape" data-v="' + x[0] + '" data-id="' + id + '">' + x[1] + "</button>"; }).join("");
-    return '<div class="mgstyc"><span class="lbl2">اللون</span><div class="cps" style="margin-bottom:10px">' + sw + '</div><span class="lbl2">إطار صورة الغلاف</span><div class="cps">' + sh + "</div></div>";
+    var bt = function (k, items, cur) { return items.map(function (x) { return '<button type="button" class="cp' + (cur === x[0] ? " on good" : "") + '" data-act="mgcsty" data-k="' + k + '" data-v="' + x[0] + '" data-id="' + id + '">' + x[1] + "</button>"; }).join(""); };
+    var th = MGCP.map(function (x) { return '<button type="button" class="wfb' + ((c.cpreset || "classic") === x[0] ? " on" : "") + '" data-act="mgcsty" data-k="cpreset" data-v="' + x[0] + '" data-id="' + id + '">' + mgWf(x[2]) + "<span>" + x[1] + "</span></button>"; }).join("");
+    return '<div class="mgstyc"><span class="lbl2">اختر تصميم الغلاف</span><div class="wfgrid">' + th + '</div><span class="lbl2">اللون</span><div class="cps" style="margin-bottom:10px">' + sw + '</div><span class="lbl2">إطار صور الغلاف</span><div class="cps">' + bt("cshape", [["full", "كاملة"]].concat(MGS), c.cshape || "full") + '</div><span class="lbl2">نقش الغلاف</span><div class="cps">' + bt("pattern", MGPAT, c.pattern || "none") + "</div></div>";
   }
   function aMagazine() {
     var c = S.mag.cfg, ed = S.mag.editors || [];
@@ -2202,8 +2312,8 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     }
     return flashHtml("mag") + '<div class="card"><h3>غلاف العدد ' + arNum(c.no) + '</h3><form data-form="magcfg" class="stack"><div class="form-grid"><div class="field"><label for="mc-title">عنوان المجلة</label><input id="mc-title" type="text" value="' + h(c.title) + '"></div><div class="field"><label for="mc-sub">شعار فرعي / عبارة</label><input id="mc-sub" type="text" value="' + h(c.sub) + '"></div><div class="field"><label for="mc-month">الشهر والسنة</label><input id="mc-month" type="text" value="' + h(c.month) + '"></div><div class="field"><label for="mc-no">رقم العدد</label><input id="mc-no" type="number" min="1" value="' + c.no + '"></div></div>' +
       '<div class="field"><label for="mc-note">كلمة رئيس التحرير</label><textarea id="mc-note" style="min-height:110px">' + h(c.note) + '</textarea></div><div class="field"><label for="mc-noteby">اسم الكاتب</label><input id="mc-noteby" type="text" value="' + h(c.noteBy) + '"></div><button class="btn" type="submit">حفظ الغلاف</button></form>' +
-      '<div class="row-act" style="margin-top:12px;flex-wrap:wrap"><label class="btn ghost sm" for="mg-bg">' + (c.bg ? "تغيير صورة الخلفية" : "صورة الخلفية الشفافة") + '</label><input id="mg-bg" class="evin" type="file" accept="image/*">' + (c.bg ? '<button class="btn danger sm" data-act="mgbgdel">إزالة</button>' : "") + '<label class="btn ghost sm" for="mg-nimg">' + (c.noteImg ? "تغيير صورة الكاتب" : "صورة الكاتب") + '</label><input id="mg-nimg" class="evin" type="file" accept="image/*"></div></div>' +
-      '<div class="card"><h3>تصميم الغلاف</h3><p class="muted" style="margin-bottom:8px">لون الغلاف، وشكل إطار صورة الخلفية (اختر «كاملة» لتكون خلفية الغلاف كله).</p>' + coverCtl(c, 0) + '</div>' +
+      '<div class="row-act" style="margin-top:12px;flex-wrap:wrap"><label class="btn ghost sm" for="mg-bg">' + (c.bg ? "تغيير صورة الخلفية" : "صورة الخلفية الشفافة") + '</label><input id="mg-bg" class="evin" type="file" accept="image/*">' + (c.bg ? '<button class="btn danger sm" data-act="mgbgdel">إزالة</button>' : "") + '<label class="btn ghost sm" for="mg-cimg">صور الغلاف (حتى 3)</label><input id="mg-cimg" class="evin" type="file" accept="image/*" multiple><label class="btn ghost sm" for="mg-nimg">' + (c.noteImg ? "تغيير صورة الكاتب" : "صورة الكاتب") + '</label><input id="mg-nimg" class="evin" type="file" accept="image/*"></div></div>' +
+      '<div class="card"><h3>تصميم الغلاف</h3>' + ((c.imgs || []).length ? '<div class="mgimgs" style="display:flex;gap:8px;flex-wrap:wrap">' + c.imgs.map(function (x, i) { return '<div><img src="' + x + '" alt=""><button type="button" data-act="mgcimgdel" data-id="' + i + '" aria-label="حذف">✕</button></div>'; }).join("") + "</div>" : "") + '<p class="muted" style="margin-bottom:8px">لون الغلاف، وشكل إطار صورة الخلفية (اختر «كاملة» لتكون خلفية الغلاف كله).</p>' + coverCtl(c, 0) + '</div>' +
       '<div class="card"><h3>المحررون من الكشافة (' + ed.length + ")</h3><p class=\"muted\" style=\"margin-bottom:8px\">من تمنحهم الصلاحية يكتبون صفحة أو صفحتين في كل عدد ويرسلونها لك.</p>" + edl + '<div style="margin-top:10px">' + opts + "</div></div>" +
       "<h3 style=\"margin:16px 0 8px\">صفحات بانتظار الموافقة (" + pend.length + ")</h3>" + pc + '<div class="card"><h3>صفحات العدد الحالي (' + appr.length + ")</h3>" + ar + '<div style="margin-top:12px">' + pub + '</div><p style="margin-top:10px"><a href="#magazine-draft">معاينة العدد الحالي ←</a></p></div><div class="card"><h3>الأعداد المنشورة</h3>' + (ui.mgidel ? '<p class="muted" style="margin-bottom:8px">عند حذف العدد تعود صفحاته المقبولة إلى قائمة الانتظار لتُضاف إلى عدد آخر.</p>' : "") + iss + "</div>" + issEdit;
   }
@@ -2223,7 +2333,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var loadI = function (src) { return new Promise(function (res) { if (!src) { res(null); return; } var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = src; }); };
     var drawCover = function (bg) {
       d.page(); var c = d.c; c.fillStyle = m.cfg.color || PGREEN; c.fillRect(0, 0, PGW, PGH);
-      if (bg && m.cfg.cshape && m.cfg.cshape !== "full") { shapeDraw(c, bg, (PGW - 700) / 2, 330, 700, shapeH(m.cfg.cshape, 700), m.cfg.cshape); bg = null; }
+      if (bg && ((m.cfg.cpreset && m.cfg.cpreset !== "classic") || (m.cfg.cshape && m.cfg.cshape !== "full"))) { var csh = m.cfg.cshape && m.cfg.cshape !== "full" && m.cfg.cshape !== "mixed" ? m.cfg.cshape : "rect"; shapeDraw(c, bg, (PGW - 700) / 2, 330, 700, shapeH(csh, 700), csh); bg = null; }
       if (bg) { c.globalAlpha = .25; var k = Math.max(PGW / bg.naturalWidth, PGH / bg.naturalHeight), w = bg.naturalWidth * k, hh = bg.naturalHeight * k; c.drawImage(bg, (PGW - w) / 2, (PGH - hh) / 2, w, hh); c.globalAlpha = 1; }
       c.drawImage(LOGO_IMG, PGW - PMG - 150, 120, 150, 150);
       c.fillStyle = "#fbf3e1"; c.textAlign = "right"; c.font = d.f(120, true); c.fillText(m.cfg.title, PGW - PMG, 1000);
@@ -2234,11 +2344,11 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var pageHead = function (title) { d.page(); var c = d.c; c.fillStyle = pcol; c.fillRect(0, 0, PGW, 16); d.y = 70; d.text(title, 56, { bold: true, color: pcol }); d.space(10); };
     var imgDraw = function (im, h0) { if (!im) return; var W = PGW - 2 * PMG, bw = Math.min(W, shp === "circle" || shp === "square" ? Math.min(W, 560) : shp === "arch" ? 440 : W), bh = shapeH(shp, bw); if (bh > h0 + 80) { bh = h0 + 80; bw = shp === "arch" ? bh * .75 : bw; } d.ensure(bh + 20); shapeDraw(d.c, im, (PGW - bw) / 2, d.y, bw, bh, shp); d.y += bh + 20; };
     var foot = function (p) { d.space(20); d.ensure(60); d.c.strokeStyle = "#d6c9aa"; d.c.beginPath(); d.c.moveTo(PMG, d.y); d.c.lineTo(PGW - PMG, d.y); d.c.stroke(); d.space(14); d.text((p.name || "") + " — " + (p.grade || ""), 26, { color: "#555" }); };
-    var job = loadI(m.cfg.bg).then(drawCover);
+    var job = loadI((m.cfg.imgs && m.cfg.imgs[0]) || m.cfg.bg).then(drawCover);
     if (m.cfg.note) job = job.then(function () { pageHead("كلمة رئيس التحرير"); d.text(m.cfg.note, 32, {}); d.space(20); d.text(m.cfg.noteBy || "", 28, { bold: true, color: PGREEN }); });
     m.pages.forEach(function (p) {
       job = job.then(function () { return Promise.all((p.imgs || []).map(loadI)); }).then(function (ims) {
-        var sp = mgSty(p); pcol = sp.color; shp = sp.shape;
+        var sp = mgSty(p); pcol = sp.color; shp = sp.shape === "mixed" ? "rect" : sp.shape;
         pageHead(p.title);
         if (p.tpl === "article") { imgDraw(ims[0], 560); d.text(p.body, 32, {}); }
         else if (p.tpl === "activity") { ims.forEach(function (im, i) { imgDraw(im, 480); d.text((p.caps || [])[i] || "", 26, { color: "#555" }); d.space(10); }); if (p.body) d.text(p.body, 32, {}); }
@@ -2725,12 +2835,12 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "mgnext" || a === "mgprev") { var pg = document.getElementById("mgpager"); if (pg) pg.scrollBy({ left: (a === "mgnext" ? -1 : 1) * pg.clientWidth, behavior: "smooth" }); }
     else if (a === "mgshare") { var lk = location.href.split("#")[0] + "#magazine-" + val; try { navigator.clipboard.writeText(lk).then(function () { toast("نُسخ رابط العدد."); }, function () { toast(lk, 6000); }); } catch (er) { toast(lk, 6000); } }
     else if (a === "mgpdf") exportPdf("mag", Number(val));
-    else if (a === "mgnew") { ui.mgf = { id: 0, tpl: "article", title: "", body: "", ans: "", who: "", imgs: [], caps: [], qa: [], sty: { shape: "rect", layout: "", color: MGC[0] } }; refresh(); }
+    else if (a === "mgnew") { ui.mgf = { id: 0, tpl: "article", title: "", body: "", ans: "", who: "", imgs: [], caps: [], qa: [], sty: { shape: "rect", preset: "classic", color: MGC[0], pattern: "none", ts: "plain" } }; refresh(); }
     else if (a === "mgcancel") { ui.mgf = null; refresh(); }
-    else if (a === "mgtpl") { mgCapture(); ui.mgf.tpl = val; ui.mgf.sty = Object.assign({}, ui.mgf.sty || {}, { layout: "" }); ui.mgf.imgs = ui.mgf.imgs.slice(0, val === "activity" ? 4 : 1); refresh(); }
+    else if (a === "mgtpl") { mgCapture(); ui.mgf.tpl = val; ui.mgf.sty = Object.assign({}, ui.mgf.sty || {}, { preset: val === "activity" ? "grid4" : "classic" }); refresh(); }
     else if (a === "mgsty") { mgCapture(); ui.mgf.sty = ui.mgf.sty || {}; ui.mgf.sty[t.getAttribute("data-k")] = val; refresh(); }
     else if (a === "mgasty") { var ps = byId(S.magp, id); if (ps) { ps.sty = ps.sty || {}; ps.sty[t.getAttribute("data-k")] = val; save(); refresh(); } }
-    else if (a === "mgcsty") { var tg = id ? S.mag.issues.filter(function (x) { return x.no === id; })[0] : S.mag.cfg; if (tg) { tg[t.getAttribute("data-k") === "shape" ? "cshape" : "color"] = val; save(); refresh(); } }
+    else if (a === "mgcsty") { var tg = id ? S.mag.issues.filter(function (x) { return x.no === id; })[0] : S.mag.cfg; if (tg) { tg[t.getAttribute("data-k")] = val; save(); refresh(); } }
     else if (a === "mgimgdel") { mgCapture(); ui.mgf.imgs.splice(id, 1); ui.mgf.caps.splice(id, 1); refresh(); }
     else if (a === "mgedit") { var pe = byId(S.magp, id); if (pe) { ui.mgf = JSON.parse(JSON.stringify(pe)); ui.mgf.caps = ui.mgf.caps || []; ui.mgf.qa = ui.mgf.qa || []; ui.mgf.who = ui.mgf.who || ""; ui.mgf.ans = ui.mgf.ans || ""; ui.mgf.body = ui.mgf.body || ""; refresh(); } }
     else if (a === "mgdel") { S.magp = S.magp.filter(function (p) { return !(p.id === id && p.scout === uid && p.status !== "approved") && true; }); if (session === "admin") S.magp = S.magp.filter(function (p) { return p.id !== id; }); save(); refresh(); }
@@ -2762,6 +2872,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "mgissno") { ui.mgidel = null; refresh(); }
     else if (a === "mgissyes") { var dn = Number(val); S.mag.issues = S.mag.issues.filter(function (x) { return x.no !== dn; }); S.magp.forEach(function (p) { if (p.status === "approved" && p.no === dn) { p.status = "pending"; p.no = 0; } }); if (ui.mgie === dn) ui.mgie = null; ui.mgidel = null; save(); ui.flash = { where: "mag", text: "حُذف العدد " + arNum(dn) + "." }; refresh(); }
     else if (a === "mgedrm") { S.mag.editors = S.mag.editors.filter(function (x) { return x !== id; }); save(); refresh(); }
+    else if (a === "mgcimgdel") { S.mag.cfg.imgs.splice(id, 1); save(); refresh(); }
     else if (a === "mgbgdel") { S.mag.cfg.bg = ""; save(); refresh(); }
     else if (a === "mgpubask") { ui.mgpub = true; refresh(); }
     else if (a === "mgpubno") { ui.mgpub = false; refresh(); }
@@ -2945,8 +3056,11 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   document.addEventListener("change", function (e) {
     var t = e.target;
     if (t.id === "mg-img") {
-      mgCapture(); var mf = Array.prototype.slice.call(t.files || []), room = (ui.mgf.tpl === "activity" ? 4 : 1) - ui.mgf.imgs.length; mf = mf.slice(0, Math.max(0, room));
-      (function nx(k) { if (k >= mf.length) { refresh(); return; } readImage(mf[k]).then(function (r) { ui.mgf.imgs.push(scaleTo(r.img, 1000, 0.72)); URL.revokeObjectURL(r.url); nx(k + 1); }, function () { nx(k + 1); }); })(0);
+      mgCapture(); var mf = Array.prototype.slice.call(t.files || []), room = mgPr(mgSty({ tpl: ui.mgf.tpl, sty: ui.mgf.sty }).preset)[2] - ui.mgf.imgs.length; mf = mf.slice(0, Math.max(0, room));
+      (function nx(k) { if (k >= mf.length) { refresh(); return; } readImage(mf[k]).then(function (r) { ui.mgf.imgs.push(scaleTo(r.img, 900, 0.7)); URL.revokeObjectURL(r.url); nx(k + 1); }, function () { nx(k + 1); }); })(0);
+    } else if (t.id === "mg-cimg") {
+      var cfs = Array.prototype.slice.call(t.files || [], 0, 3); S.mag.cfg.imgs = S.mag.cfg.imgs || [];
+      (function nx(k) { if (k >= cfs.length || S.mag.cfg.imgs.length >= 3) { save(); refresh(); return; } readImage(cfs[k]).then(function (r) { S.mag.cfg.imgs.push(scaleTo(r.img, 1000, 0.72)); URL.revokeObjectURL(r.url); nx(k + 1); }, function () { nx(k + 1); }); })(0);
     } else if (t.id === "mg-bg" || t.id === "mg-nimg") {
       var bf = t.files && t.files[0]; if (bf) readImage(bf).then(function (r) { if (t.id === "mg-bg") S.mag.cfg.bg = scaleTo(r.img, 1200, 0.7); else S.mag.cfg.noteImg = scaleTo(r.img, 300, 0.8); URL.revokeObjectURL(r.url); save(); refresh(); }, function () {});
     } else if (t.id === "mgi-bg") {
