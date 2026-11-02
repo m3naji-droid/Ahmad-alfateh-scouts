@@ -457,6 +457,7 @@ button.alb.new span { font-size: 3rem; line-height: 1; }
 .sc-st.ok { background: #d9efdd; color: #14532d; }
 .sc-st.bad { background: #f6d9d4; color: var(--danger); }
 .sc-list { max-height: 180px; overflow: auto; }
+.dept-in { font-family: inherit; padding: 4px 8px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); min-width: 130px; }
 .keep { display: flex; align-items: center; gap: 10px; margin: 4px 0 12px; font-size: .95rem; color: var(--muted); cursor: pointer; }
 .keep input { width: 20px; height: 20px; accent-color: var(--primary); }
 .rk-sel { font-family: inherit; padding: 4px 6px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); }
@@ -955,14 +956,42 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       (up ? '<div class="card"><h3>الأنشطة القادمة</h3><div class="acts" style="border-top:0">' + up + "</div></div>" : "") + (anns ? '<div class="card"><h3>آخر الأخبار</h3>' + anns + "</div>" : "") + "</section>";
   }
 
+  var DEPTS = ["التربية الإسلامية", "اللغة العربية", "اللغة الإنجليزية", "الرياضيات", "العلوم", "الاجتماعيات", "التربية الفنية", "التربية الرياضية", "الحاسوب", "الفرقة الكشفية", "الإدارة المدرسية", "الإرشاد الطلابي"];
+  function deptOf(t) { return t.dept || "بدون قسم"; }
   function loginForm() {
-    var sc = ui.role === "scout";
-    return '<form class="login" data-form="login"><h1>دخول الأعضاء</h1><div class="seg" role="group" aria-label="نوع الحساب"><button type="button" data-act="role" data-v="scout" class="' + (ui.role === "scout" ? "on" : "") + '">كشاف</button><button type="button" data-act="role" data-v="teacher" class="' + (ui.role === "teacher" ? "on" : "") + '">معلم</button><button type="button" data-act="role" data-v="admin" class="' + (ui.role === "admin" ? "on" : "") + '">الإدارة</button></div>' +
-      '<div class="field"><label for="l-user">' + "اسم المستخدم" + '</label><input id="l-user" name="username" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" required></div>' +
-      '<div class="field"><label for="l-pass">' + "كلمة المرور" + '</label><input id="l-pass" name="password" type="password" autocomplete="current-password" required></div>' +
-      '<label class="keep"><input id="l-keep" type="checkbox"' + (ui.role === "admin" ? "" : " checked") + '><span>ابقَ داخل حسابي على هذا الجهاز</span></label>' +
-      '<div class="err" role="alert">' + h(ui.loginErr) + '</div><button class="btn" type="submit">دخول</button>' +
-      '</form>';
+    var rl = ui.role, lg = ui.lgf || (ui.lgf = {});
+    var seg = '<form class="login" data-form="login"><h1>دخول الأعضاء</h1><div class="seg" role="group" aria-label="نوع الحساب"><button type="button" data-act="role" data-v="scout" class="' + (rl === "scout" ? "on" : "") + '">كشاف</button><button type="button" data-act="role" data-v="teacher" class="' + (rl === "teacher" ? "on" : "") + '">معلم</button><button type="button" data-act="role" data-v="admin" class="' + (rl === "admin" ? "on" : "") + '">الإدارة</button></div>';
+    var opt = function (v0, t, sel) { return '<option value="' + h(v0) + '"' + (String(sel) === String(v0) ? " selected" : "") + ">" + h(t) + "</option>"; };
+    var fld = function (id, lbl, opts) { return '<div class="field"><label for="' + id + '">' + lbl + '</label><select id="' + id + '">' + opts + "</select></div>"; };
+    var body = "", ready = false;
+    if (rl === "admin") {
+      body = '<div class="field"><label for="l-user">اسم المستخدم</label><input id="l-user" name="username" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" required></div>';
+      ready = true;
+    } else if (rl === "teacher") {
+      var ds = []; S.teachers.forEach(function (t) { if (ds.indexOf(deptOf(t)) < 0) ds.push(deptOf(t)); }); ds.sort();
+      body = fld("lg-dept", "القسم", opt("", "اختر القسم", lg.dept || "") + ds.map(function (d) { return opt(d, d, lg.dept); }).join(""));
+      if (lg.dept) {
+        var ts = S.teachers.filter(function (t) { return deptOf(t) === lg.dept; }).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+        body += fld("lg-name", "الاسم", opt("", "اختر اسمك", lg.id || "") + ts.map(function (t) { return opt(t.id, t.name + (t.title ? " · " + t.title : ""), lg.id); }).join(""));
+        ready = !!lg.id;
+      }
+    } else {
+      body = fld("lg-grade", "الصف", opt("", "اختر الصف", lg.grade || "") + GRADES.map(function (g) { return opt(g[0], g[0], lg.grade); }).join(""));
+      var gr = GRADES.filter(function (g) { return g[0] === lg.grade; })[0];
+      if (gr) {
+        var cls = []; for (var k = 1; k <= gr[1]; k++) cls.push(gr[2] + " " + k);
+        cls = cls.filter(function (c) { return S.members.some(function (m) { return m.grade === c; }); });
+        body += fld("lg-class", "الفصل", opt("", cls.length ? "اختر الفصل" : "لا يوجد كشافة في هذا الصف", lg.cls || "") + cls.map(function (c) { return opt(c, c + " (" + S.members.filter(function (m) { return m.grade === c; }).length + ")", lg.cls); }).join(""));
+        if (lg.cls) {
+          var ms = S.members.filter(function (m) { return m.grade === lg.cls; }).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+          body += fld("lg-name", "الاسم", opt("", "اختر اسمك", lg.id || "") + ms.map(function (m) { return opt(m.id, m.name, lg.id); }).join(""));
+          ready = !!lg.id;
+        }
+      }
+    }
+    var pass = ready ? '<div class="field"><label for="l-pass">' + (rl === "admin" ? "كلمة المرور" : "الرقم السري") + '</label><input id="l-pass" name="password" type="password" autocomplete="current-password" required></div>' +
+      '<label class="keep"><input id="l-keep" type="checkbox"' + (rl === "admin" ? "" : " checked") + '><span>ابقَ داخل حسابي على هذا الجهاز</span></label>' : "";
+    return seg + body + pass + '<div class="err" role="alert">' + h(ui.loginErr) + "</div>" + (ready ? '<button class="btn" type="submit">دخول</button>' : "") + "</form>";
   }
 
   function credCard(a) {
@@ -1514,7 +1543,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
   };
   var HDRS = {
     members: { name: ["الاسم", "اسم", "name"], grade: ["الصف", "صف", "grade"], patrol: ["الطليعة", "طليعة", "patrol"], user: ["اسم المستخدم", "المستخدم", "username", "user"], pass: ["كلمة المرور", "كلمة السر", "password", "pass"] },
-    teachers: { name: ["الاسم", "اسم", "name"], title: ["المسمى", "مسمى", "الوظيفة", "title"], user: ["اسم المستخدم", "المستخدم", "username", "user"], pass: ["كلمة المرور", "كلمة السر", "password", "pass"] }
+    teachers: { name: ["الاسم", "اسم", "name"], title: ["المسمى", "مسمى", "الوظيفة", "title"], dept: ["القسم", "قسم", "dept"], user: ["اسم المستخدم", "المستخدم", "username", "user"], pass: ["كلمة المرور", "كلمة السر", "password", "pass"] }
   };
   function norm(x) { return String(x == null ? "" : x).replace(/\s+/g, " ").trim(); }
   function buildRows(table, kind) {
@@ -1860,13 +1889,14 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
       var del = ui.confirmT === m.id
         ? '<span class="row-act"><span class="muted">حذف ' + h(m.name) + '؟</span><button class="btn danger sm" data-act="tdelyes" data-id="' + m.id + '">نعم، احذف</button><button class="btn ghost sm" data-act="tno">إلغاء</button></span>'
         : '<button class="btn danger sm" data-act="tdel" data-id="' + m.id + '">حذف</button>';
-      return "<tr><td>" + h(m.name) + "</td><td>" + h(m.title) + '</td><td><code class="pw">' + h(m.user) + "</code>" + (m.credEdit ? ' <small class="muted">(عدّله صاحبه ' + fullDate(m.credEdit) + ")</small>" : "") + "</td><td>" + pwCell("t", m) + "</td><td>" + del + "</td></tr>";
-    }).join("") || '<tr><td colspan="5" class="empty">لا يوجد معلمون.</td></tr>';
+      return "<tr><td>" + h(m.name) + "</td><td>" + h(m.title) + '</td><td><input class="dept-in" list="dept-list" data-tdept="' + m.id + '" value="' + h(m.dept || "") + '" placeholder="بدون قسم" aria-label="قسم ' + h(m.name) + '"></td><td><code class="pw">' + h(m.user) + "</code>" + (m.credEdit ? ' <small class="muted">(عدّله صاحبه ' + fullDate(m.credEdit) + ")</small>" : "") + "</td><td>" + pwCell("t", m) + "</td><td>" + del + "</td></tr>";
+    }).join("") || '<tr><td colspan="6" class="empty">لا يوجد معلمون.</td></tr>';
     return flashHtml("teachers") + bulkBar("teachers") + '<div class="card"><h3>إضافة معلم أو مشرف</h3><form data-form="addTeacher"><div class="form-grid"><div class="field"><label for="t-name">الاسم</label><input id="t-name" type="text" required></div>' +
       '<div class="field"><label for="t-title">المسمى</label><input id="t-title" type="text" list="t-list" placeholder="مثال: معلم الرياضيات"><datalist id="t-list"><option value="معلم"><option value="مشرف"><option value="مشرف اجتماعي"><option value="مرشد طلابي"></datalist></div>' +
+      '<div class="field"><label for="t-dept">القسم (يظهر في تسجيل الدخول)</label><input id="t-dept" type="text" list="dept-list" placeholder="مثال: الرياضيات"><datalist id="dept-list">' + DEPTS.map(function (d) { return '<option value="' + d + '">'; }).join("") + '</datalist></div>' +
       '<div class="field"><label for="t-user">اسم المستخدم (اختياري)</label><input id="t-user" type="text" dir="ltr" autocomplete="off" placeholder="يُنشأ تلقائياً"></div><div class="field"><label for="t-pass">كلمة المرور (اختياري)</label><input id="t-pass" type="text" dir="ltr" autocomplete="off" placeholder="تُنشأ تلقائياً"></div></div>' +
       '<div style="margin-top:14px"><button class="btn" type="submit">إضافة</button></div></form></div>' + bulkCard("teachers") +
-      '<div class="card"><h3>المعلمون والمشرفون (' + S.teachers.length + ')</h3><div class="tbl"><table><thead><tr><th>الاسم</th><th>المسمى</th><th>اسم المستخدم</th><th>كلمة المرور</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div></div>";
+      '<div class="card"><h3>المعلمون والمشرفون (' + S.teachers.length + ')</h3><div class="tbl"><table><thead><tr><th>الاسم</th><th>المسمى</th><th>القسم</th><th>اسم المستخدم</th><th>كلمة المرور</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div></div>";
   }
 
   /* ---------- photos ---------- */
@@ -2226,10 +2256,10 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     var t = e.target.closest("[data-act]");
     if (!t) return;
     var a = t.getAttribute("data-act"), id = Number(t.getAttribute("data-id")), val = t.getAttribute("data-v");
-    if (a === "role") { ui.role = val; ui.loginErr = ""; refresh(); }
+    if (a === "role") { ui.role = val; ui.loginErr = ""; ui.lgf = {}; refresh(); }
     else if (a === "herodel") { S.hero = "none"; save(); refresh(); }
     else if (a === "herodef") { delete S.hero; save(); refresh(); }
-    else if (a === "logout") { try { localStorage.removeItem("afs-login"); } catch (e) {} ui.cert = null; session = null; uid = null; ui.loginErr = ""; location.hash = "home"; shown = ""; go(); }
+    else if (a === "logout") { try { localStorage.removeItem("afs-login"); } catch (e) {} ui.lgf = {}; ui.cert = null; session = null; uid = null; ui.loginErr = ""; location.hash = "home"; shown = ""; go(); }
     else if (a === "tab") { ui.tab = val; ui.confirmDel = null; refresh(); }
     else if (a === "delask") { ui.confirmDel = id; refresh(); }
     else if (a === "delno") { ui.confirmDel = null; refresh(); }
@@ -2314,7 +2344,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     else if (a === "doimport") {
       var ik = ui.imp ? ui.imp.kind : "members", good = ui.imp ? ui.imp.rows.filter(function (r) { return !r.bad; }) : [];
       if (ik === "teachers") {
-        good.forEach(function (r) { var uu = r.user && !userTaken(r.user) ? r.user : genUser("teacher"); S.teachers.push({ id: nid(), name: r.name, title: r.title, user: uu, pass: r.pass || ranStr(6) }); });
+        good.forEach(function (r) { var uu = r.user && !userTaken(r.user) ? r.user : genUser("teacher"); S.teachers.push({ id: nid(), name: r.name, title: r.title, dept: r.dept || "", user: uu, pass: r.pass || ranStr(6) }); });
         ui.flash = { where: "bulk", text: "تمت إضافة " + good.length + " معلم من الملف وأُنشئت لهم حسابات. افتح «بطاقات الدخول» لرؤيتها." };
       } else {
         good.forEach(function (r) { var uu = r.user && !userTaken(r.user) ? r.user : genUser("scout"); S.members.push({ id: nid(), name: r.name, grade: r.grade, patrol: r.patrol, level: "فتيان", att: 0, photo: "", user: uu, pass: r.pass || ranStr(6) }); });
@@ -2462,6 +2492,16 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
         if (err) { ui.flash = { where: wh, text: err, err: true }; refresh(); }
         else { rm.rank = nv; logEv && logEv("تغيير لقب " + rm.name + " إلى " + (nv || "بدون لقب")); save(); ui.flash = { where: wh, text: nv ? "منح " + rm.name + " لقب " + nv + "." : "أُزيل لقب " + rm.name + "." }; refresh(); }
       }
+    } else if (t.id === "lg-dept") {
+      ui.lgf = { dept: t.value }; ui.loginErr = ""; refresh();
+    } else if (t.id === "lg-grade") {
+      ui.lgf = { grade: t.value }; ui.loginErr = ""; refresh();
+    } else if (t.id === "lg-class") {
+      ui.lgf = { grade: ui.lgf.grade, cls: t.value }; ui.loginErr = ""; refresh();
+    } else if (t.id === "lg-name") {
+      ui.lgf.id = t.value; ui.loginErr = ""; refresh(); var lp = document.getElementById("l-pass"); if (lp) lp.focus();
+    } else if (t.matches && t.matches("[data-tdept]")) {
+      var td = byId(S.teachers, Number(t.getAttribute("data-tdept"))); if (td) { td.dept = t.value.trim(); save(); ui.flash = { where: "teachers", text: "حُدّث قسم " + td.name + "." }; refresh(); }
     } else if (t.id === "mc-patrol") {
       ui.mcPatrol = t.value; refresh();
     } else if (t.id === "mc-grade") {
@@ -2532,9 +2572,10 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     if (!f) return;
     e.preventDefault();
     if (f === "login") {
-      var u = v("l-user").toLowerCase(), p = v("l-pass");
-      var acct = (ui.role === "scout" ? S.members : ui.role === "teacher" ? S.teachers : S.staff).filter(function (x) { return String(x.user).toLowerCase() === u && x.pass === p; })[0], ok = !!acct;
-      if (!ok) { ui.loginErr = "اسم المستخدم أو كلمة المرور غير صحيحة."; refresh(); return; }
+      var p = v("l-pass"), acct;
+      if (ui.role === "admin") { var u = v("l-user").toLowerCase(); acct = S.staff.filter(function (x) { return String(x.user).toLowerCase() === u && x.pass === p; })[0]; }
+      else { var lid = Number((ui.lgf || {}).id); acct = (ui.role === "scout" ? S.members : S.teachers).filter(function (x) { return x.id === lid && x.pass === p; })[0]; }
+      if (!acct) { ui.loginErr = ui.role === "admin" ? "اسم المستخدم أو كلمة المرور غير صحيحة." : "الرقم السري غير صحيح."; refresh(); return; }
       session = ui.role; uid = acct.id; if (session === "scout") S.meId = acct.id; ui.loginErr = "";
       try { var kp = document.getElementById("l-keep"); if (kp && kp.checked) localStorage.setItem("afs-login", JSON.stringify({ role: session, uid: uid })); else localStorage.removeItem("afs-login"); } catch (e) {} shown = ""; location.hash = session; go();
     } else if (f === "setJoin") {
@@ -2622,7 +2663,7 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
     } else if (f === "addTeacher") {
       var c3 = newCred(v("t-user"), v("t-pass"), "teacher");
       if (c3.err) { ui.flash = { where: "teachers", text: c3.err, err: true }; refresh(); return; }
-      S.teachers.push({ id: nid(), name: v("t-name"), title: v("t-title") || "معلم", user: c3.user, pass: c3.pass });
+      S.teachers.push({ id: nid(), name: v("t-name"), title: v("t-title") || "معلم", dept: v("t-dept"), user: c3.user, pass: c3.pass });
       logEv("إضافة المعلم " + v("t-name")); save(); ui.flash = { where: "teachers", text: "تمت إضافة " + v("t-name") + ". اسم المستخدم: " + c3.user + " · كلمة المرور: " + c3.pass }; refresh();
     } else if (f === "addStaff") {
       var c2 = newCred(v("st-user"), v("st-pass"), "staff");
