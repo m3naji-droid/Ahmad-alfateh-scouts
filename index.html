@@ -669,6 +669,10 @@ code.pw { font-family: ui-monospace, Menlo, Consolas, monospace; background: var
 .bar-tools button { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); display: grid; place-items: center; cursor: pointer; padding: 0; font: inherit; }
 .bar-tools button:hover { border-color: var(--primary); color: var(--primary); }
 .bar-tools svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.bar-tools button.on { color: var(--primary); border-color: var(--primary); background: var(--surface); }
+.bar-tools button.on svg { fill: currentColor; fill-opacity: .18; }
+.swi { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+.swi input { width: 20px; height: 20px; flex-shrink: 0; }
 .bar-tools button.spin svg { animation: tspin .8s linear infinite; }
 @keyframes tspin { to { transform: rotate(360deg); } }
 #intro { position: fixed; inset: 0; z-index: 3000; background: var(--bg); }
@@ -684,7 +688,11 @@ body.introing #brand img { visibility: hidden; }
   html, body { max-width: 100%; overflow-x: hidden; }
   body { padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px)); }
   .nav .dsk { display: none; }
-  .nav { overflow: visible; }
+  .bar .wrap { gap: 8px; }
+  .bar-tools { gap: 4px; }
+  .bar-tools button { width: 34px; height: 34px; }
+  .bar-tools svg { width: 18px; height: 18px; }
+  .nav a, .nav button { padding: 6px 9px; }
   .bnav { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; position: fixed; inset-inline: 0; bottom: 0; z-index: 40; background: var(--bg); border-top: 2px dashed var(--line); padding: 6px max(6px, env(safe-area-inset-left, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)); }
   .bnav a { display: grid; justify-items: center; gap: 1px; padding: 4px 2px; text-decoration: none; color: var(--muted); font-size: .72rem; line-height: 1.3; font-weight: 500; border-radius: 10px; min-width: 0; }
   .bnav a svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
@@ -719,7 +727,7 @@ body.introing #brand img { visibility: hidden; }
 <header class="bar"><div class="wrap">
   <a class="brand" href="#home" id="brand"></a>
   <nav class="nav" id="nav" aria-label="التنقل"></nav>
-  <div class="bar-tools"><button type="button" id="btn-install" data-act="appinst" aria-label="تثبيت الموقع كتطبيق على الشاشة الرئيسية" title="تثبيت كتطبيق"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg></button><button type="button" id="btn-refresh" data-act="appref" aria-label="تحديث الصفحة" title="تحديث"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button></div>
+  <div class="bar-tools"><button type="button" id="btn-push" data-act="pushdlg" aria-label="التنبيهات" title="التنبيهات"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/></svg></button><button type="button" id="btn-install" data-act="appinst" aria-label="تثبيت الموقع كتطبيق على الشاشة الرئيسية" title="تثبيت كتطبيق"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg></button><button type="button" id="btn-refresh" data-act="appref" aria-label="تحديث الصفحة" title="تحديث"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button></div>
 </div></header>
 <main class="wrap" id="app"></main>
 <nav class="bnav" id="bnav" aria-label="التنقل السفلي"></nav>
@@ -2856,6 +2864,7 @@ body.introing #brand img { visibility: hidden; }
     }
     var IC = { home: '<path d="M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6"/>', act: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>', pic: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>', mag: '<path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 3v18M12 8h4M12 12h4"/>', me: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>', join: '<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6.5 7-6.5M18 8v6M15 11h6"/>' };
     var bi = [["home", "الرئيسية", "home"], ["activities", "الأنشطة", "act"], ["gallery", "الصور", "pic"], ["magazine", "المجلة", "mag"], session ? [session, "لوحتي", "me"] : ["join", "انضم", "join"]];
+    pushTrack();
     var bn = document.getElementById("bnav");
     if (bn) bn.innerHTML = bi.map(function (x) { var on = shown === x[0] || (x[0] === "gallery" && /^album-/.test(shown)) || (x[0] === "magazine" && /^magazine/.test(shown)) || (x[0] === session && /^(admin|teacher|scout)/.test(shown)); return '<a href="#' + x[0] + '"' + (on ? ' class="on" aria-current="page"' : "") + '><svg viewBox="0 0 24 24" aria-hidden="true">' + IC[x[2]] + "</svg><span>" + x[1] + "</span></a>"; }).join("");
     document.getElementById("nav").innerHTML = n;
@@ -2866,7 +2875,7 @@ body.introing #brand img { visibility: hidden; }
     var out = view === "scout" ? vScout() : view === "admin" ? vAdmin(k) : view === "teacher" ? vTeacher() : view === "home" ? vHome() : view === "gallery" ? vGallery() : view === "activities" ? vActivities() : view === "album" ? vAlbum(k) : view === "magazine" ? vMagazine(k) : vParts()[view];
     ui.flash = null;
     document.getElementById("app").innerHTML = out +
-      '<footer class="ft"><div><b style="font-family:var(--font-display);font-size:1.2rem;color:var(--fg)">فرقة أحمد الفاتح الكشفية</b><br>كن مستعداً</div><div>جميع الحقوق محفوظة © فرقة أحمد الفاتح الكشفية · الإصدار 82</div></footer>';
+      '<footer class="ft"><div><b style="font-family:var(--font-display);font-size:1.2rem;color:var(--fg)">فرقة أحمد الفاتح الكشفية</b><br>كن مستعداً</div><div>جميع الحقوق محفوظة © فرقة أحمد الفاتح الكشفية · الإصدار 83</div></footer>';
     if (ui.cert && view !== "admin") document.getElementById("app").insertAdjacentHTML("beforeend", certHtml(ui.cert[0], ui.cert[1]));
     renderBar();
   }
@@ -2961,6 +2970,11 @@ body.introing #brand img { visibility: hidden; }
       try { var obj = JSON.parse(raw); if (!obj || !obj.members || !obj.staff) throw 0; localStorage.setItem(KEY, JSON.stringify(obj)); cloudRestore(obj); }
       catch (er) { ui.bkAsk = false; ui.bkErr = true; ui.bkMsg = "النص الملصوق ليس نسخة احتياطية صحيحة."; refresh(); }
     }
+    else if (a === "pushdlg") { pushOpen(); }
+    else if (a === "pushclose") { var pd = document.getElementById("pushdlg"); if (pd) pd.remove(); }
+    else if (a === "pushtoggle") { pushToggle(); }
+    else if (a === "pushtest") { pushTest(); }
+    else if (a === "pushtype") { var po = pushLoad(); po.types[val] = t.checked ? 1 : 0; pushSave(po); pushUpdate(); }
     else if (a === "appinst") { aInstall(); }
     else if (a === "appref") { aRefresh(); }
     else if (a === "instclose") { var idg = document.getElementById("instdlg"); if (idg) idg.remove(); }
@@ -3640,12 +3654,84 @@ body.introing #brand img { visibility: hidden; }
     }).catch(function () {}).then(function () { phBusy = false; });
   }
 
+  /* ---------- push notifications ---------- */
+  var PUSH_PUB = "BMlNr-3OgemimChY4PBskrO3FlKwW_eTcltQjAwQ4conRIh66-Lg6Gs4eJrn8x8iiywe01P2P11ae_CIyUjT_-Y", PUSHK = "afs-push", pushKeyLast = null, pushBusy = false, pushMsg = "";
+  function pushLoad() { var d = { on: false, types: { pts: 1, ann: 1, story: 1, msg: 1 } }; try { var o = JSON.parse(localStorage.getItem(PUSHK) || "null"); if (o) { d.on = !!o.on; Object.keys(d.types).forEach(function (k) { if (o.types && o.types[k] === 0) d.types[k] = 0; }); } } catch (e) {} return d; }
+  function pushSave(o) { try { localStorage.setItem(PUSHK, JSON.stringify(o)); } catch (e) {} }
+  function b64u(b) { var p = "=".repeat((4 - b.length % 4) % 4), r = atob((b + p).replace(/-/g, "+").replace(/_/g, "/")), a = new Uint8Array(r.length); for (var i = 0; i < r.length; i++) a[i] = r.charCodeAt(i); return a; }
+  function pushWhy() {
+    var ua = navigator.userAgent || "", ios = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    if (!CLOUD) return "التنبيهات تعمل من الرابط الأصلي للموقع فقط (m3naji-droid.github.io/Ahmad-alfateh-scouts)، وليس من هذه المعاينة.";
+    if (ios && !isStandalone()) return "في الآيفون ثبّت الموقع على الشاشة الرئيسية أولاً (زر التثبيت)، ثم افتحه من أيقونته وفعّل التنبيهات.";
+    if (!(window.Notification && navigator.serviceWorker && window.PushManager)) return "هذا المتصفح لا يدعم التنبيهات.";
+    if (window.Notification.permission === "denied") return "التنبيهات محجوبة لهذا الموقع. فعّلها من إعدادات المتصفح ثم أعد المحاولة.";
+    if (!session) return "سجّل الدخول أولاً ليصلك ما يخصّك من تنبيهات.";
+    return "";
+  }
+  function pushTypeList() {
+    return session === "scout" ? [["pts", "النقاط والملاحظات"], ["ann", "الإعلانات والأنشطة"], ["story", "القصص"], ["msg", "المهام والردود"]]
+      : session === "teacher" ? [["ann", "الإعلانات والأنشطة"], ["story", "القصص"], ["msg", "الرسائل وحالات المراجعة"]]
+      : session === "admin" ? [["msg", "الرسائل وطلبات الانضمام والحالات"]] : [];
+  }
+  function pushReg() { return navigator.serviceWorker.register("sw.js").then(function () { return navigator.serviceWorker.ready; }); }
+  function pushKeyOf(sub) { return sha256(sub.endpoint).slice(0, 40); }
+  function pushPut(sub) {
+    if (!CLOUD) return Promise.resolve();
+    var o = pushLoad();
+    return clJ(clBase() + "/push/" + pushKeyOf(sub) + ".json", { method: "PUT", body: JSON.stringify({ sub: sub.toJSON(), role: session || "", uid: session ? uid : 0, types: o.types, ts: Date.now() }) });
+  }
+  function pushDraw() {
+    var b = document.getElementById("btn-push"); if (b) b.classList.toggle("on", !!pushLoad().on);
+    var el = document.getElementById("pushdlg"); if (!el) return;
+    var o = pushLoad(), why = pushWhy(), blocked = /محجوبة/.test(why);
+    var list = o.on ? pushTypeList().map(function (x) { return '<label class="swi"><input type="checkbox" data-act="pushtype" data-v="' + x[0] + '"' + (o.types[x[0]] === 0 ? "" : " checked") + "><span>" + x[1] + "</span></label>"; }).join("") : "";
+    el.innerHTML = '<div class="card"><h3>التنبيهات</h3>' + (why && !o.on ? '<p class="note" style="margin-bottom:10px">' + why + "</p>" : "") +
+      (pushMsg ? '<p class="note" style="margin-bottom:10px">' + pushMsg + "</p>" : "") +
+      '<p style="margin-bottom:10px">الحالة: <b>' + (o.on ? "مفعّلة على هذا الجهاز" : "غير مفعّلة") + "</b></p>" +
+      (o.on ? '<p class="muted" style="margin-bottom:6px">اختر ما يصلك:</p>' + list + '<div class="row-act" style="margin-top:12px;flex-wrap:wrap"><button type="button" class="btn ghost sm" data-act="pushtest">تنبيه تجريبي</button><button type="button" class="btn danger sm" data-act="pushtoggle"' + (pushBusy ? " disabled" : "") + '>إيقاف التنبيهات</button></div><p class="muted" style="margin-top:10px;font-size:.85rem">قد يتأخر وصول التنبيه بضع دقائق عن الحدث.</p>'
+        : '<button type="button" class="btn" data-act="pushtoggle"' + ((why && !blocked) || pushBusy ? " disabled" : "") + ">" + (pushBusy ? "جارٍ التفعيل…" : "تشغيل التنبيهات") + "</button>") +
+      '<div style="margin-top:14px"><button type="button" class="btn ghost sm" data-act="pushclose">إغلاق</button></div></div>';
+  }
+  function pushOpen() {
+    pushMsg = ""; var el = document.getElementById("pushdlg"); if (el) el.remove();
+    el = document.createElement("div"); el.id = "pushdlg"; el.className = "dlg"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "التنبيهات");
+    document.body.appendChild(el); pushDraw();
+  }
+  function pushToggle() {
+    if (pushBusy) return;
+    var o = pushLoad();
+    if (o.on) {
+      pushBusy = true; pushDraw();
+      navigator.serviceWorker.getRegistration().then(function (reg) { return reg && reg.pushManager.getSubscription(); }).then(function (sub) {
+        if (!sub) return; var k = pushKeyOf(sub);
+        return (CLOUD ? fetch(clBase() + "/push/" + k + ".json", { method: "DELETE" }).catch(function () {}) : Promise.resolve()).then(function () { return sub.unsubscribe(); });
+      }).catch(function () {}).then(function () { o.on = false; pushSave(o); pushBusy = false; pushMsg = "تم إيقاف التنبيهات."; pushDraw(); });
+      return;
+    }
+    var why = pushWhy(); if (why && !/محجوبة/.test(why)) { pushDraw(); return; }
+    pushBusy = true; pushMsg = ""; pushDraw();
+    window.Notification.requestPermission().then(function (p) {
+      if (p !== "granted") throw new Error("denied");
+      return pushReg();
+    }).then(function (reg) {
+      return reg.pushManager.getSubscription().then(function (sub) { return sub || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64u(PUSH_PUB) }); }).then(function (sub) {
+        return pushPut(sub).then(function () { o.on = true; pushSave(o); pushMsg = "تم تشغيل التنبيهات."; try { reg.showNotification("تم تشغيل التنبيهات", { body: "ستصلك تنبيهات فرقة أحمد الفاتح على هذا الجهاز.", icon: "icon-192.png", dir: "rtl", lang: "ar" }).catch(function () {}); } catch (e) {} });
+      });
+    }).catch(function (e) { pushMsg = e && e.message === "denied" ? "لم يتم السماح بالتنبيهات." : "تعذّر تشغيل التنبيهات. حاول مرة أخرى."; }).then(function () { pushBusy = false; pushDraw(); });
+  }
+  function pushTest() { navigator.serviceWorker.getRegistration().then(function (reg) { if (reg) return reg.showNotification("تنبيه تجريبي", { body: "التنبيهات تعمل على هذا الجهاز.", icon: "icon-192.png", dir: "rtl", lang: "ar" }); }).catch(function () {}); }
+  function pushUpdate() {
+    if (!pushLoad().on || !CLOUD || !navigator.serviceWorker) return;
+    navigator.serviceWorker.getRegistration().then(function (reg) { return reg && reg.pushManager.getSubscription(); }).then(function (sub) { if (sub) return pushPut(sub); }).catch(function () {});
+  }
+  function pushTrack() { var k = (session || "") + ":" + (session ? uid : 0); if (k !== pushKeyLast) { pushKeyLast = k; pushUpdate(); } }
+
   /* ---------- install as app / refresh / intro ---------- */
   var deferredInst = null;
   window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferredInst = e; });
   window.addEventListener("appinstalled", function () { deferredInst = null; toolsDraw(); });
   function isStandalone() { return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true; }
-  function toolsDraw() { var b = document.getElementById("btn-install"); if (b) b.hidden = isStandalone(); }
+  function toolsDraw() { var b = document.getElementById("btn-install"); if (b) b.hidden = isStandalone(); pushDraw(); }
   function aInstall() {
     if (deferredInst) { var d = deferredInst; deferredInst = null; d.prompt(); return; }
     var ua = navigator.userAgent || "", ios = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1), and = /android/i.test(ua), site = /github\.io$/.test(location.hostname);
