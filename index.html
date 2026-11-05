@@ -138,7 +138,7 @@ footer.ft { margin-top: 80px; border-top: 2px dashed var(--line); padding-block:
 /* login */
 .login h1 { color: var(--fg); font-size: 1.8rem; }
 .login { max-width: 460px; margin: 48px auto 0; background: var(--surface); border: 2px dashed var(--line); border-radius: 10px; padding: 28px; display: grid; gap: 16px; }
-\1\n.hero .login { margin: 0; max-width: none; color: var(--fg); }
+.hero .login { margin: 0; max-width: none; color: var(--fg); }
 .seg { display: grid; grid-template-columns: repeat(3, 1fr); border: 2px solid var(--primary); border-radius: 8px; overflow: hidden; }
 .seg button { font-family: inherit; font-size: .92rem; white-space: nowrap; font-weight: 700; padding: 8px 2px; border: 0; background: none; color: var(--primary); cursor: pointer; }
 .seg button.on { background: var(--primary); color: var(--primary-fg); }
@@ -677,6 +677,43 @@ body.introing #brand img { visibility: hidden; }
 .dlg { position: fixed; inset: 0; z-index: 2500; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; padding: 16px; }
 .dlg .card { max-width: 420px; width: 100%; margin: 0; max-height: 90vh; overflow: auto; }
 .dlg ol { padding-inline-start: 22px; line-height: 2; margin: 8px 0 14px; }
+
+/* bottom app bar (phones) + phone-fit home */
+.bnav { display: none; }
+@media (max-width: 820px) {
+  html, body { max-width: 100%; overflow-x: hidden; }
+  body { padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px)); }
+  .nav .dsk { display: none; }
+  .nav { overflow: visible; }
+  .bnav { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; position: fixed; inset-inline: 0; bottom: 0; z-index: 40; background: var(--bg); border-top: 2px dashed var(--line); padding: 6px max(6px, env(safe-area-inset-left, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)); }
+  .bnav a { display: grid; justify-items: center; gap: 1px; padding: 4px 2px; text-decoration: none; color: var(--muted); font-size: .72rem; line-height: 1.3; font-weight: 500; border-radius: 10px; min-width: 0; }
+  .bnav a svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .bnav a.on { color: var(--primary); font-weight: 700; }
+  .bnav a.on svg { stroke-width: 2.4; }
+  #toast { bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
+  #qundo { bottom: calc(82px + env(safe-area-inset-bottom, 0px)); }
+  #clpill { bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important; }
+  footer.ft { margin-top: 40px; }
+  .hero { margin-top: 8px; padding: 8px; min-height: calc(100dvh - 66px - 82px - env(safe-area-inset-bottom, 0px)); display: flex; }
+  .hero-in { width: 100%; padding: 14px 14px; gap: 12px; align-content: center; }
+  .hero-in > div:first-child { display: grid; grid-template-columns: 76px 1fr; column-gap: 12px; align-items: center; }
+  .hero img.emb { grid-row: 1 / span 2; width: 76px; max-width: 76px; margin: 0; }
+  .hero .motto { font-size: 1.05rem; margin: 0; align-self: end; }
+  .hero h1 { font-size: clamp(1.35rem, 6.6vw, 1.8rem); align-self: start; }
+  .hero p.lead { display: none; }
+  .hero .login { padding: 12px 14px; gap: 6px; }
+  .hero .login > h1 { display: none; }
+  .hero .login .field { gap: 2px; }
+  .hero .login .field input { padding: 8px 12px; }
+  .hero .login .err:empty { display: none; }
+  .hero .login .keep { font-size: .85rem; }
+  .hero .join-go { display: block; text-align: center; }
+}
+@media (max-width: 820px) and (max-height: 700px) {
+  .hero-in { gap: 8px; padding: 10px; } .hero-in > div:first-child { grid-template-columns: 56px 1fr; } .hero img.emb { width: 56px; max-width: 56px; }
+  .hero .login { padding: 8px 12px; gap: 4px; } .hero .login .field input { padding: 5px 10px; } .hero .login .seg button { padding: 5px 2px; } .hero .login .btn { padding: 7px 24px; }
+}
+@media (min-width: 821px) { .hero .join-go { display: none; } }
 </style>
 
 <header class="bar"><div class="wrap">
@@ -685,6 +722,7 @@ body.introing #brand img { visibility: hidden; }
   <div class="bar-tools"><button type="button" id="btn-install" data-act="appinst" aria-label="تثبيت الموقع كتطبيق على الشاشة الرئيسية" title="تثبيت كتطبيق"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg></button><button type="button" id="btn-refresh" data-act="appref" aria-label="تحديث الصفحة" title="تحديث"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button></div>
 </div></header>
 <main class="wrap" id="app"></main>
+<nav class="bnav" id="bnav" aria-label="التنقل السفلي"></nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -1191,7 +1229,7 @@ body.introing #brand img { visibility: hidden; }
   }
   function heroImg() { return S.hero === "none" ? "" : (S.hero || DEFHERO); }
   function vHome() {
-    return (session ? storyStrip() : "") + '<section class="hero"' + (heroImg() ? ' style="--hb:url(' + heroImg() + ')"' : "") + '><div class="hero-in"><div>' + emblem("emb", "#234a78", "#fbf3e1", "#e8d3a2") + '<div class="motto">كن مستعداً</div><h1>فرقة أحمد الفاتح الكشفية</h1><p class="lead">نصنع من الاولاد رجالاً يعتمدون على أنفسهم، ويقومون بواجبهم تجاه الله وتجاه وطنهم ومجتمعهم.</p></div>' + loginForm() + '</div></section>' + homeExtra();
+    return (session ? storyStrip() : "") + '<section class="hero"' + (heroImg() ? ' style="--hb:url(' + heroImg() + ')"' : "") + '><div class="hero-in"><div>' + emblem("emb", "#234a78", "#fbf3e1", "#e8d3a2") + '<div class="motto">كن مستعداً</div><h1>فرقة أحمد الفاتح الكشفية</h1><p class="lead">نصنع من الاولاد رجالاً يعتمدون على أنفسهم، ويقومون بواجبهم تجاه الله وتجاه وطنهم ومجتمعهم.</p></div>' + loginForm() + (session ? '' : '<a class="btn gold join-go" href="#join">انضم إلينا</a>') + '</div></section>' + homeExtra();
   }
   function homeExtra() {
     var mo = TODAY.slice(0, 7), anns = S.announcements.slice(0, 3).map(function (a) { return '<div class="ann"><h4>' + h(a.title) + "</h4><p>" + h(a.text) + "</p><small>" + longDate(a.date) + "</small></div>"; }).join("");
@@ -2812,10 +2850,14 @@ body.introing #brand img { visibility: hidden; }
     document.getElementById("brand").innerHTML = emblem("", "#234a78", "#fdf6e6", "#e8d3a2") + "<span>فرقة أحمد الفاتح</span>";
     var n;
     if (session) {
-      n = '<span class="chip" style="align-self:center">' + (session === "admin" ? "الإدارة" : session === "teacher" ? "معلم" : "كشاف") + '</span><a href="#' + session + '">لوحتي</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#magazine">المجلة</a><a href="#about">من نحن</a><button data-act="logout">خروج</button>';
+      n = '<span class="chip" style="align-self:center">' + (session === "admin" ? "الإدارة" : session === "teacher" ? "معلم" : "كشاف") + '</span><a class="dsk" href="#' + session + '">لوحتي</a><a class="dsk" href="#activities">الأنشطة</a><a class="dsk" href="#gallery">الصور</a><a class="dsk" href="#magazine">المجلة</a><a href="#about">من نحن</a><button data-act="logout">خروج</button>';
     } else {
-      n = '<a href="#home">الرئيسية</a><a href="#activities">الأنشطة</a><a href="#gallery">الصور</a><a href="#magazine">المجلة</a><a href="#about">من نحن</a><a class="go" href="#join">انضم إلينا</a>';
+      n = '<a class="dsk" href="#home">الرئيسية</a><a class="dsk" href="#activities">الأنشطة</a><a class="dsk" href="#gallery">الصور</a><a class="dsk" href="#magazine">المجلة</a><a href="#about">من نحن</a><a class="go dsk" href="#join">انضم إلينا</a>';
     }
+    var IC = { home: '<path d="M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6"/>', act: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>', pic: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>', mag: '<path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 3v18M12 8h4M12 12h4"/>', me: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>', join: '<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6.5 7-6.5M18 8v6M15 11h6"/>' };
+    var bi = [["home", "الرئيسية", "home"], ["activities", "الأنشطة", "act"], ["gallery", "الصور", "pic"], ["magazine", "المجلة", "mag"], session ? [session, "لوحتي", "me"] : ["join", "انضم", "join"]];
+    var bn = document.getElementById("bnav");
+    if (bn) bn.innerHTML = bi.map(function (x) { var on = shown === x[0] || (x[0] === "gallery" && /^album-/.test(shown)) || (x[0] === "magazine" && /^magazine/.test(shown)) || (x[0] === session && /^(admin|teacher|scout)/.test(shown)); return '<a href="#' + x[0] + '"' + (on ? ' class="on" aria-current="page"' : "") + '><svg viewBox="0 0 24 24" aria-hidden="true">' + IC[x[2]] + "</svg><span>" + x[1] + "</span></a>"; }).join("");
     document.getElementById("nav").innerHTML = n;
   }
   function render(k) {
@@ -2824,7 +2866,7 @@ body.introing #brand img { visibility: hidden; }
     var out = view === "scout" ? vScout() : view === "admin" ? vAdmin(k) : view === "teacher" ? vTeacher() : view === "home" ? vHome() : view === "gallery" ? vGallery() : view === "activities" ? vActivities() : view === "album" ? vAlbum(k) : view === "magazine" ? vMagazine(k) : vParts()[view];
     ui.flash = null;
     document.getElementById("app").innerHTML = out +
-      '<footer class="ft"><div><b style="font-family:var(--font-display);font-size:1.2rem;color:var(--fg)">فرقة أحمد الفاتح الكشفية</b><br>كن مستعداً</div><div>جميع الحقوق محفوظة © فرقة أحمد الفاتح الكشفية</div></footer>';
+      '<footer class="ft"><div><b style="font-family:var(--font-display);font-size:1.2rem;color:var(--fg)">فرقة أحمد الفاتح الكشفية</b><br>كن مستعداً</div><div>جميع الحقوق محفوظة © فرقة أحمد الفاتح الكشفية · الإصدار 82</div></footer>';
     if (ui.cert && view !== "admin") document.getElementById("app").insertAdjacentHTML("beforeend", certHtml(ui.cert[0], ui.cert[1]));
     renderBar();
   }
@@ -3538,7 +3580,7 @@ body.introing #brand img { visibility: hidden; }
       if (!cl.first && loc !== cl.last[k]) return; /* تعديل محلي لم يُرسل بعد */
       try { S[k] = JSON.parse(r); cl.last[k] = r; changed = true; } catch (e) {}
     });
-    if (securePw()) { changed = true; cloudPush(); }
+    if (securePw() | syncAttPts()) { changed = true; cloudPush(); }
     if (cl.first) { cl.first = false; clFlush(); }
     if (changed) { clRefresh(); }
   }
